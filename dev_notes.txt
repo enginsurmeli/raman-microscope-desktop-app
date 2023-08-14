@@ -1,0 +1,49 @@
+-- Start the homing cycle with '$H' and set the final coordinates as origin with 'G92 X0 Y160 Z0'. Then, park position will be denoted as 'G0 X1 Y1 Z-1' and center position is 'G0 x145 Y80 Z-1'.
+
+-- Serial console requires carriage return at the end of each command. 'Both NL&CR' option also works.
+
+-- In jupyter notebook, use 'sys.argv[0]' instead of '__file__', the latter only works in .py files. Or for a command like os.path(__file__), put the argument in double quotes, i.e. os.path("__file__").
+
+-- Again in jupyter notebook, use current_folder = globals()['_dh'][0] instead of os.getcwd.
+
+-- To automatically create a list of required librares, use 'pip freeze > requirements.txt'.
+
+-- loading.io/icon/ is a good website for free icons to download in svg format.
+
+-- Default $$ parameters as of 14/08/2023:
+"
+$0=10
+$1=25
+$2=0
+$3=0
+$4=0
+$5=0
+$6=0
+$10=1
+$11=0.010
+$12=0.002
+$13=0
+$20=0
+$21=1
+$22=1
+$23=1
+$24=25.000
+$25=500.000
+$26=250
+$27=1.000
+$30=1000
+$31=0
+$32=0
+$100=800.000
+$101=800.000
+$102=800.000
+$110=1000.000
+$111=1000.000
+$112=600.000
+$120=30.000
+$121=30.000
+$122=30.000
+$130=200.000
+$131=200.000
+$132=200.000
+"
