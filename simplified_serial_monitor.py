@@ -25,21 +25,6 @@ def get_str_of_chr(chr_in_byte):
 			return '\\r'
 	return '\\x{:02x}'.format(cd)
 
-def get_hexstr_of_chr(chr_in_byte):
-	cd = ord(chr_in_byte)
-	st = '{:02X}'.format(cd)
-	if cd == 10:
-		st += '\n'
-	else:
-		st += ' '
-	return st
-
-def is_hex_digit(a_byte):
-	return b'0' <= a_byte and a_byte <= b'9' or b'A' <= a_byte and a_byte <= b'F' or b'a' <= a_byte and a_byte <= b'f'
-
-def is_oct_digit(a_byte):
-	return b'0' <= a_byte and a_byte <= b'7'
-
 def decode_esc(str_of_chr):
 	sbs = bytes([ord(c) for c in str_of_chr])
 	dbs = b''
@@ -52,7 +37,7 @@ def decode_esc(str_of_chr):
 			by = sbs[idx:idx+1]
 			if by == b'\\' or by == b"'" or by == b'"':
 				dbs += by
-			elif by == b'0' and not is_oct_digit(sbs[idx+1:idx+2]):
+			elif by == b'0':
 				dbs += b'\0'
 			elif by == b'a':
 				dbs += b'\a'
@@ -69,26 +54,8 @@ def decode_esc(str_of_chr):
 			elif by == b'r':
 				dbs += b'\r'
 			elif by == b'x':
-				if is_hex_digit(sbs[idx+1:idx+2]):
-					if is_hex_digit(sbs[idx+2:idx+3]):
-						dbs += bytes([int(sbs[idx+1:idx+3], 16)])
-						idx += 3
-						continue
 				err = {'from': idx-1, 'to': idx+3, 'msg': f'Value Error: invalid {str_of_chr[idx-1:idx+3]} escape at position {idx-1}'}
 				break
-			elif is_oct_digit(by):
-				od = 1
-				if is_oct_digit(sbs[idx+1:idx+2]):
-					od += 1
-					if is_oct_digit(sbs[idx+2:idx+3]):
-						od += 1
-				ov = int(sbs[idx:idx+od], 8)
-				if ov > 255:
-					od -= 1
-					ov >>= 3
-				dbs += bytes([ov])
-				idx += od
-				continue
 			else:
 				if by:
 					ch = chr(ord(by))
@@ -107,8 +74,6 @@ def sendCmd(event):
 	global sentTexts, sentTextsPtr
 	txt = str(txText.get())
 	lst = len(sentTexts)
-	if txt == '{about}':
-		showAbout()
 	if txt != '':
 		bs, err = decode_esc(txt)
 		if err:
@@ -127,10 +92,7 @@ def sendCmd(event):
 		elif lineEndingCbo.current() == 3:
 			bs += b'\r\n'
 		currentPort.write(bs)
-		if dispHexVar.get():
-			txt = ''.join([get_hexstr_of_chr(bytes([i])) for i in bs])
-		else:
-			txt = ''.join([get_str_of_chr(bytes([i])) for i in bs])
+		txt = ''.join([get_str_of_chr(bytes([i])) for i in bs])
 		writeConsole(txt, 1)
 		txText.delete(0, tk.END)
 
@@ -242,7 +204,7 @@ def writeConsole(txt, upd=0):
 		return
 	if upd !=2 and lastUpdatedBy == 2:
 		ad = '\n' + ad
-	ad += txt
+	ad += txt.replace('\\r', '')
 	rxText.configure(state=tk.NORMAL)
 	rxText.insert(tk.END, ad)
 	rxText.see(tk.END)
@@ -262,10 +224,7 @@ def rxPolling():
 			ch = currentPort.read()
 			tm = time.strftime('%H:%M:%S.{}'.format(repr(time.time()).split('.')[1][:3]))
 			txt = ''
-			if dispHexVar.get():
-				txt += get_hexstr_of_chr(ch)
-			else:
-				txt += get_str_of_chr(ch)
+			txt += get_str_of_chr(ch)
 			writeConsole(txt)
 	except serial.SerialException as se:
 		closePort()
@@ -307,11 +266,10 @@ def closePort():
 		root.title(APP_TITLE)
 
 def showAbout():
-	msgbox.showinfo(APP_TITLE, 'Designed by ZulNs\n@Gorontalo, 13 April 2021')
+	msgbox.showinfo(APP_TITLE, 'Designed by Engin Can Sürmeli, August 2023')
 
 def exitRoot():
 	data = {}
-	data['displayhex'] = dispHexVar.get()
 	data['lineending'] = lineEndingCbo.current()
 	data['baudrateindex'] = baudrateCbo.current()
 	data['databits'] = currentPort.bytesize
@@ -425,8 +383,6 @@ if __name__ == '__main__':
 		root.iconphoto(False, ico)
 	root.protocol("WM_DELETE_WINDOW", exitRoot)
 
-	dispHexVar = tk.BooleanVar()
-
 	tk.Grid.rowconfigure(root, 0, weight=1)
 	tk.Grid.rowconfigure(root, 1, weight=999)
 	tk.Grid.rowconfigure(root, 2, weight=1)
@@ -494,15 +450,13 @@ if __name__ == '__main__':
 
 	rxTextMenu = tk.Menu(rxText, tearoff=0)
 	rxTextMenu.add_command(label='Copy', accelerator='Ctrl+C', command=lambda:rxText.event_generate('<<Copy>>'))
-	rxTextMenu.add_separator()
-	rxTextMenu.add_command(label='Close active port', command=closePort)
-	rxTextMenu.add_separator()
-	rxTextMenu.add_checkbutton(label='Display in hexadecimal code', onvalue=True, offvalue=False, variable=dispHexVar)
+	# rxTextMenu.add_separator()
+	# rxTextMenu.add_command(label='Close active port', command=closePort)
 	rxTextMenu.add_separator()
 	rxTextMenu.add_command(label='Port setting', command=setting)
 	rxTextMenu.add_separator()
 	rxTextMenu.add_command(label='About', command=showAbout)
-
+ 
 	listPortsPolling()
 
 	root.update()
@@ -513,9 +467,6 @@ if __name__ == '__main__':
 	root.minsize(rw, 233)
 	root.geometry(f'{rw}x{rh}+{int((sw-rw)/2)}+{int((sh-rh)/2)-30}')
 
-	di = data.get('displayhex')
-	if di != None:
-		dispHexVar.set(di)
 	di = data.get('databits')
 	if di != None:
 		currentPort.bytesize = di
