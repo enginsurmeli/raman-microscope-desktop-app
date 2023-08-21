@@ -1,7 +1,9 @@
 # Importing all the necessary libraries
 import sys
 import os
-from PIL import Image
+from PIL import Image, ImageTk
+# import PIL.Image
+# import PIL.ImageTk
 import time
 
 import tkinter as tk
@@ -32,8 +34,6 @@ from pygrabber.dshow_graph import FilterGraph  # pip install pygrabber
 from typing import Optional, Tuple, Union
 
 
-
-
 class MenuBar(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
@@ -51,14 +51,13 @@ class Logo(customtkinter.CTkFrame):
         self.menu_logo = customtkinter.CTkLabel(
             self, image=self.menu_logo_image, text='')
         self.menu_logo.pack(fill="both", expand=True)
-        # self.menu_logo.bind('<Configure>',_resize_image)
+        self.menu_logo.bind('<Configure>',self._resize_image)
 
-
-def _resize_image(self, event):
-    new_width = event.width
-    new_height = event.height
-    pilimg = self.pirates.resize((new_width, new_height))
-    self.homelbl.configure(image=customtkinter.CTkImage(pilimg))
+    def _resize_image(self, event):
+        new_width = event.width
+        new_height = event.height
+        pilimg = self.pirates.resize((new_width, new_height))
+        self.homelbl.configure(image=customtkinter.CTkImage(pilimg))
 
 
 class SerialConsole(customtkinter.CTkFrame):
@@ -69,6 +68,85 @@ class SerialConsole(customtkinter.CTkFrame):
 class CameraView(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
+
+        # configure grid layout (4x4)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure((2, 3), weight=0)
+        self.grid_rowconfigure((0, 1, 2), weight=1)
+
+        # create sidebar frame with widgets
+        self.sidebar_frame = customtkinter.CTkFrame(
+            self, width=350, corner_radius=0)
+        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(4, weight=1)
+        self.logo_label = customtkinter.CTkLabel(
+            self.sidebar_frame, text="Video Source", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+
+    def connect_camera(self):
+        for i, device in enumerate(self.graph.get_input_devices()):
+            if device == self.combobox.get():
+                self.video_source = i
+
+        # main window
+        self.vid = MyVideoCapture(self.video_source)
+
+        # Create a canvas that can fit the above video source size
+        self.canvas = tk.Canvas(
+            self, width=self.vid.width, height=self.vid.height)
+        self.canvas.grid(row=0, rowspan=4, column=1)
+
+        self.delay = 15
+        self.update()
+
+    def update(self):
+        # Get a frame from the video source
+        return_value, frame = self.vid.get_frame()
+
+        if return_value:
+            try:
+                # frame = self.analyzeFrame(frame) <-- this is where you would put your image processing code, see webcam_qr.py
+                self.photo = PIL.ImageTk.PhotoImage(
+                    image=PIL.Image.fromarray(frame))
+                self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
+
+            except BaseException:
+                import sys
+                print(sys.exc_info()[0])
+                import traceback
+                print(traceback.format_exc())
+            finally:
+                pass
+
+        self.after(self.delay, self.update)
+
+
+class MyVideoCapture:
+    def __init__(self, video_source=0):
+        # Open the video source
+        self.vid = cv2.VideoCapture(video_source)
+        if not self.vid.isOpened():
+            raise ValueError("Unable to open video source", video_source)
+
+        # Get video source width and height
+        self.width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self.height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
+    def get_frame(self):
+        if not self.vid.isOpened():
+            return (return_value, None)
+
+        return_value, frame = self.vid.read()
+        if return_value:
+            # Return a boolean success flag and the current frame converted to BGR
+            return (return_value, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        else:
+            return (return_value, None)
+
+    # Release the video source when the object is destroyed
+    def __del__(self):
+        if self.vid.isOpened():
+            self.vid.release()
 
 
 class ScanParameters(customtkinter.CTkFrame):
@@ -172,7 +250,8 @@ class SettingsWindow(customtkinter.CTkToplevel):
             self.settings_frame, values=self.camera_list, dynamic_resizing=False)
         self.camera_combobox.grid(row=2, column=1, padx=10, pady=10)
 
-        self.appearance_combobox = customtkinter.CTkOptionMenu(self.settings_frame, values=["Light", "Dark", "System"])
+        self.appearance_combobox = customtkinter.CTkOptionMenu(
+            self.settings_frame, values=["Light", "Dark", "System"])
         self.appearance_combobox.grid(row=4, column=1, padx=10, pady=10)
 
         # set current values
@@ -184,19 +263,36 @@ class SettingsWindow(customtkinter.CTkToplevel):
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
+        
+    def connect_camera_event(self, new_camera: str):
+        for i, device in enumerate(self.camera_list):   
+            if device == self.camera_combobox.get():
+                self.video_source = i
+
+        # main window
+        self.vid = MyVideoCapture(self.video_source)
+
+        # Create a canvas that can fit the above video source size
+        self.canvas = tk.Canvas(self, width = self.vid.width, height = self.vid.height)
+        self.canvas.grid(row=0, rowspan=4, column=1)
+
+        self.delay = 15
+        self.update() 
 
     def apply_settings(self):
         # apply changes
+        App.camera = self.camera_combobox.get()
+        self.connect_camera_event(App.camera)        
         App.appearance = self.appearance_combobox.get()
         self.change_appearance_mode_event(App.appearance)
-        
+
         # save settings to json file
         data = {}
         data['lineending'] = self.line_endings_combobox.get()
         data['baudrate'] = self.baud_rates_combobox.get()
         data['port'] = self.serial_ports_combobox.get()
         data['portlist'] = self.ports_list
-        data['camera'] = self.camera_combobox.get()
+        data['camera'] = App.camera
         data['cameralist'] = self.camera_list
         data['appearance'] = App.appearance
         with open('app_settings.json', 'w') as jfile:
@@ -308,7 +404,7 @@ class App(customtkinter.CTk):
         self.cnc_buttons_frame = CNCButtons(self)
         self.cnc_buttons_frame.grid(
             row=1, column=3, rowspan=2, padx=(10, 20), pady=(10, 20), sticky="nsew")
-        
+
         # Modes: "System" (standard), "Dark", "Light"
         customtkinter.set_appearance_mode(App.appearance)
         # Themes: "blue" (standard), "green", "dark-blue"
