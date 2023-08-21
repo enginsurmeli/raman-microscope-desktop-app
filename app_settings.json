@@ -1,0 +1,18 @@
+{
+    "lineending": "CR",
+    "baudrate": "115200",
+    "port": "COM15",
+    "portlist": [
+        "COM15",
+        "COM12",
+        "COM13",
+        "COM14"
+    ],
+    "camera": "HD Camera",
+    "cameralist": [
+        "HD Camera",
+        "PowerToys VideoConference Mute",
+        "OBS Virtual Camera"
+    ],
+    "appearance": "Dark"
+}
