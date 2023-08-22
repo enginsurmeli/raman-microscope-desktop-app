@@ -106,8 +106,8 @@ class CameraView(customtkinter.CTkFrame):
         if return_value:
             try:
                 # frame = self.analyzeFrame(frame) <-- this is where you would put your image processing code, see webcam_qr.py
-                self.photo = PIL.ImageTk.PhotoImage(
-                    image=PIL.Image.fromarray(frame))
+                self.photo = ImageTk.PhotoImage(
+                    image=Image.fromarray(frame))
                 self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
 
             except BaseException:
