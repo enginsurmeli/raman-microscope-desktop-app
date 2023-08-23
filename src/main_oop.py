@@ -2,9 +2,6 @@
 import sys
 import os
 from PIL import Image, ImageTk
-# import PIL.Image
-# import PIL.ImageTk
-import time
 
 import tkinter as tk
 from tkinter import ttk
@@ -29,10 +26,6 @@ import json
 
 import cv2
 from pygrabber.dshow_graph import FilterGraph  # pip install pygrabber
-
-# Modes: "System" (standard), "Dark", "Light"
-from typing import Optional, Tuple, Union
-
 
 class MenuBar(customtkinter.CTkFrame):
     def __init__(self, master):
@@ -65,9 +58,6 @@ class CameraView(customtkinter.CTkFrame):
         self.label = customtkinter.CTkLabel(self, text="")
         self.label.pack(fill="both", expand=True)
         
-    def update(self, input_text: str):
-        self.label.configure(text=input_text)
-
 class ScanParameters(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
@@ -183,16 +173,8 @@ class SettingsWindow(customtkinter.CTkToplevel):
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
         
-    def connect_camera_event(self):
-        for i, device in enumerate(self.camera_list):   
-            if device == self.camera_combobox.get():
-                App.camera = i
-
-
     def apply_settings(self):
         # apply changes
-        CameraView.update("Text changed")
-        self.connect_camera_event()        
         App.appearance = self.appearance_combobox.get()
         self.change_appearance_mode_event(App.appearance)
 
@@ -205,7 +187,7 @@ class SettingsWindow(customtkinter.CTkToplevel):
         data['camera'] = App.camera
         data['cameralist'] = self.camera_list
         data['appearance'] = App.appearance
-        with open('app_settings.json', 'w') as jfile:
+        with open('settings.json', 'w') as jfile:
             json.dump(data, jfile, indent=4)
             jfile.close()
         self.destroy()
@@ -244,7 +226,7 @@ class App(customtkinter.CTk):
     filename = sys.argv[0].rsplit('.', 1)[0]
     jfile = None
     try:
-        jfile = open('app_settings.json')
+        jfile = open('settings.json')
         settings_data = json.load(jfile)
     except FileNotFoundError as fnfe:
         pass
@@ -269,7 +251,7 @@ class App(customtkinter.CTk):
             f"{app_window_width}x{app_window_height}+{int(screen_width/2-app_window_width/2)}+{int(screen_height/2-app_window_height/2)}")
         self.minsize(app_window_width, app_window_height)
         self.grab_set()
-        icons_folder = 'icons'
+        icons_folder = 'src//icons'
         self.image_path = os.path.join(App.current_folder, icons_folder)
 
         try:
