@@ -61,66 +61,12 @@ class SerialConsole(customtkinter.CTkFrame):
 class CameraView(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
-
-        # main window
-        self.vid = MyVideoCapture(0)
-
-        # Create a canvas that can fit the above video source size
-        self.canvas = tk.Canvas(self, width = self.vid.width, height = self.vid.height)
-        self.canvas.grid(row=0, rowspan=4, column=1)
-
-        self.delay = 15
-        self.update() 
-
-    def update(self):
-        # Get a frame from the video source
-        return_value, frame = self.vid.get_frame()
-
-        if return_value:
-            try:
-                # frame = self.analyzeFrame(frame) <-- this is where you would put your image processing code, see webcam_qr.py
-                self.photo = ImageTk.PhotoImage(
-                    image=Image.fromarray(frame))
-                self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
-
-            except BaseException:
-                import sys
-                print(sys.exc_info()[0])
-                import traceback
-                print(traceback.format_exc())
-            finally:
-                pass
-
-        self.after(self.delay, self.update)
-
-
-class MyVideoCapture:
-    def __init__(self, video_source=0):
-        # Open the video source
-        self.vid = cv2.VideoCapture(video_source)
-        if not self.vid.isOpened():
-            raise ValueError("Unable to open video source", video_source)
-
-        # Get video source width and height
-        self.width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
-        self.height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
         
-    def get_frame(self):
-        if not self.vid.isOpened():
-            return (return_value, None)
-
-        return_value, frame = self.vid.read()
-        if return_value:
-            # Return a boolean success flag and the current frame converted to BGR
-            return (return_value, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-        else:
-            return (return_value, None)
-
-    # Release the video source when the object is destroyed
-    def __del__(self):
-        if self.vid.isOpened():
-            self.vid.release()
-
+        self.label = customtkinter.CTkLabel(self, text="")
+        self.label.pack(fill="both", expand=True)
+        
+    def update(self, input_text: str):
+        self.label.configure(text=input_text)
 
 class ScanParameters(customtkinter.CTkFrame):
     def __init__(self, master):
@@ -245,6 +191,7 @@ class SettingsWindow(customtkinter.CTkToplevel):
 
     def apply_settings(self):
         # apply changes
+        CameraView.update("Text changed")
         self.connect_camera_event()        
         App.appearance = self.appearance_combobox.get()
         self.change_appearance_mode_event(App.appearance)
