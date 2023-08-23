@@ -51,13 +51,6 @@ class Logo(customtkinter.CTkFrame):
         self.menu_logo = customtkinter.CTkLabel(
             self, image=self.menu_logo_image, text='')
         self.menu_logo.pack(fill="both", expand=True)
-        self.menu_logo.bind('<Configure>',self._resize_image)
-
-    def _resize_image(self, event):
-        new_width = event.width
-        new_height = event.height
-        pilimg = self.pirates.resize((new_width, new_height))
-        self.homelbl.configure(image=customtkinter.CTkImage(pilimg))
 
 
 class SerialConsole(customtkinter.CTkFrame):
@@ -69,35 +62,15 @@ class CameraView(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 
-        # configure grid layout (4x4)
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure((2, 3), weight=0)
-        self.grid_rowconfigure((0, 1, 2), weight=1)
-
-        # create sidebar frame with widgets
-        self.sidebar_frame = customtkinter.CTkFrame(
-            self, width=350, corner_radius=0)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(4, weight=1)
-        self.logo_label = customtkinter.CTkLabel(
-            self.sidebar_frame, text="Video Source", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-
-    def connect_camera(self):
-        for i, device in enumerate(self.graph.get_input_devices()):
-            if device == self.combobox.get():
-                self.video_source = i
-
         # main window
-        self.vid = MyVideoCapture(self.video_source)
+        self.vid = MyVideoCapture(0)
 
         # Create a canvas that can fit the above video source size
-        self.canvas = tk.Canvas(
-            self, width=self.vid.width, height=self.vid.height)
+        self.canvas = tk.Canvas(self, width = self.vid.width, height = self.vid.height)
         self.canvas.grid(row=0, rowspan=4, column=1)
 
         self.delay = 15
-        self.update()
+        self.update() 
 
     def update(self):
         # Get a frame from the video source
@@ -131,7 +104,7 @@ class MyVideoCapture:
         # Get video source width and height
         self.width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
-
+        
     def get_frame(self):
         if not self.vid.isOpened():
             return (return_value, None)
@@ -264,25 +237,15 @@ class SettingsWindow(customtkinter.CTkToplevel):
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
         
-    def connect_camera_event(self, new_camera: str):
+    def connect_camera_event(self):
         for i, device in enumerate(self.camera_list):   
             if device == self.camera_combobox.get():
-                self.video_source = i
+                App.camera = i
 
-        # main window
-        self.vid = MyVideoCapture(self.video_source)
-
-        # Create a canvas that can fit the above video source size
-        self.canvas = tk.Canvas(self, width = self.vid.width, height = self.vid.height)
-        self.canvas.grid(row=0, rowspan=4, column=1)
-
-        self.delay = 15
-        self.update() 
 
     def apply_settings(self):
         # apply changes
-        App.camera = self.camera_combobox.get()
-        self.connect_camera_event(App.camera)        
+        self.connect_camera_event()        
         App.appearance = self.appearance_combobox.get()
         self.change_appearance_mode_event(App.appearance)
 
@@ -359,11 +322,14 @@ class App(customtkinter.CTk):
             f"{app_window_width}x{app_window_height}+{int(screen_width/2-app_window_width/2)}+{int(screen_height/2-app_window_height/2)}")
         self.minsize(app_window_width, app_window_height)
         self.grab_set()
-        self.icons_folder = 'icons'
+        icons_folder = 'icons'
+        self.image_path = os.path.join(App.current_folder, icons_folder)
 
-        self.image_path = os.path.join(App.current_folder, self.icons_folder)
         try:
-            self.iconbitmap(os.path.join(self.image_path, "lst_logo.ico"))
+            # self.iconbitmap(os.path.join(self.image_path, "microscope_logo.ico"))
+            iconpath = ImageTk.PhotoImage(file=os.path.join(self.image_path, "microscope_logo.png"))
+            self.wm_iconbitmap()
+            self.after(300, lambda: self.iconphoto(False, iconpath))
         except:
             pass
 
