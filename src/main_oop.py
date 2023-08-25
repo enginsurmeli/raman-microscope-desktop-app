@@ -27,13 +27,18 @@ import json
 import cv2
 from pygrabber.dshow_graph import FilterGraph  # pip install pygrabber
 
+
 class MenuBar(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 
+        self.master = master
         settings_button = customtkinter.CTkButton(
-            self, text="Settings", command=SettingsWindow)
+            self, text="Settings", command=self.OpenSettings)
         settings_button.pack(side="bottom", padx=10, pady=10)
+        
+    def OpenSettings(self):
+        settings_window = SettingsWindow(self.master)
 
 
 class Logo(customtkinter.CTkFrame):
@@ -54,10 +59,11 @@ class SerialConsole(customtkinter.CTkFrame):
 class CameraView(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
-        
+
         self.label = customtkinter.CTkLabel(self, text="")
         self.label.pack(fill="both", expand=True)
-        
+
+
 class ScanParameters(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
@@ -79,18 +85,21 @@ class CNCStatus(customtkinter.CTkFrame):
 
 
 class SettingsWindow(customtkinter.CTkToplevel):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, master):
+        super().__init__(master)
 
+        self.master = master
+        app_window_width = master.winfo_width()
+        app_window_height = master.winfo_height()
+        app_window_x = master.winfo_x()
+        app_window_y = master.winfo_y()
+        settings_window_width = 600
+        settings_window_height = 240
+        self.geometry(
+            f"{settings_window_width}x{settings_window_height}+{app_window_x+app_window_width//2-settings_window_width//2}+{app_window_y+app_window_height//2-settings_window_height//2}")
+        self.resizable(False, False)
         self.title("Settings")
         self.deiconify()
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        app_window_width = 600
-        app_window_height = 240
-        self.geometry(
-            f"{app_window_width}x{app_window_height}+{int(screen_width/2-app_window_width/2)}+{int(screen_height/2-app_window_height/2)}")
-        self.resizable(False, False)
         self.grab_set()
 
         self.grid_rowconfigure(0, weight=1)
@@ -164,19 +173,19 @@ class SettingsWindow(customtkinter.CTkToplevel):
         self.appearance_combobox.grid(row=4, column=1, padx=10, pady=10)
 
         # set current values
-        self.serial_ports_combobox.set(App.serial_port)
-        self.baud_rates_combobox.set(App.baudrate)
-        self.line_endings_combobox.set(App.serial_line_ending)
-        self.camera_combobox.set(App.camera)
-        self.appearance_combobox.set(App.appearance)
+        self.serial_ports_combobox.set(master.serial_port)
+        self.baud_rates_combobox.set(master.baudrate)
+        self.line_endings_combobox.set(master.serial_line_ending)
+        self.camera_combobox.set(master.camera)
+        self.appearance_combobox.set(master.appearance)
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
-        
+
     def apply_settings(self):
         # apply changes
-        App.appearance = self.appearance_combobox.get()
-        self.change_appearance_mode_event(App.appearance)
+        self.master.appearance = self.appearance_combobox.get()
+        self.change_appearance_mode_event(self.master.appearance)
 
         # save settings to json file
         data = {}
@@ -184,38 +193,46 @@ class SettingsWindow(customtkinter.CTkToplevel):
         data['baudrate'] = self.baud_rates_combobox.get()
         data['port'] = self.serial_ports_combobox.get()
         data['portlist'] = self.ports_list
-        data['camera'] = App.camera
+        data['camera'] = self.master.camera
         data['cameralist'] = self.camera_list
-        data['appearance'] = App.appearance
+        data['appearance'] = self.master.appearance
         with open('settings.json', 'w') as jfile:
             json.dump(data, jfile, indent=4)
             jfile.close()
         self.destroy()
 
 
-# class QuitAppWindow(customtkinter.CTkToplevel):
-#     def __init__(self):
-#         super().__init__()
+class OnQuitApp(customtkinter.CTkToplevel):
+    def __init__(self, master):
+        super().__init__(master)
 
-#         self.geometry("320x100")
-#         self.title("Quit Application")
-#         self.resizable(False, False)
-#         self.deiconify()
-#         self.grab_set()
+        self.master = master
+        app_window_width = master.winfo_width()
+        app_window_height = master.winfo_height()
+        app_window_x = master.winfo_x()
+        app_window_y = master.winfo_y()
+        quit_window_width = 320
+        quit_window_height = 100
+        self.geometry(
+            f"{quit_window_width}x{quit_window_height}+{app_window_x+app_window_width//2-quit_window_width//2}+{app_window_y+app_window_height//2-quit_window_height//2}")
+        self.title("Quit Application")
+        self.resizable(False, False)
+        self.deiconify()
+        self.grab_set()
 
-#         label = customtkinter.CTkLabel(
-#             self, text="Are you sure you want to quit?")
-#         label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
-#         yes_button = customtkinter.CTkButton(
-#             self, text="Yes", command=self._quit)
-#         yes_button.grid(row=1, column=0, padx=10, pady=10)
-#         no_button = customtkinter.CTkButton(
-#             self, text="No", command=self.destroy)
-#         no_button.grid(row=1, column=1, padx=10, pady=10)
+        label = customtkinter.CTkLabel(
+            self, text="Are you sure you want to quit?")
+        label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+        yes_button = customtkinter.CTkButton(
+            self, text="Yes", command=self._quit)
+        yes_button.grid(row=1, column=0, padx=10, pady=10)
+        no_button = customtkinter.CTkButton(
+            self, text="No", command=self.destroy)
+        no_button.grid(row=1, column=1, padx=10, pady=10)
 
-#     def _quit():
-#         App.quit()
-#         App.destroy()
+    def _quit(self):
+        self.master.quit()
+        self.master.destroy()
 
 
 class App(customtkinter.CTk):
@@ -256,7 +273,8 @@ class App(customtkinter.CTk):
 
         try:
             # self.iconbitmap(os.path.join(self.image_path, "microscope_logo.ico"))
-            iconpath = ImageTk.PhotoImage(file=os.path.join(self.image_path, "microscope_logo.png"))
+            iconpath = ImageTk.PhotoImage(file=os.path.join(
+                self.image_path, "microscope_logo.png"))
             self.wm_iconbitmap()
             self.after(300, lambda: self.iconphoto(False, iconpath))
         except:
@@ -307,27 +325,7 @@ class App(customtkinter.CTk):
         # customtkinter.deactivate_automatic_dpi_awareness()
 
     def OnQuitApp(self):
-        quit_app_window = customtkinter.CTkToplevel(self)
-        quit_app_window.geometry(
-            f"320x100+{self.winfo_x()+self.winfo_width()//2-160}+{self.winfo_y()+self.winfo_height()//2-50}")
-        quit_app_window.title("Quit Application")
-        quit_app_window.resizable(False, False)
-        quit_app_window.deiconify()
-        quit_app_window.grab_set()
-
-        label = customtkinter.CTkLabel(
-            quit_app_window, text="Are you sure you want to quit?")
-        label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
-        yes_button = customtkinter.CTkButton(
-            quit_app_window, text="Yes", command=self._quit)
-        yes_button.grid(row=1, column=0, padx=10, pady=10)
-        no_button = customtkinter.CTkButton(
-            quit_app_window, text="No", command=quit_app_window.destroy)
-        no_button.grid(row=1, column=1, padx=10, pady=10)
-
-    def _quit(self):
-        self.quit()
-        self.destroy()
+        quit_app = OnQuitApp(self)
 
 
 if __name__ == "__main__":
