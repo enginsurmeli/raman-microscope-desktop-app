@@ -27,6 +27,8 @@ import json
 import cv2
 from pygrabber.dshow_graph import FilterGraph  # pip install pygrabber
 
+from configparser import ConfigParser
+
 
 class MenuBar(customtkinter.CTkFrame):
     def __init__(self, master):
@@ -36,7 +38,7 @@ class MenuBar(customtkinter.CTkFrame):
         settings_button = customtkinter.CTkButton(
             self, text="Settings", command=self.OpenSettings)
         settings_button.pack(side="bottom", padx=10, pady=10)
-        
+
     def OpenSettings(self):
         settings_window = SettingsWindow(self.master)
 
@@ -168,16 +170,21 @@ class SettingsWindow(customtkinter.CTkToplevel):
             self.settings_frame, values=self.camera_list, dynamic_resizing=False)
         self.camera_combobox.grid(row=2, column=1, padx=10, pady=10)
 
+        # create a list of appearance modes and accent colors
         self.appearance_combobox = customtkinter.CTkOptionMenu(
             self.settings_frame, values=["Light", "Dark", "System"])
         self.appearance_combobox.grid(row=4, column=1, padx=10, pady=10)
 
-        # set current values
-        self.serial_ports_combobox.set(master.serial_port)
-        self.baud_rates_combobox.set(master.baudrate)
-        self.line_endings_combobox.set(master.serial_line_ending)
-        self.camera_combobox.set(master.camera)
-        self.appearance_combobox.set(master.appearance)
+        self.accent_color_option = customtkinter.CTkOptionMenu(
+            self.settings_frame, values=["Blue", "Green", "Dark Blue"])
+        self.accent_color_option.grid(row=4, column=2, padx=10, pady=10)
+
+        # # set current values
+        # self.serial_ports_combobox.set(master.serial_port)
+        # self.baud_rates_combobox.set(master.baudrate)
+        # self.line_endings_combobox.set(master.serial_line_ending)
+        # self.camera_combobox.set(master.camera)
+        # self.appearance_combobox.set(master.appearance)
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
@@ -193,10 +200,11 @@ class SettingsWindow(customtkinter.CTkToplevel):
         data['baudrate'] = self.baud_rates_combobox.get()
         data['port'] = self.serial_ports_combobox.get()
         data['portlist'] = self.ports_list
-        data['camera'] = self.master.camera
+        # data['camera'] = self.master.camera
         data['cameralist'] = self.camera_list
-        data['appearance'] = self.master.appearance
-        with open('settings.json', 'w') as jfile:
+        # data['appearance'] = self.master.appearance
+        # data['accent_color'] = self.master.theme
+        with open('settings.ini', 'w') as jfile:
             json.dump(data, jfile, indent=4)
             jfile.close()
         self.destroy()
@@ -237,25 +245,6 @@ class OnQuitApp(customtkinter.CTkToplevel):
 
 class App(customtkinter.CTk):
 
-    current_folder = os.getcwd()
-    # current_folder = globals()['_dh'][0]
-    settings_data = {}
-    filename = sys.argv[0].rsplit('.', 1)[0]
-    jfile = None
-    try:
-        jfile = open('settings.json')
-        settings_data = json.load(jfile)
-    except FileNotFoundError as fnfe:
-        pass
-    if jfile:
-        jfile.close()
-
-    serial_line_ending = settings_data.get('lineending', 'CR')
-    baudrate = settings_data.get('baudrate', '115200')
-    serial_port = settings_data.get('port', 'COM7')
-    camera = settings_data.get('camera', '0')
-    appearance = settings_data.get('appearance', 'System')
-
     def __init__(self):
         super().__init__()
         self.protocol("WM_DELETE_WINDOW", self.OnQuitApp)
@@ -268,8 +257,12 @@ class App(customtkinter.CTk):
             f"{app_window_width}x{app_window_height}+{int(screen_width/2-app_window_width/2)}+{int(screen_height/2-app_window_height/2)}")
         self.minsize(app_window_width, app_window_height)
         self.grab_set()
+
+        self.current_folder = os.getcwd()
+        # self.current_folder = globals()['_dh'][0]
+        self.filename = sys.argv[0].rsplit('.', 1)[0]
         icons_folder = 'src//icons'
-        self.image_path = os.path.join(App.current_folder, icons_folder)
+        self.image_path = os.path.join(self.current_folder, icons_folder)
 
         try:
             # self.iconbitmap(os.path.join(self.image_path, "microscope_logo.ico"))
@@ -280,7 +273,7 @@ class App(customtkinter.CTk):
         except:
             pass
 
-        # set grid layout 2x4
+        # set grid layout 3x4
         self.grid_rowconfigure(0, weight=2)
         self.grid_rowconfigure(1, weight=7)
         self.grid_rowconfigure(2, weight=2)
@@ -318,9 +311,27 @@ class App(customtkinter.CTk):
         self.cnc_buttons_frame.grid(
             row=1, column=3, rowspan=2, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
-        # Modes: "System" (standard), "Dark", "Light"
-        customtkinter.set_appearance_mode(App.appearance)
-        # Themes: "blue" (standard), "green", "dark-blue"
+        self.loadSettings()  # Initialize settings
+
+    def loadSettings(self):
+        settings_data = {}
+        jfile = None
+        try:
+            jfile = open('settings.ini')
+            settings_data = json.load(jfile)
+        except FileNotFoundError as fnfe:
+            pass
+        if jfile:
+            jfile.close()
+
+        serial_line_ending = settings_data.get('lineending', 'CR')
+        baudrate = settings_data.get('baudrate', '115200')
+        serial_port = settings_data.get('port', 'COM7')
+        camera = settings_data.get('camera', '0')
+        appearance = settings_data.get('appearance', 'System')
+        accent_color = settings_data.get('accent_color', 'Blue')
+
+        customtkinter.set_appearance_mode(appearance)
         customtkinter.set_default_color_theme("blue")
         # customtkinter.deactivate_automatic_dpi_awareness()
 
