@@ -38,7 +38,7 @@ class SerialConsole(customtkinter.CTkFrame):
         self.grid_columnconfigure((1, 2), weight=0)
 
         self.rx_textbox = customtkinter.CTkTextbox(
-            self, bg_color='#343638', state="disabled", wrap="word", border_width=2, corner_radius=0)
+            self, bg_color='#343638', state="disabled", wrap="word", border_width=2, corner_radius=0, height=150)
         self.rx_textbox.grid(row=0, column=0, columnspan=3,
                              padx=5, pady=5, sticky="nsew")
 

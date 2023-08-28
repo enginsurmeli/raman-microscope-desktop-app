@@ -34,7 +34,7 @@ class App(customtkinter.CTk):
         self.grab_set()
 
         self.current_folder = os.getcwd()
-        # self.current_folder = globals()['_dh'][0]
+        # self.current_folder = globals()['_dh'][0] # Use this for jupyter notebook
         self.filename = sys.argv[0].rsplit('.', 1)[0]
         icons_folder = 'src//icons'
         self.image_path = os.path.join(self.current_folder, icons_folder)
@@ -51,7 +51,7 @@ class App(customtkinter.CTk):
         # set grid layout 3x4
         self.grid_rowconfigure(0, weight=2)
         self.grid_rowconfigure(1, weight=7)
-        self.grid_rowconfigure(2, weight=2)
+        self.grid_rowconfigure(2, weight=0)
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=8)
         self.grid_columnconfigure(2, weight=2)

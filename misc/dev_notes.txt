@@ -47,3 +47,9 @@ $130=200.000
 $131=200.000
 $132=200.000
 "
+
+-- Settings initialization routine:
+    1. App.__init__ çağırıldığında json dosyası okunup ayarlar ilk seferde uygulanacak.
+    2. Daha sonra okunan ayarlar settings_window objesine aktarılacak.
+    3. settings_window objesi her açıldığında bu variable'ları görüp combobox'ları ona göre ayarlayacak.
+    4. settings_window'da apply settings yapılırsa json dosyasına kaydedilecek. Sonra App class'ındaki variable'lar da değişecek. Buradan gelen yeni variable'lar ilgili objelere aktarılacak (ör: serial port değişikliği).
