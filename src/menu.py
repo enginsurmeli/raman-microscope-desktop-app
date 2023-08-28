@@ -1,7 +1,8 @@
 import customtkinter
 import settings_window
 
-class MenuBar(customtkinter.CTkFrame):
+
+class Menu(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
 

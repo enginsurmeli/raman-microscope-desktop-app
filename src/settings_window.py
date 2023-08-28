@@ -10,6 +10,7 @@ class SettingsWindow(customtkinter.CTkToplevel):
         super().__init__(master)
 
         self.master = master
+
         app_window_width = master.winfo_width()
         app_window_height = master.winfo_height()
         app_window_x = master.winfo_x()
@@ -64,66 +65,64 @@ class SettingsWindow(customtkinter.CTkToplevel):
         # list available serial ports
         myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
         self.ports_list = [p[0] for p in myports]
-        self.serial_ports_combobox = customtkinter.CTkOptionMenu(
+        self.serial_ports_optionmenu = customtkinter.CTkOptionMenu(
             self.settings_frame, values=self.ports_list)
-        self.serial_ports_combobox.grid(row=0, column=1, padx=10, pady=10)
+        self.serial_ports_optionmenu.grid(row=0, column=1, padx=10, pady=10)
 
         # create a list of baud rates
         baud_rates = ["9600", "19200", "38400", "57600", "115200"]
-        self.baud_rates_combobox = customtkinter.CTkOptionMenu(
+        self.baud_rates_optionmenu = customtkinter.CTkOptionMenu(
             self.settings_frame, values=baud_rates)
-        self.baud_rates_combobox.grid(row=0, column=2, padx=10, pady=10)
+        self.baud_rates_optionmenu.grid(row=0, column=2, padx=10, pady=10)
 
         # create a list of line endings
         line_endings = ["None", "CR", "LF", "Both CR&LF"]
-        self.line_endings_combobox = customtkinter.CTkOptionMenu(
+        self.line_endings_optionmenu = customtkinter.CTkOptionMenu(
             self.settings_frame, values=line_endings)
-        self.line_endings_combobox.grid(row=0, column=3, padx=10, pady=10)
+        self.line_endings_optionmenu.grid(row=0, column=3, padx=10, pady=10)
 
         # get a list of available video devices
         self.graph = FilterGraph()
 
-        # fill combobox with video devices
+        # fill optionmenu with video devices
         self.camera_list = self.graph.get_input_devices()
-        self.camera_combobox = customtkinter.CTkOptionMenu(
+        self.camera_optionmenu = customtkinter.CTkOptionMenu(
             self.settings_frame, values=self.camera_list, dynamic_resizing=False)
-        self.camera_combobox.grid(row=2, column=1, padx=10, pady=10)
+        self.camera_optionmenu.grid(row=2, column=1, padx=10, pady=10)
 
         # create a list of appearance modes and accent colors
-        self.appearance_combobox = customtkinter.CTkOptionMenu(
+        self.appearance_optionmenu = customtkinter.CTkOptionMenu(
             self.settings_frame, values=["Light", "Dark", "System"])
-        self.appearance_combobox.grid(row=4, column=1, padx=10, pady=10)
+        self.appearance_optionmenu.grid(row=4, column=1, padx=10, pady=10)
 
-        self.accent_color_option = customtkinter.CTkOptionMenu(
-            self.settings_frame, values=["Blue", "Green", "Dark Blue"])
-        self.accent_color_option.grid(row=4, column=2, padx=10, pady=10)
+        # self.accent_color_option = customtkinter.CTkOptionMenu(
+        #     self.settings_frame, values=["blue", "green", "dark-blue"])
+        # self.accent_color_option.grid(row=4, column=2, padx=10, pady=10)
 
-        # # set current values
-        # self.serial_ports_combobox.set(master.serial_port)
-        # self.baud_rates_combobox.set(master.baudrate)
-        # self.line_endings_combobox.set(master.serial_line_ending)
-        # self.camera_combobox.set(master.camera)
-        # self.appearance_combobox.set(master.appearance)
+    def initialize_settings(self, settings_data: dict):
+        # print(settings_data)
+        pass
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
 
     def apply_settings(self):
         # apply changes
-        self.master.appearance = self.appearance_combobox.get()
-        self.change_appearance_mode_event(self.master.appearance)
+        camera = self.camera_optionmenu.get()
+
+        appearance = self.appearance_optionmenu.get()
+        self.change_appearance_mode_event(appearance)
 
         # save settings to json file
         data = {}
-        data['lineending'] = self.line_endings_combobox.get()
-        data['baudrate'] = self.baud_rates_combobox.get()
-        data['port'] = self.serial_ports_combobox.get()
+        data['lineending'] = self.line_endings_optionmenu.get()
+        data['baudrate'] = self.baud_rates_optionmenu.get()
+        data['port'] = self.serial_ports_optionmenu.get()
         data['portlist'] = self.ports_list
-        # data['camera'] = self.master.camera
+        data['camera'] = camera
         data['cameralist'] = self.camera_list
-        # data['appearance'] = self.master.appearance
-        # data['accent_color'] = self.master.theme
-        with open('settings.ini', 'w') as jfile:
+        data['appearance'] = appearance
+        with open('settings.json', 'w') as jfile:
             json.dump(data, jfile, indent=4)
             jfile.close()
         self.destroy()

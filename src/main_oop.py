@@ -6,7 +6,6 @@ from PIL import ImageTk
 import customtkinter
 
 import json
-from configparser import ConfigParser
 
 import quit_app_window
 import menu
@@ -59,7 +58,7 @@ class App(customtkinter.CTk):
         self.grid_columnconfigure(3, weight=2)
 
         # create frames
-        self.menu_bar_frame = menu.MenuBar(self)
+        self.menu_bar_frame = menu.Menu(self)
         self.menu_bar_frame.grid(
             row=0, column=0, rowspan=2, padx=(20, 10), pady=(20, 10), sticky="nsew")
 
@@ -88,13 +87,11 @@ class App(customtkinter.CTk):
         self.cnc_buttons_frame.grid(
             row=1, column=3, rowspan=2, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
-        self.loadSettings()  # Initialize settings
-
     def loadSettings(self):
         settings_data = {}
         jfile = None
         try:
-            jfile = open('settings.ini')
+            jfile = open('settings.json')
             settings_data = json.load(jfile)
         except FileNotFoundError as fnfe:
             pass
@@ -105,12 +102,15 @@ class App(customtkinter.CTk):
         baudrate = settings_data.get('baudrate', '115200')
         serial_port = settings_data.get('port', 'COM7')
         camera = settings_data.get('camera', '0')
-        appearance = settings_data.get('appearance', 'System')
-        accent_color = settings_data.get('accent_color', 'Blue')
+        appearance = settings_data.get('appearance', 'Dark')
 
-        customtkinter.set_appearance_mode(appearance)
-        customtkinter.set_default_color_theme("blue")
+        # print(f"{serial_line_ending}, {baudrate}, {serial_port}, {camera}, {appearance}")
+
+        # customtkinter.set_appearance_mode(appearance)
+        # customtkinter.set_default_color_theme("blue")
         # customtkinter.deactivate_automatic_dpi_awareness()
+
+        return settings_data
 
     def OnQuitApp(self):
         quit_app = quit_app_window.OnQuitApp(self)
