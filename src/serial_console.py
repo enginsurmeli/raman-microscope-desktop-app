@@ -132,7 +132,7 @@ class SerialConsole(customtkinter.CTkFrame):
         if tx_text != "":
             bs, err = self.decodeEsc(tx_text)
             if err:
-                self.writeConsole(err['msg'] + '\n', 2)
+                self.writeConsole(err['msg'] + '\n')
                 self.tx_entrybox.xview(err['from'])
                 self.tx_entrybox.selection_range(err['from'], err['to'])
                 self.tx_entrybox.icursor(err['to'])
@@ -148,7 +148,7 @@ class SerialConsole(customtkinter.CTkFrame):
                 bs += b'\r\n'
             self.currentPort.write(bs)
             tx_text = ''.join([self.getStrOfChr(bytes([i])) for i in bs])
-            self.writeConsole(tx_text)
+            self.writeConsole(tx_text + '\n')
             self.tx_entrybox.delete(0, 'end')
 
     def upKeyCmd(self, event):
@@ -176,7 +176,7 @@ class SerialConsole(customtkinter.CTkFrame):
         self.disableSending()
         if self.currentPort.is_open:
             self.currentPort.close()
-            self.writeConsole('Serial port closed.\n', 2)
+            self.writeConsole('Serial port closed.\n')
         self.currentPort.port = self.serial_port
         self.writeConsole('Connecting...', 2)
         self.update()
@@ -184,17 +184,17 @@ class SerialConsole(customtkinter.CTkFrame):
             self.currentPort.open()
         except:
             # portCbo.set('Select port')
-            self.writeConsole('failed!!!\n', 2)
+            self.writeConsole('failed!!!\n')
             self.currentPort.port = None
         if self.currentPort.is_open:
             self.enableSending()
             self.rxPolling()
-            self.writeConsole('done.\n', 2)
+            self.writeConsole('done.\n')
 
     def changeBaudrate(self, event):
         self.currentPort.baudrate = self.baudrate
 
-    def writeConsole(self, text, upd=0):
+    def writeConsole(self, text):
         text += text.replace('\\r', '') # remove 'carriage return' from incoming text
         self.rx_textbox.configure(state="normal")
         self.rx_textbox.insert('end', text)
@@ -208,9 +208,9 @@ class SerialConsole(customtkinter.CTkFrame):
         try:
             while self.currentPort.in_waiting > 0 and time.perf_counter_ns()-preset < 2000000:  # loop duration about 2ms
                 ch = self.currentPort.read()
-                txt = ''
-                txt += self.getStrOfChr(ch)
-                self.writeConsole(txt)
+                text = ''
+                text += self.getStrOfChr(ch)
+                self.writeConsole(text)
         except serial.SerialException as se:
             self.closePort()
         self.after(10, self.rxPolling)  # polling in 10ms interval
@@ -226,6 +226,6 @@ class SerialConsole(customtkinter.CTkFrame):
     def closePort(self):
         if self.currentPort.is_open:
             self.currentPort.close()
-            self.writeConsole('Serial port closed.\n', 2)
+            self.writeConsole('Serial port closed.\n')
             self.currentPort.port = None
             self.disableSending()

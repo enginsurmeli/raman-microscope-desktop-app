@@ -77,7 +77,7 @@ def sendCmd(event):
 	if txt != '':
 		bs, err = decode_esc(txt)
 		if err:
-			writeConsole(err['msg'] + '\n', 2)
+			writeConsole(err['msg'] + '\n')
 			txText.xview(err['from'])
 			txText.selection_range(err['from'], err['to'])
 			txText.icursor(err['to'])
@@ -93,7 +93,7 @@ def sendCmd(event):
 			bs += b'\r\n'
 		currentPort.write(bs)
 		txt = ''.join([get_str_of_chr(bytes([i])) for i in bs])
-		writeConsole(txt, 1)
+		writeConsole(txt + '\n')
 		txText.delete(0, tk.END)
 
 def upKeyCmd(event):
@@ -122,10 +122,10 @@ def changePort(event):
 	disableSending()
 	if currentPort.is_open:
 		currentPort.close()
-		writeConsole(portDesc + ' closed.\n', 2)
+		writeConsole(portDesc + ' closed.\n')
 	currentPort.port = portCbo.get()
 	portDesc = ports[currentPort.port]
-	writeConsole('Opening ' + portDesc + '...', 2)
+	writeConsole('Opening port...')
 	root.update()
 	try:
 		currentPort.open()
@@ -133,25 +133,22 @@ def changePort(event):
 		root.title(APP_TITLE)
 		portCbo.set('Select port')
 		#msgbox.showerror(APP_TITLE, "Couldn't open the {} port.".format(portDesc))
-		writeConsole('failed!!!\n', 2)
+		writeConsole(' failed!!!\n')
 		currentPort.port = None
 	if currentPort.is_open:
 		root.title(APP_TITLE + ': ' + ports[currentPort.port])
 		enableSending()
 		rxPolling()
-		writeConsole('done.\n', 2)
+		writeConsole(' done.\n')
 		#msgbox.showinfo(APP_TITLE, '{} opened.'.format(portDesc))
 
 def changeBaudrate(event):
 	currentPort.baudrate = BAUD_RATES[baudrateCbo.current()]
 
 def clearOutputCmd():
-	# global isEndByNL, lastUpdatedBy
 	rxText.configure(state=tk.NORMAL)
 	rxText.delete('1.0', tk.END)
 	rxText.configure(state=tk.DISABLED)
-	# isEndByNL = True
-	# lastUpdatedBy = 2
 
 def showTxTextMenu(event):
 	if txText.selection_present():
@@ -184,36 +181,12 @@ def showRxTextMenu(event):
 	finally:
 		rxTextMenu.grab_release()
 
-def writeConsole(txt, upd=0):
-	# global isEndByNL, lastUpdatedBy
-	ad = ''
-	# if not upd:
-	# 	if not lastUpdatedBy and isEndByNL or lastUpdatedBy:
-	# 		if not isEndByNL:
-	# 			ad = '\n' + ad
-	# elif upd == 1:
-	# 	if lastUpdatedBy == 1 and isEndByNL or lastUpdatedBy != 1:
-	# 		if not isEndByNL:
-	# 			ad = '\n' + ad
-	# elif upd == 2:
-	# 	if lastUpdatedBy != 2:
-	# 		ad = '\n'
-	# 		if not isEndByNL:
-	# 			ad += '\n'
-	# else:
-	# 	return
-	# if upd !=2 and lastUpdatedBy == 2:
-	# 	ad = '\n' + ad
-	ad += txt.replace('\\r', '')
+def writeConsole(txt):
+	txt = txt.replace('\\r', '') # remove 'carriage return' from incoming text
 	rxText.configure(state=tk.NORMAL)
-	rxText.insert(tk.END, ad)
+	rxText.insert(tk.END, txt)
 	rxText.see(tk.END)
 	rxText.configure(state=tk.DISABLED)
-	# if txt[-1] == '\n':
-	# 	isEndByNL = True
-	# else:
-	# 	isEndByNL = False
-	# lastUpdatedBy = upd
 
 def rxPolling():
 	if not currentPort.is_open:
@@ -259,7 +232,7 @@ def enableSending():
 def closePort():
 	if currentPort.is_open:
 		currentPort.close()
-		writeConsole(portDesc + ' closed.\n', 2)
+		writeConsole(portDesc + ' closed.\n')
 		currentPort.port = None
 		disableSending()
 		portCbo.set('Select port')
@@ -358,8 +331,6 @@ if __name__ == '__main__':
 	portDesc = ''
 	sentTexts = []
 	sentTextsPtr = 0
-	# isEndByNL = True
-	# lastUpdatedBy = 2
 	ico = None
 
 	data = {}

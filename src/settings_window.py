@@ -99,10 +99,9 @@ class SettingsWindow(customtkinter.CTkToplevel):
         #     self.settings_frame, values=["blue", "green", "dark-blue"])
         # self.accent_color_option.grid(row=4, column=2, padx=10, pady=10)
 
-    def initialize_settings(self, settings_data: dict):
-        # print(settings_data)
+    def refreshPorts(self): # TODO: implement this, refresh available serial ports and cameras every 1 second
         pass
-
+    
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
 
