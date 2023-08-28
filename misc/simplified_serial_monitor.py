@@ -146,12 +146,12 @@ def changeBaudrate(event):
 	currentPort.baudrate = BAUD_RATES[baudrateCbo.current()]
 
 def clearOutputCmd():
-	global isEndByNL, lastUpdatedBy
+	# global isEndByNL, lastUpdatedBy
 	rxText.configure(state=tk.NORMAL)
 	rxText.delete('1.0', tk.END)
 	rxText.configure(state=tk.DISABLED)
-	isEndByNL = True
-	lastUpdatedBy = 2
+	# isEndByNL = True
+	# lastUpdatedBy = 2
 
 def showTxTextMenu(event):
 	if txText.selection_present():
@@ -185,35 +185,35 @@ def showRxTextMenu(event):
 		rxTextMenu.grab_release()
 
 def writeConsole(txt, upd=0):
-	global isEndByNL, lastUpdatedBy
+	# global isEndByNL, lastUpdatedBy
 	ad = ''
-	if not upd:
-		if not lastUpdatedBy and isEndByNL or lastUpdatedBy:
-			if not isEndByNL:
-				ad = '\n' + ad
-	elif upd == 1:
-		if lastUpdatedBy == 1 and isEndByNL or lastUpdatedBy != 1:
-			if not isEndByNL:
-				ad = '\n' + ad
-	elif upd == 2:
-		if lastUpdatedBy != 2:
-			ad = '\n'
-			if not isEndByNL:
-				ad += '\n'
-	else:
-		return
-	if upd !=2 and lastUpdatedBy == 2:
-		ad = '\n' + ad
+	# if not upd:
+	# 	if not lastUpdatedBy and isEndByNL or lastUpdatedBy:
+	# 		if not isEndByNL:
+	# 			ad = '\n' + ad
+	# elif upd == 1:
+	# 	if lastUpdatedBy == 1 and isEndByNL or lastUpdatedBy != 1:
+	# 		if not isEndByNL:
+	# 			ad = '\n' + ad
+	# elif upd == 2:
+	# 	if lastUpdatedBy != 2:
+	# 		ad = '\n'
+	# 		if not isEndByNL:
+	# 			ad += '\n'
+	# else:
+	# 	return
+	# if upd !=2 and lastUpdatedBy == 2:
+	# 	ad = '\n' + ad
 	ad += txt.replace('\\r', '')
 	rxText.configure(state=tk.NORMAL)
 	rxText.insert(tk.END, ad)
 	rxText.see(tk.END)
 	rxText.configure(state=tk.DISABLED)
-	if txt[-1] == '\n':
-		isEndByNL = True
-	else:
-		isEndByNL = False
-	lastUpdatedBy = upd
+	# if txt[-1] == '\n':
+	# 	isEndByNL = True
+	# else:
+	# 	isEndByNL = False
+	# lastUpdatedBy = upd
 
 def rxPolling():
 	if not currentPort.is_open:
@@ -358,8 +358,8 @@ if __name__ == '__main__':
 	portDesc = ''
 	sentTexts = []
 	sentTextsPtr = 0
-	isEndByNL = True
-	lastUpdatedBy = 2
+	# isEndByNL = True
+	# lastUpdatedBy = 2
 	ico = None
 
 	data = {}

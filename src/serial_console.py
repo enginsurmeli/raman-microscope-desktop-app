@@ -21,8 +21,6 @@ class SerialConsole(customtkinter.CTkFrame):
             port=None, baudrate=115200, timeout=0, write_timeout=0)
         self.sent_texts = []
         self.sent_texts_index = 0
-        self.isEndByNL = True
-        self.lastUpdatedBy = 2
 
         icons_folder = os.path.join(os.getcwd(), 'src', 'icons')
         send_button_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "send_button_light.png")),
@@ -197,39 +195,11 @@ class SerialConsole(customtkinter.CTkFrame):
         self.currentPort.baudrate = self.baudrate
 
     def writeConsole(self, text, upd=0):
-        ad = ''
-        if not upd:
-            if not self.lastUpdatedBy and self.isEndByNL or self.lastUpdatedBy:
-                ad += 'RX'
-                if ad:
-                    ad += ' >> '
-                if not self.isEndByNL:
-                    ad = '\n' + ad
-        elif upd == 1:
-            if self.lastUpdatedBy == 1 and self.isEndByNL or self.lastUpdatedBy != 1:
-                ad = 'TX'
-                ad += ' >> '
-                if not self.isEndByNL:
-                    ad = '\n' + ad
-        elif upd == 2:
-            if self.lastUpdatedBy != 2:
-                ad = '\n'
-                if not self.isEndByNL:
-                    ad += '\n'
-        else:
-            return
-        if upd != 2 and self.lastUpdatedBy == 2:
-            ad = '\n' + ad
-        ad += text
+        text += text.replace('\\r', '') # remove 'carriage return' from incoming text
         self.rx_textbox.configure(state="normal")
-        self.rx_textbox.insert('end', ad)
+        self.rx_textbox.insert('end', text)
         self.rx_textbox.see('end')
         self.rx_textbox.configure(state="disabled")
-        if text[-1] == '\n':
-            self.isEndByNL = True
-        else:
-            self.isEndByNL = False
-        self.lastUpdatedBy = upd
 
     def rxPolling(self):
         if not self.currentPort.is_open:
