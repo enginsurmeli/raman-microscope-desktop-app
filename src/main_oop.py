@@ -86,8 +86,10 @@ class App(customtkinter.CTk):
         self.cnc_buttons_frame = cnc_buttons.CNCButtons(self)
         self.cnc_buttons_frame.grid(
             row=1, column=3, rowspan=2, padx=(10, 20), pady=(10, 20), sticky="nsew")
+        
+        self.initializeSettings()
 
-    def loadSettings(self):
+    def initializeSettings(self):
         settings_data = {}
         jfile = None
         try:
@@ -98,19 +100,20 @@ class App(customtkinter.CTk):
         if jfile:
             jfile.close()
 
-        serial_line_ending = settings_data.get('lineending', 'CR')
-        baudrate = settings_data.get('baudrate', '115200')
-        serial_port = settings_data.get('port', 'COM7')
-        camera = settings_data.get('camera', '0')
-        appearance = settings_data.get('appearance', 'Dark')
+        self.serial_line_ending = settings_data.get('lineending', 'CR')
+        self.baudrate = settings_data.get('baudrate', '115200')
+        self.serial_port = settings_data.get('port', 'COM7')
+        self.camera = settings_data.get('camera', '0')
+        self.appearance = settings_data.get('appearance', 'Dark')
 
-        # print(f"{serial_line_ending}, {baudrate}, {serial_port}, {camera}, {appearance}")
-
-        # customtkinter.set_appearance_mode(appearance)
-        # customtkinter.set_default_color_theme("blue")
+        customtkinter.set_appearance_mode(self.appearance)
+        customtkinter.set_default_color_theme("blue")
         # customtkinter.deactivate_automatic_dpi_awareness()
 
         return settings_data
+    
+    def updateSettings(self):
+        print(f"{self.serial_port}, {self.baudrate}, {self.serial_line_ending}, {self.camera}, {self.appearance}")
 
     def OnQuitApp(self):
         quit_app = quit_app_window.OnQuitApp(self)

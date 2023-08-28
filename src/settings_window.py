@@ -6,10 +6,11 @@ import tkinter.ttk as ttk
 
 
 class SettingsWindow(customtkinter.CTkToplevel):
-    def __init__(self, master):
+    def __init__(self, master, settings_data=None):
         super().__init__(master)
 
         self.master = master
+        self.settings_data = settings_data
 
         app_window_width = master.winfo_width()
         app_window_height = master.winfo_height()
