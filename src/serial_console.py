@@ -7,7 +7,7 @@ import time
 import serial
 import serial.tools.list_ports as list_ports
 
-
+# TODO: Add copy paste functionality to entry box, add option to disconnect from serial port (using closePort() method)
 class SerialConsole(customtkinter.CTkFrame):
     def __init__(self, master, ports=None, serial_port=None, baudrate=None, line_ending=None):
         super().__init__(master)

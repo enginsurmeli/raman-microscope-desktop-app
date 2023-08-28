@@ -195,7 +195,6 @@ def rxPolling():
 	try:
 		while currentPort.in_waiting > 0 and time.perf_counter_ns()-preset < 2000000: # loop duration about 2ms
 			ch = currentPort.read()
-			tm = time.strftime('%H:%M:%S.{}'.format(repr(time.time()).split('.')[1][:3]))
 			txt = ''
 			txt += get_str_of_chr(ch)
 			writeConsole(txt)
@@ -245,9 +244,6 @@ def exitRoot():
 	data = {}
 	data['lineending'] = lineEndingCbo.current()
 	data['baudrateindex'] = baudrateCbo.current()
-	data['databits'] = currentPort.bytesize
-	data['parity'] = currentPort.parity
-	data['stopbits'] = currentPort.stopbits
 	data['portindex'] = portCbo.current()
 	data['portlist'] = ports
 	with open(fname+'.json', 'w') as jfile:
@@ -255,77 +251,9 @@ def exitRoot():
 		jfile.close()
 	root.destroy()
 
-def setting():
-	global settingDlg, dataBitsCbo, parityCbo, stopBitsCbo
-	settingDlg = tk.Toplevel()
-	settingDlg.title('Port Setting')
-	if ico:
-		settingDlg.iconphoto(False, ico)
-	tk.Grid.rowconfigure(settingDlg, 0, weight=1)
-	tk.Grid.rowconfigure(settingDlg, 1, weight=1)
-	tk.Grid.rowconfigure(settingDlg, 2, weight=1)
-	tk.Grid.rowconfigure(settingDlg, 3, weight=1)
-	tk.Grid.columnconfigure(settingDlg, 0, weight=1)
-	tk.Grid.columnconfigure(settingDlg, 1, weight=1)
-	tk.Grid.columnconfigure(settingDlg, 2, weight=1)
-	tk.Label(settingDlg, text='Data bits:').grid(row=0, column=1, padx=0, pady=12, sticky=tk.NE)
-	tk.Label(settingDlg, text='Parity:').grid(row=1, column=1, padx=0, pady=0, sticky=tk.NS+tk.E)
-	tk.Label(settingDlg, text='Stop bits:').grid(row=2, column=1, padx=0, pady=12, sticky=tk.NE)
-	dataBitsCbo = ttk.Combobox(settingDlg, width=10, state='readonly')
-	dataBitsCbo.grid(row=0, column=2, padx=12, pady=12, sticky=tk.NE)
-	dataBitsCbo['values'] = DATABITS
-	dataBitsCbo.set(currentPort.bytesize)
-	parityCbo = ttk.Combobox(settingDlg, width=10, state='readonly')
-	parityCbo.grid(row=1, column=2, padx=12, pady=0, sticky=tk.NS+tk.E)
-	parityCbo['values'] = PARITY_VAL
-	parityCbo.current(PARITY.index(currentPort.parity))
-	stopBitsCbo = ttk.Combobox(settingDlg, width=10, state='readonly')
-	stopBitsCbo.grid(row=2, column=2, padx=12, pady=12, sticky=tk.NE)
-	stopBitsCbo['values'] = STOPBITS
-	stopBitsCbo.set(currentPort.stopbits)
-	tk.Button(settingDlg, text='Default', width=10, command=defaultSetting).\
-		grid(row=1, column=0, padx=12, pady=0, sticky=tk.NS+tk.W)
-	tk.Button(settingDlg, text='OK', width=10, command=lambda:setPort(None)).\
-		grid(row=3, column=1, padx=0, pady=12, sticky=tk.S)
-	cancelBtn = tk.Button(settingDlg, text='Cancel', width=10, command=lambda:hideSetting(None))
-	cancelBtn.grid(row=3, column=2, padx=12, pady=12, sticky=tk.S)
-	settingDlg.bind('<Return>', setPort)
-	settingDlg.bind('<Escape>', hideSetting)
-	settingDlg.update()
-	rw = root.winfo_width()
-	rh = root.winfo_height()
-	rx = root.winfo_rootx()
-	ry = root.winfo_rooty()
-	dw = settingDlg.winfo_width()
-	dh = settingDlg.winfo_height()
-	settingDlg.geometry(f'{dw}x{dh}+{rx+int((rw-dw)/2)}+{ry+int((rh-dh)/2)}')
-	settingDlg.minsize(dw, dh)
-	settingDlg.maxsize(dw, dh)
-	settingDlg.resizable(0, 0)
-	settingDlg.grab_set()
-	cancelBtn.focus_set()
-
-def defaultSetting():
-	dataBitsCbo.set(serial.EIGHTBITS)
-	parityCbo.current(PARITY.index(serial.PARITY_NONE))
-	stopBitsCbo.set(serial.STOPBITS_ONE)
-
-def setPort(event):
-	currentPort.bytesize = DATABITS[dataBitsCbo.current()]
-	currentPort.parity = PARITY[parityCbo.current()]
-	currentPort.stopbits = STOPBITS[stopBitsCbo.current()]
-	settingDlg.destroy()
-
-def hideSetting(event):
-	settingDlg.destroy()
-
 if __name__ == '__main__':
 	APP_TITLE = 'Serial Monitor'
 	BAUD_RATES = (300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 76800, 115200, 23040, 500000, 1000000, 2000000)
-	DATABITS = (serial.FIVEBITS, serial.SIXBITS, serial.SEVENBITS, serial.EIGHTBITS)
-	PARITY = (serial.PARITY_EVEN, serial.PARITY_ODD, serial.PARITY_NONE, serial.PARITY_MARK, serial.PARITY_SPACE)
-	PARITY_VAL = ('Even', 'Odd', 'None', 'Mark', 'Space')
-	STOPBITS = (serial.STOPBITS_ONE, serial.STOPBITS_ONE_POINT_FIVE, serial.STOPBITS_TWO)
 	ports = {p.name: p.description for p in list_ports.comports()}
 	currentPort = serial.Serial(port=None, baudrate=115200, timeout=0, write_timeout=0)
 	portDesc = ''
@@ -421,10 +349,8 @@ if __name__ == '__main__':
 
 	rxTextMenu = tk.Menu(rxText, tearoff=0)
 	rxTextMenu.add_command(label='Copy', accelerator='Ctrl+C', command=lambda:rxText.event_generate('<<Copy>>'))
-	# rxTextMenu.add_separator()
-	# rxTextMenu.add_command(label='Close active port', command=closePort)
 	rxTextMenu.add_separator()
-	rxTextMenu.add_command(label='Port setting', command=setting)
+	rxTextMenu.add_command(label='Close active port', command=closePort)
 	rxTextMenu.add_separator()
 	rxTextMenu.add_command(label='About', command=showAbout)
  
@@ -438,15 +364,6 @@ if __name__ == '__main__':
 	root.minsize(rw, 233)
 	root.geometry(f'{rw}x{rh}+{int((sw-rw)/2)}+{int((sh-rh)/2)-30}')
 
-	di = data.get('databits')
-	if di != None:
-		currentPort.bytesize = di
-	di = data.get('parity')
-	if di != None:
-		currentPort.parity = di
-	di = data.get('stopbits')
-	if di != None:
-		currentPort.stopbits = di
 	di = data.get('portindex')
 	if di != None and di != -1 and data.get('portlist') == ports:
 		portCbo.current(di)

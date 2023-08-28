@@ -1,9 +1,6 @@
 {
     "lineending": 2,
     "baudrateindex": 9,
-    "databits": 8,
-    "parity": "N",
-    "stopbits": 1,
     "portindex": 4,
     "portlist": {
         "COM15": "Standard Serial over Bluetooth link (COM15)",
