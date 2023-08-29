@@ -1,5 +1,4 @@
 import customtkinter
-import tkinter as tk
 from PIL import Image
 
 import os
@@ -39,9 +38,6 @@ class SerialConsole(customtkinter.CTkFrame):
         self.rx_textbox.grid(row=0, column=0, columnspan=3,
                              padx=5, pady=5, sticky="nsew")
         
-        self.context_menu = tk.Menu(self.rx_textbox, tearoff=0)
-        self.context_menu.add_command(label='Close active port', command=self.closePort)
-
         self.tx_entrybox = customtkinter.CTkEntry(
             self, border_width=2, corner_radius=0)
         self.tx_entrybox.grid(row=1, column=0, padx=5, pady=5, sticky="ew")
