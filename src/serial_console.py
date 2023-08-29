@@ -1,23 +1,18 @@
 import customtkinter
+import tkinter as tk
 from PIL import Image
 
 import os
 import time
 
 import serial
-import serial.tools.list_ports as list_ports
-
-# TODO: Add copy paste functionality to entry box, add option to disconnect from serial port (using closePort() method)
 
 
 class SerialConsole(customtkinter.CTkFrame):
-    def __init__(self, master, ports=None, serial_port=None, baudrate=None, line_ending=None):
+    def __init__(self, master):
         super().__init__(master)
 
         self.master = master
-        self.serial_port = serial_port
-        self.baudrate = baudrate
-        self.line_ending = line_ending
 
         self.currentPort = serial.Serial(
             port=None, baudrate=115200, timeout=0, write_timeout=0)
@@ -43,6 +38,9 @@ class SerialConsole(customtkinter.CTkFrame):
             self, bg_color='#343638', state="disabled", wrap="word", border_width=2, corner_radius=0, height=150)
         self.rx_textbox.grid(row=0, column=0, columnspan=3,
                              padx=5, pady=5, sticky="nsew")
+        
+        self.context_menu = tk.Menu(self.rx_textbox, tearoff=0)
+        self.context_menu.add_command(label='Close active port', command=self.closePort)
 
         self.tx_entrybox = customtkinter.CTkEntry(
             self, border_width=2, corner_radius=0)
@@ -59,12 +57,9 @@ class SerialConsole(customtkinter.CTkFrame):
         self.send_button.grid(row=1, column=2, padx=5, pady=5)
 
     def updateSerialSettings(self, serial_port=None, baudrate=None, line_ending=None):
-        self.serial_port = serial_port
-        self.baudrate = baudrate
-        self.line_ending = line_ending
-
         self.changeBaudrate(baudrate)
         self.changePort(serial_port)
+        self.line_ending = line_ending
 
     def clear(self):
         self.rx_textbox.configure(state="normal")
@@ -135,28 +130,29 @@ class SerialConsole(customtkinter.CTkFrame):
 
     def send(self, event=None):
         tx_text = str(self.tx_entrybox.get())
+        if tx_text == '':
+            return
         lst = len(self.sent_texts)
-        if tx_text != "":
-            bs, err = self.decodeEsc(tx_text)
-            if err:
-                self.writeConsole(err['msg'] + '\n')
-                self.tx_entrybox.xview(err['from'])
-                self.tx_entrybox.select_range(err['from'], err['to'])
-                self.tx_entrybox.icursor(err['to'])
-                return
-            if lst > 0 and self.sent_texts[lst-1] != tx_text or lst == 0:
-                self.sent_texts.append(tx_text)
-            self.sent_texts_index = len(self.sent_texts)
-            if self.line_ending == 1:
-                bs += b'\n'
-            elif self.line_ending == 2:
-                bs += b'\r'
-            elif self.line_ending == 3:
-                bs += b'\r\n'
-            self.currentPort.write(bs)
-            tx_text = ''.join([self.getStrOfChr(bytes([i])) for i in bs])
-            self.writeConsole(tx_text + '\n')
-            self.tx_entrybox.delete(0, 'end')
+        bs, err = self.decodeEsc(tx_text)
+        if err:
+            self.writeConsole(err['msg'] + '\n')
+            self.tx_entrybox.xview(err['from'])
+            self.tx_entrybox.select_range(err['from'], err['to'])
+            self.tx_entrybox.icursor(err['to'])
+            return
+        if lst > 0 and self.sent_texts[lst-1] != tx_text or lst == 0:
+            self.sent_texts.append(tx_text)
+        self.sent_texts_index = len(self.sent_texts)
+        if self.line_ending == 'LF':
+            bs += b'\n'
+        elif self.line_ending == 'CR':
+            bs += b'\r'
+        elif self.line_ending == 'Both CR&LF':
+            bs += b'\r\n'
+        self.currentPort.write(bs)
+        tx_text = ''.join([self.getStrOfChr(bytes([i])) for i in bs])
+        self.writeConsole(tx_text + '\n')
+        self.tx_entrybox.delete(0, 'end')
 
     def upKeyCmd(self, event):
         if self.sent_texts_index == len(self.sent_texts):
