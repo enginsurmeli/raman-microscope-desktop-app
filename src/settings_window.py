@@ -65,7 +65,7 @@ class SettingsWindow(customtkinter.CTkToplevel):
 
         # list available serial ports
         myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
-        self.ports_list = [p[0] for p in myports]
+        self.ports_list = sorted([p[0] for p in myports])
         self.serial_ports_optionmenu = customtkinter.CTkOptionMenu(
             self.settings_frame, values=self.ports_list)
         self.serial_ports_optionmenu.grid(row=0, column=1, padx=10, pady=10)
