@@ -8,6 +8,8 @@ import serial
 import serial.tools.list_ports as list_ports
 
 # TODO: Add copy paste functionality to entry box, add option to disconnect from serial port (using closePort() method)
+
+
 class SerialConsole(customtkinter.CTkFrame):
     def __init__(self, master, ports=None, serial_port=None, baudrate=None, line_ending=None):
         super().__init__(master)
@@ -58,6 +60,9 @@ class SerialConsole(customtkinter.CTkFrame):
         self.serial_port = serial_port
         self.baudrate = baudrate
         self.line_ending = line_ending
+
+        self.changeBaudrate(baudrate)
+        self.changePort(serial_port)
 
     def clear(self):
         self.rx_textbox.configure(state="normal")
@@ -170,15 +175,15 @@ class SerialConsole(customtkinter.CTkFrame):
                 self.tx_entrybox.insert(
                     "end", self.sent_texts[self.sent_texts_index])
 
-    def changePort(self, event):
-        if self.serial_port == self.currentPort.port:
+    def changePort(self, serial_port):
+        if serial_port == self.currentPort.port:
             return
         self.disableSending()
         if self.currentPort.is_open:
             self.currentPort.close()
             self.writeConsole('Serial port closed.\n')
-        self.currentPort.port = self.serial_port
-        self.writeConsole('Connecting...', 2)
+        self.currentPort.port = serial_port
+        self.writeConsole('Connecting...')
         self.update()
         try:
             self.currentPort.open()
@@ -191,11 +196,14 @@ class SerialConsole(customtkinter.CTkFrame):
             self.rxPolling()
             self.writeConsole('done.\n')
 
-    def changeBaudrate(self, event):
-        self.currentPort.baudrate = self.baudrate
+    def changeBaudrate(self, baudrate):
+        if baudrate == self.currentPort.baudrate:
+            return
+        self.currentPort.baudrate = baudrate
 
     def writeConsole(self, text):
-        text += text.replace('\\r', '') # remove 'carriage return' from incoming text
+        # remove 'carriage return' from incoming text
+        text = text.replace('\\r', '')
         self.rx_textbox.configure(state="normal")
         self.rx_textbox.insert('end', text)
         self.rx_textbox.see('end')

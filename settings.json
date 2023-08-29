@@ -1,7 +1,7 @@
 {
     "lineending": "CR",
     "baudrate": "115200",
-    "port": "COM15",
+    "port": "COM7",
     "portlist": [
         "COM15",
         "COM12",

@@ -32,3 +32,4 @@ class OnQuitApp(customtkinter.CTkToplevel):
     def _quit(self):
         self.master.quit()
         self.master.destroy()
+        # TODO: Close serial port and disconnect camera
