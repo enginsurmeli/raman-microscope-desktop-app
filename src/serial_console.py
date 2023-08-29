@@ -47,6 +47,8 @@ class SerialConsole(customtkinter.CTkFrame):
         self.tx_entrybox = customtkinter.CTkEntry(
             self, border_width=2, corner_radius=0)
         self.tx_entrybox.grid(row=1, column=0, padx=5, pady=5, sticky="ew")
+        self.tx_entrybox.bind('<Up>', self.upKeyCmd)
+        self.tx_entrybox.bind('<Down>', self.downKeyCmd)
 
         self.clear_button = customtkinter.CTkButton(
             self, text="", command=self.clear, width=5, height=5, image=clear_button_icon)
@@ -139,7 +141,7 @@ class SerialConsole(customtkinter.CTkFrame):
             if err:
                 self.writeConsole(err['msg'] + '\n')
                 self.tx_entrybox.xview(err['from'])
-                self.tx_entrybox.selection_range(err['from'], err['to'])
+                self.tx_entrybox.select_range(err['from'], err['to'])
                 self.tx_entrybox.icursor(err['to'])
                 return
             if lst > 0 and self.sent_texts[lst-1] != tx_text or lst == 0:
