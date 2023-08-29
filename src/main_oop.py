@@ -86,12 +86,13 @@ class App(customtkinter.CTk):
         self.cnc_buttons_frame = cnc_buttons.CNCButtons(self)
         self.cnc_buttons_frame.grid(
             row=1, column=3, rowspan=2, padx=(10, 20), pady=(10, 20), sticky="nsew")
-        
+
         self.initializeSettings()
 
     def initializeSettings(self):
         settings_data = {}
         jfile = None
+
         try:
             jfile = open('settings.json')
             settings_data = json.load(jfile)
@@ -100,20 +101,30 @@ class App(customtkinter.CTk):
         if jfile:
             jfile.close()
 
-        self.serial_line_ending = settings_data.get('lineending', 'CR')
-        self.baudrate = settings_data.get('baudrate', '115200')
-        self.serial_port = settings_data.get('port', 'COM7')
-        self.camera = settings_data.get('camera', '0')
-        self.appearance = settings_data.get('appearance', 'Dark')
+        self.updateSettings(settings_data)
 
-        customtkinter.set_appearance_mode(self.appearance)
+    def updateSettings(self, settings_data: dict):
+        self.settings_data = settings_data
+        serial_line_ending = settings_data.get('lineending')
+        baudrate = settings_data.get('baudrate')
+        serial_port = settings_data.get('port')
+        camera = settings_data.get('camera_index')
+        appearance = settings_data.get('appearance')
+
+        # change serial settings
+        self.serial_console_frame.updateSerialSettings(
+            serial_port=serial_port, baudrate=baudrate, line_ending=serial_line_ending)
+        
+        # change camera settings
+        
+
+        # set theme and appearance mode
+        customtkinter.set_appearance_mode(appearance)
         customtkinter.set_default_color_theme("blue")
         # customtkinter.deactivate_automatic_dpi_awareness()
 
-        return settings_data
-    
-    def updateSettings(self):
-        print(f"{self.serial_port}, {self.baudrate}, {self.serial_line_ending}, {self.camera}, {self.appearance}")
+    def sendSettingsData(self):
+        return self.settings_data
 
     def OnQuitApp(self):
         quit_app = quit_app_window.OnQuitApp(self)

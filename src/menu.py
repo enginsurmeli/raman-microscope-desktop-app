@@ -12,4 +12,5 @@ class Menu(customtkinter.CTkFrame):
         settings_button.pack(side="bottom", padx=10, pady=10)
 
     def OpenSettings(self):
-        settings = settings_window.SettingsWindow(self.master, self.master.updateSettings())
+        settings = settings_window.SettingsWindow(
+            self.master, self.master.sendSettingsData())

@@ -6,7 +6,7 @@ import tkinter.ttk as ttk
 
 
 class SettingsWindow(customtkinter.CTkToplevel):
-    def __init__(self, master, settings_data=None):
+    def __init__(self, master, settings_data: dict):
         super().__init__(master)
 
         self.master = master
@@ -100,29 +100,51 @@ class SettingsWindow(customtkinter.CTkToplevel):
         #     self.settings_frame, values=["blue", "green", "dark-blue"])
         # self.accent_color_option.grid(row=4, column=2, padx=10, pady=10)
 
-    def refreshPorts(self): # TODO: implement this, refresh available serial ports and cameras every 1 second
+        self.setCurrentSettings()
+
+    def setCurrentSettings(self):
+        camera_index = self.settings_data.get('camera_index')
+        self.serial_ports_optionmenu.set(self.settings_data.get('port'))
+        self.baud_rates_optionmenu.set(self.settings_data.get('baudrate'))
+        self.line_endings_optionmenu.set(self.settings_data.get('lineending'))
+        self.camera_optionmenu.set(self.camera_list[camera_index])
+        self.appearance_optionmenu.set(self.settings_data.get('appearance'))
+
+    # TODO: implement this, refresh available serial ports and cameras every 1 second
+    def refreshPorts(self):
         pass
-    
+
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
 
     def apply_settings(self):
-        # apply changes
-        camera = self.camera_optionmenu.get()
 
+        # get serial port, baud rate and line ending
+        serial_port = self.serial_ports_optionmenu.get()
+        baud_rate = self.baud_rates_optionmenu.get()
+        line_ending = self.line_endings_optionmenu.get()
+
+        # get camera index
+        camera = self.camera_optionmenu.get()
+        for i, device in enumerate(self.camera_list):
+            if device == camera:
+                camera_index = i
+
+        # change appearance mode
         appearance = self.appearance_optionmenu.get()
         self.change_appearance_mode_event(appearance)
 
         # save settings to json file
-        data = {}
-        data['lineending'] = self.line_endings_optionmenu.get()
-        data['baudrate'] = self.baud_rates_optionmenu.get()
-        data['port'] = self.serial_ports_optionmenu.get()
-        data['portlist'] = self.ports_list
-        data['camera'] = camera
-        data['cameralist'] = self.camera_list
-        data['appearance'] = appearance
+        settings_data = {}
+        settings_data['lineending'] = line_ending
+        settings_data['baudrate'] = baud_rate
+        settings_data['port'] = serial_port
+        settings_data['portlist'] = self.ports_list
+        settings_data['camera_index'] = camera_index
+        settings_data['cameralist'] = self.camera_list
+        settings_data['appearance'] = appearance
         with open('settings.json', 'w') as jfile:
-            json.dump(data, jfile, indent=4)
+            json.dump(settings_data, jfile, indent=4)
             jfile.close()
+        self.master.updateSettings(settings_data)
         self.destroy()
