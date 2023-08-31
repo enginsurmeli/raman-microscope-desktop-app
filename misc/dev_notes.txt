@@ -53,3 +53,6 @@ $132=200.000
     2. Daha sonra okunan ayarlar settings_window objesine aktarılacak.
     3. settings_window objesi her açıldığında bu variable'ları görüp combobox'ları ona göre ayarlayacak.
     4. settings_window'da apply settings yapılırsa json dosyasına kaydedilecek. Sonra App class'ındaki variable'lar da değişecek. Buradan gelen yeni variable'lar ilgili objelere aktarılacak (ör: serial port değişikliği).
+
+-- Relative movement with buttons example, go 5mm in -x direction (feed rate = 2000 mm/min): $J=G21G91X-5.000Y0.000Z0.000F2000
+-- Continuous jogging example, go in +z direction (feed rate = 2000 mm/min): $J=G21G91X0.000Y0.000Z200.000F2000
