@@ -125,6 +125,9 @@ class App(customtkinter.CTk):
 
     def sendSettingsData(self):
         return self.settings_data
+    
+    def sendSerialCommand(self, command: str):
+        self.serial_console_frame.send(cnc_command=command)
 
     def OnQuitApp(self):
         quit_app = quit_app_window.OnQuitApp(self)

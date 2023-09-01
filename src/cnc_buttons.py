@@ -112,8 +112,10 @@ class CNCButtons(customtkinter.CTkFrame):
             z_step = step_size
 
         jog_command = f"$J=G21G91X{x_step:.3f}Y{y_step:.3f}Z{z_step:.3f}F{feed_rate}"
-        # self.master.serial_console_frame.send(jog_command)
-        print(jog_command)
+        self.master.sendSerialCommand(jog_command)
+        # print(jog_command)
 
     def stop(self):
-        print("Stopping")
+        stop_command = "!"
+        self.master.sendSerialCommand(stop_command)
+        # print(stop_command)

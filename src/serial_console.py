@@ -46,11 +46,11 @@ class SerialConsole(customtkinter.CTkFrame):
 
         self.clear_button = customtkinter.CTkButton(
             self, text="", command=self.clear, width=5, height=5, image=clear_button_icon)
-        self.clear_button.grid(row=1, column=1, padx=2.5, pady=5)
+        self.clear_button.grid(row=1, column=2, padx=2.5, pady=5)
 
         self.send_button = customtkinter.CTkButton(
             self, text="", command=self.send, width=5, height=5, image=send_button_icon)
-        self.send_button.grid(row=1, column=2, padx=5, pady=5)
+        self.send_button.grid(row=1, column=1, padx=5, pady=5)
 
     def updateSerialSettings(self, serial_port=None, baudrate=None, line_ending=None):
         self.changeBaudrate(baudrate)
@@ -124,8 +124,11 @@ class SerialConsole(customtkinter.CTkFrame):
             idx += 1
         return dbs, err
 
-    def send(self, event=None):
-        tx_text = str(self.tx_entrybox.get())
+    def send(self, event=None, cnc_command=None):
+        if cnc_command:
+            tx_text = cnc_command
+        else:
+            tx_text = str(self.tx_entrybox.get())
         if tx_text == '':
             return
         lst = len(self.sent_texts)
@@ -231,3 +234,7 @@ class SerialConsole(customtkinter.CTkFrame):
             self.writeConsole('Serial port closed.\n')
             self.currentPort.port = None
             self.disableSending()
+            
+    def resetConnection(self):
+        self.closePort()
+        self.changePort(self.currentPort.port)

@@ -3,10 +3,11 @@
     "baudrate": "115200",
     "port": "COM7",
     "portlist": [
-        "COM15",
         "COM12",
         "COM13",
-        "COM14"
+        "COM14",
+        "COM15",
+        "COM7"
     ],
     "camera_index": 0,
     "cameralist": [
