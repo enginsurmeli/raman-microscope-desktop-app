@@ -116,6 +116,5 @@ class CNCButtons(customtkinter.CTkFrame):
         # print(jog_command)
 
     def stop(self):
-        stop_command = "!"
-        self.master.sendSerialCommand(stop_command)
+        self.master.sendSerialCommand('cancel')
         # print(stop_command)
