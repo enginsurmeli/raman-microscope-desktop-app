@@ -8,14 +8,11 @@ import customtkinter
 import json
 
 import quit_app_window
-import menu
-import logo
-import cnc_status
 import cnc_buttons
 import serial_console
 import camera_view
-import scan_parameters
-import raman_map_spectrum
+import raman_plot
+import raman_search
 
 
 class App(customtkinter.CTk):
@@ -49,43 +46,46 @@ class App(customtkinter.CTk):
             pass
 
         # set grid layout 3x4
-        self.grid_rowconfigure(0, weight=2)
-        self.grid_rowconfigure(1, weight=7)
-        self.grid_rowconfigure(2, weight=0)
-        self.grid_columnconfigure(0, weight=0)
-        self.grid_columnconfigure(1, weight=8)
-        self.grid_columnconfigure(2, weight=2)
-        self.grid_columnconfigure(3, weight=2)
+        self.grid_rowconfigure((0, 2), weight=1)
+        self.grid_rowconfigure(1, weight=3)
+        self.grid_columnconfigure((0, 2), weight=1)
+        self.grid_columnconfigure(1, weight=9)
 
         # create frames
-        self.menu_bar_frame = menu.Menu(self)
-        self.menu_bar_frame.grid(
+        self.cnc_buttons_frame = cnc_buttons.CNCButtons(self)
+        self.cnc_buttons_frame.grid(
             row=0, column=0, rowspan=2, padx=(20, 10), pady=(20, 10), sticky="nsew")
 
-        self.logo_frame = logo.Logo(self)
-        self.logo_frame.grid(row=2, column=0, padx=(
-            20, 10), pady=(10, 20), sticky="nsew")
+        self.serial_console_frame = serial_console.SerialConsole(self)
+        self.serial_console_frame.grid(
+            row=2, column=0, padx=(20, 10), pady=(10, 20), sticky="nsew")
 
-        self.raman_map_spectrum_frame = raman_map_spectrum.RamanMapSpectrum(
+        self.raman_plot_frame = raman_plot.RamanPlot(
             self)
-        self.raman_map_spectrum_frame.grid(
+        self.raman_plot_frame.grid(
             row=0, column=1, rowspan=3, padx=10, pady=20, sticky="nsew")
 
         self.camera_view_frame = camera_view.CameraView(self)
         self.camera_view_frame.grid(
-            row=0, column=2, rowspan=2, padx=10, pady=(20, 10), sticky="nsew")
+            row=0, column=2, padx=(10, 20), pady=(20, 10), sticky="nsew")
 
-        self.serial_console_frame = serial_console.SerialConsole(self)
-        self.serial_console_frame.grid(
-            row=2, column=2, padx=10, pady=(10, 20), sticky="nsew")
+        self.raman_search_frame = raman_search.RamanSearch(self)
+        self.raman_search_frame.grid(
+            row=1, column=2, rowspan=2, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
-        self.cnc_status_frame = cnc_status.CNCStatus(self)
-        self.cnc_status_frame.grid(row=0, column=3, padx=(
-            10, 20), pady=(20, 10), sticky="nsew")
+        # Placeholder labels for the frames
+        self.raman_plot_frame_label = customtkinter.CTkLabel(
+            self.raman_plot_frame, text="Raman Plot")
+        self.raman_plot_frame_label.place(relx=0.5, rely=0.5, anchor="center")
 
-        self.cnc_buttons_frame = cnc_buttons.CNCButtons(self)
-        self.cnc_buttons_frame.grid(
-            row=1, column=3, rowspan=2, padx=(10, 20), pady=(10, 20), sticky="nsew")
+        self.camera_view_frame_label = customtkinter.CTkLabel(
+            self.camera_view_frame, text="Camera View")
+        self.camera_view_frame_label.place(relx=0.5, rely=0.5, anchor="center")
+
+        self.raman_search_frame_label = customtkinter.CTkLabel(
+            self.raman_search_frame, text="Raman Search")
+        self.raman_search_frame_label.place(
+            relx=0.5, rely=0.5, anchor="center")
 
         self.initializeSettings()
 
@@ -114,9 +114,8 @@ class App(customtkinter.CTk):
         # change serial settings
         self.serial_console_frame.updateSerialSettings(
             serial_port=serial_port, baudrate=baudrate, line_ending=serial_line_ending)
-        
+
         # change camera settings
-        
 
         # set theme and appearance mode
         customtkinter.set_appearance_mode(appearance)
@@ -125,10 +124,10 @@ class App(customtkinter.CTk):
 
     def sendSettingsData(self):
         return self.settings_data
-    
+
     def sendSerialCommand(self, command: str):
         self.serial_console_frame.send(cnc_command=command)
-        
+
     # def resetSerialConnection(self):
     #     self.serial_console_frame.resetSerialConnection()
 

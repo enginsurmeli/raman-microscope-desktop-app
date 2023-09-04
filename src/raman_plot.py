@@ -12,6 +12,6 @@ from matplotlib.backend_bases import key_press_handler
 import numpy as np
 
 
-class RamanMapSpectrum(customtkinter.CTkFrame):
+class RamanPlot(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
