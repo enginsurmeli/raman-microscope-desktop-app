@@ -125,6 +125,7 @@ class SerialConsole(customtkinter.CTkFrame):
         return dbs, err
 
     def send(self, event=None, cnc_command=None):
+        # NOTE: cls, reset and cancel implementations can be simplified in the future. it seems unnecessary to put entrybox delete and return commands in each if statement.
         if cnc_command:
             tx_text = cnc_command
         else:
@@ -136,7 +137,11 @@ class SerialConsole(customtkinter.CTkFrame):
             self.tx_entrybox.delete(0, 'end')
             return
         if tx_text == 'reset':
-            self.currentPort.write(b'\x18')
+            self.currentPort.write(b'\x18') # ctrl+x
+            self.tx_entrybox.delete(0, 'end')
+            return
+        if tx_text == 'cancel':
+            self.currentPort.write(b'\x85') # jog cancel command
             self.tx_entrybox.delete(0, 'end')
             return
         lst = len(self.sent_texts)
