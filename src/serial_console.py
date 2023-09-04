@@ -131,6 +131,14 @@ class SerialConsole(customtkinter.CTkFrame):
             tx_text = str(self.tx_entrybox.get())
         if tx_text == '':
             return
+        if tx_text == 'cls':
+            self.clear()
+            self.tx_entrybox.delete(0, 'end')
+            return
+        if tx_text == 'reset':
+            self.currentPort.write(b'\x18')
+            self.tx_entrybox.delete(0, 'end')
+            return
         lst = len(self.sent_texts)
         bs, err = self.decodeEsc(tx_text)
         if err:
@@ -235,6 +243,6 @@ class SerialConsole(customtkinter.CTkFrame):
             self.currentPort.port = None
             self.disableSending()
             
-    def resetConnection(self):
-        self.closePort()
-        self.changePort(self.currentPort.port)
+    # def resetConnection(self):
+    #     self.closePort()
+    #     self.changePort(self.currentPort.port)
