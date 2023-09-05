@@ -191,20 +191,22 @@ class SerialConsole(customtkinter.CTkFrame):
         self.disableSending()
         if self.currentPort.is_open:
             self.currentPort.close()
-            self.writeConsole('Serial port closed.\n')
+            # self.writeConsole('Serial port closed.\n')
         self.currentPort.port = serial_port
-        self.writeConsole('Connecting...')
+        # self.writeConsole('Connection to the scanner ')
         self.update()
         try:
             self.currentPort.open()
         except:
             # portCbo.set('Select port')
-            self.writeConsole('failed!!!\n')
+            # self.writeConsole('failed.\n')
+            self.master.updateCncConnectionStatus('disconnected')
             self.currentPort.port = None
         if self.currentPort.is_open:
             self.enableSending()
             self.rxPolling()
-            self.writeConsole('done.\n')
+            # self.writeConsole('is successful.\n')
+            self.master.updateCncConnectionStatus('connected')
 
     def changeBaudrate(self, baudrate):
         if baudrate == self.currentPort.baudrate:

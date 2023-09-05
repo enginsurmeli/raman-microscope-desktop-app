@@ -127,6 +127,9 @@ class App(customtkinter.CTk):
 
     def sendSerialCommand(self, command: str):
         self.serial_console_frame.send(cnc_command=command)
+        
+    def updateCncConnectionStatus(self, status: str):
+        pass
 
     # def resetSerialConnection(self):
     #     self.serial_console_frame.resetSerialConnection()
