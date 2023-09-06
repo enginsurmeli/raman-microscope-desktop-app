@@ -95,7 +95,7 @@ class CNCButtons(customtkinter.CTkFrame):
                              padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
         self.status_led = customtkinter.CTkButton(
-            self.cnc_status_frame, text="", state="disabled", width=button_size[0], height=button_size[1], corner_radius=100)
+            self.cnc_status_frame, text="", state="disabled", width=button_size[0], height=button_size[1], corner_radius=100, fg_color="#dbdbdb")
         self.status_led.grid(
             row=2, column=3, padx=inner_frame_padding, pady=inner_frame_padding)
 

@@ -73,20 +73,6 @@ class App(customtkinter.CTk):
         self.raman_search_frame.grid(
             row=1, column=2, rowspan=2, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
-        # Placeholder labels for the frames
-        self.raman_plot_frame_label = customtkinter.CTkLabel(
-            self.raman_plot_frame, text="Raman Plot")
-        self.raman_plot_frame_label.place(relx=0.5, rely=0.5, anchor="center")
-
-        self.camera_view_frame_label = customtkinter.CTkLabel(
-            self.camera_view_frame, text="Camera View")
-        self.camera_view_frame_label.place(relx=0.5, rely=0.5, anchor="center")
-
-        self.raman_search_frame_label = customtkinter.CTkLabel(
-            self.raman_search_frame, text="Raman Search")
-        self.raman_search_frame_label.place(
-            relx=0.5, rely=0.5, anchor="center")
-
         self.initializeSettings()
 
     def initializeSettings(self):
