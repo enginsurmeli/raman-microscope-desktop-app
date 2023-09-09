@@ -77,4 +77,4 @@ class RamanSearch(customtkinter.CTkFrame):
         treestyle.map('Treeview', background=[('selected', color_palette[1])],
                            foreground=[('selected', color_palette[2])])
         self.treeview.bind(
-            "<<Treeview>>", lambda event: self.treeview.focus_set())
+            "<<Treeview>>", lambda event: self.treeview.focus_set()) # remove focus from treeview

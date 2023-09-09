@@ -112,6 +112,7 @@ class App(customtkinter.CTk):
         color_palette = {'Light': ['#dbdbdb', '#dce4ee', '#1f6aa5', '#252526'], 'Dark': [
             '#2b2b2b', '#252526', '#1f6aa5', '#dce4ee']}
         self.raman_search_frame.changeTheme(color_palette=color_palette.get(appearance))
+        self.raman_plot_frame.changeTheme(color_palette=color_palette.get(appearance))
 
     def sendSettingsData(self):
         return self.settings_data
