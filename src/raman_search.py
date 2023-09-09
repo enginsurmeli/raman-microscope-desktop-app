@@ -64,3 +64,17 @@ class RamanSearch(customtkinter.CTkFrame):
         # reverse sort next time
         treeview.heading(column, command=lambda: self.SortTreeviewColumn(
             treeview, column, not reverse))
+
+    def changeTheme(self, color_palette):
+        treestyle = ttk.Style()
+        treestyle.theme_use('default')
+        treestyle.configure("Treeview", background=color_palette[0],
+                            foreground=color_palette[3],
+                            fieldbackground=color_palette[0],
+                            borderwidth=0)
+        treestyle.configure(
+            "Treeview.Heading", background=color_palette[0], foreground=color_palette[3], borderwidth=0)
+        treestyle.map('Treeview', background=[('selected', color_palette[1])],
+                           foreground=[('selected', color_palette[2])])
+        self.treeview.bind(
+            "<<Treeview>>", lambda event: self.treeview.focus_set())
