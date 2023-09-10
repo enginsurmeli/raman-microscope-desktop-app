@@ -40,10 +40,6 @@ class RamanPlot(customtkinter.CTkFrame):
 
         main_canvas = FigureCanvasTkAgg(self.main_fig, master=self.plot_frame)
         main_canvas.draw()
-
-        # main_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        toolbar = NavigationToolbar2Tk(main_canvas, self.plot_frame)
-        toolbar.update()
         main_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         
         self.span_fig = Figure(figsize=(5, 1), dpi=100)
@@ -52,7 +48,37 @@ class RamanPlot(customtkinter.CTkFrame):
         
         span_canvas = FigureCanvasTkAgg(self.span_fig, master=self.span_selector_frame)
         span_canvas.draw()
+        self.toolbar = NavigationToolbar2Tk(main_canvas, self.span_selector_frame)
+        unwanted_buttons = ["Subplots", "Save", "Back", "Forward", "Home", "Pan", "Zoom"]
+        for button in unwanted_buttons:
+            self.toolbar._buttons[str(button)].pack_forget()
+        self.toolbar.update()
         span_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
     def changeTheme(self, color_palette):
-        pass
+        self.main_fig.set_facecolor(color_palette[0])
+        self.main_plot.set_facecolor(color_palette[0])
+        self.main_plot.tick_params(axis='x', colors=color_palette[3])
+        self.main_plot.xaxis.label.set_color(color_palette[3])
+        self.main_plot.spines['bottom'].set_color(color_palette[3])
+        self.main_plot.spines['top'].set_color(color_palette[3])
+        self.main_plot.spines['left'].set_color(color_palette[3])
+        self.main_plot.spines['right'].set_color(color_palette[3])
+        self.main_plot.set_yticks([])
+        
+        self.span_fig.set_facecolor(color_palette[0])
+        self.span_plot.set_facecolor(color_palette[0])
+        self.span_plot.tick_params(axis='x', colors=color_palette[3])
+        self.span_plot.xaxis.label.set_color(color_palette[3])
+        self.span_plot.spines['bottom'].set_color(color_palette[3])
+        self.span_plot.spines['top'].set_color(color_palette[3])
+        self.span_plot.spines['left'].set_color(color_palette[3])
+        self.span_plot.spines['right'].set_color(color_palette[3])
+        self.span_plot.set_yticks([])
+        self.span_plot.set_xticks([])
+        
+        self.toolbar.config(background=color_palette[0])
+        self.toolbar.winfo_children()[-2].config(background=color_palette[0])
+        self.toolbar._message_label.config(
+            background=color_palette[0], foreground=color_palette[3])
+        self.toolbar.update()

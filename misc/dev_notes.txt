@@ -56,3 +56,5 @@ $132=200.000
 
 -- Relative movement with buttons example, go 5mm in -x direction (feed rate = 2000 mm/min): $J=G21G91X-5.000Y0.000Z0.000F2000
 -- Continuous jogging example, go in +z direction (feed rate = 2000 mm/min): $J=G21G91X0.000Y0.000Z200.000F2000
+
+-- matplotlib toolbar icons location: Lib\site-packages\matplotlib\mpl-data\images
