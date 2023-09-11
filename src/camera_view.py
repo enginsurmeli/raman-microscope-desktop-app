@@ -14,7 +14,7 @@ class CameraView(customtkinter.CTkFrame):
 
     def connect_camera(self, camera_index: int = 0):
         self.vid = VideoCapture(camera_index)
-        self.canvas = tk.Canvas(self, width=self.vid.width, height=self.vid.height)
+        self.canvas = tk.Canvas(self, highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
         self.delay = 15
@@ -26,7 +26,6 @@ class CameraView(customtkinter.CTkFrame):
 
         if return_value:
             try:
-                #frame = self.analyzeFrame(frame) <-- this is where you would put your image processing code, see webcam_qr.py
                 self.photo = ImageTk.PhotoImage(image = Image.fromarray(frame))
                 self.canvas.create_image(0, 0, image = self.photo, anchor = tk.NW)
 
