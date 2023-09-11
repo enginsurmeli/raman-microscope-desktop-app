@@ -1,6 +1,7 @@
 import customtkinter
 from PIL import Image
 import os
+import settings_window
 
 
 class CNCButtons(customtkinter.CTkFrame):
@@ -28,10 +29,10 @@ class CNCButtons(customtkinter.CTkFrame):
         self.jog_settings_frame.pack(
             side="top",  expand=True, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self_label1 = customtkinter.CTkLabel(
-            self.menu_buttons_frame, text="Menu Buttons")
-        self_label1.pack(side="top",  expand=True)
-
+        settings_button = customtkinter.CTkButton(
+            self.menu_buttons_frame, text="Settings", command=self.openSettings)
+        settings_button.pack()
+        
         self.cnc_status_frame.grid_rowconfigure((0, 1, 2), weight=1)
         self.cnc_status_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
@@ -180,6 +181,10 @@ class CNCButtons(customtkinter.CTkFrame):
         self.step_size_cbox.set("1")
         self.feed_rate_cbox.set("2000")
 
+    def openSettings(self):
+        settings = settings_window.SettingsWindow(
+            self.master, self.master.sendSettingsData())
+    
     def move(self, axis: str):
         if self.step_size_cbox.get() == "Continuous":
             step_size = 200

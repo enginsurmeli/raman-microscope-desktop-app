@@ -45,10 +45,6 @@ class VideoCapture:
         if not self.vid.isOpened():
             raise ValueError("Unable to open video source", video_source)
 
-        # Get video source width and height
-        self.width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
-        self.height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
-
     def get_frame(self):
         if not self.vid.isOpened():
             return (return_value, None)

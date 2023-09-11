@@ -132,7 +132,6 @@ class SettingsWindow(customtkinter.CTkToplevel):
 
         # change appearance mode
         appearance = self.appearance_optionmenu.get()
-        self.change_appearance_mode_event(appearance)
 
         # save settings to json file
         settings_data = {}
