@@ -13,7 +13,9 @@ class CameraView(customtkinter.CTkFrame):
         self.master = master
 
     def connect_camera(self, camera_index: int = 0):
-        self.vid = VideoCapture(camera_index)
+        self.vid = cv2.VideoCapture(camera_index)
+        if not self.vid.isOpened():
+            raise ValueError("Unable to open video source", camera_index)
         self.canvas = tk.Canvas(self, highlightthickness=0)
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
@@ -22,7 +24,7 @@ class CameraView(customtkinter.CTkFrame):
 
     def update(self):
         # Get a frame from the video source
-        return_value, frame = self.vid.get_frame()
+        return_value, frame = self.get_frame()
 
         if return_value:
             try:
@@ -38,14 +40,7 @@ class CameraView(customtkinter.CTkFrame):
                 pass
 
         self.after(self.delay, self.update)
-
-
-class VideoCapture:
-    def __init__(self, video_source=0):
-        self.vid = cv2.VideoCapture(video_source)
-        if not self.vid.isOpened():
-            raise ValueError("Unable to open video source", video_source)
-
+        
     def get_frame(self):
         if not self.vid.isOpened():
             return (return_value, None)
@@ -56,8 +51,7 @@ class VideoCapture:
             return (return_value, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         else:
             return (return_value, None)
-
-    # Release the video source when the object is destroyed
-    def __del__(self):
+        
+    def closeCamera(self):
         if self.vid.isOpened():
             self.vid.release()
