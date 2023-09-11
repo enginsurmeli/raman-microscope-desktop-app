@@ -94,7 +94,7 @@ class App(customtkinter.CTk):
         serial_line_ending = settings_data.get('lineending')
         baudrate = settings_data.get('baudrate')
         serial_port = settings_data.get('port')
-        camera = settings_data.get('camera_index')
+        camera_index = settings_data.get('camera_index')
         appearance = settings_data.get('appearance')
 
         # change serial settings
@@ -102,24 +102,27 @@ class App(customtkinter.CTk):
             serial_port=serial_port, baudrate=baudrate, line_ending=serial_line_ending)
 
         # change camera settings
+        self.camera_view_frame.connect_camera(camera_index=camera_index)
 
         # set theme and appearance mode
         customtkinter.set_appearance_mode(appearance)
         customtkinter.set_default_color_theme("blue")
         # customtkinter.deactivate_automatic_dpi_awareness()
-        
-        # change color of treeview
+
+        # change color of treeview and plot area
         color_palette = {'Light': ['#dbdbdb', '#dce4ee', '#1f6aa5', '#252526'], 'Dark': [
             '#2b2b2b', '#252526', '#1f6aa5', '#dce4ee']}
-        self.raman_search_frame.changeTheme(color_palette=color_palette.get(appearance))
-        self.raman_plot_frame.changeTheme(color_palette=color_palette.get(appearance))
+        self.raman_search_frame.changeTheme(
+            color_palette=color_palette.get(appearance))
+        self.raman_plot_frame.changeTheme(
+            color_palette=color_palette.get(appearance))
 
     def sendSettingsData(self):
         return self.settings_data
 
     def sendSerialCommand(self, command: str):
         self.serial_console_frame.send(cnc_command=command)
-        
+
     def updateCncConnectionStatus(self, status: str):
         pass
 
