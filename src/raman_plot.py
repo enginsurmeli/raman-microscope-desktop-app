@@ -24,16 +24,20 @@ class RamanPlot(customtkinter.CTkFrame):
         super().__init__(master)
 
         self.master = master
+        inner_frame_padding = 5
+        figure_padding = 0.02
         self.plot_frame = customtkinter.CTkFrame(self)
-        self.plot_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        self.plot_frame.pack(fill="both", expand=True,
+                             padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.span_selector_frame = customtkinter.CTkFrame(self)
         self.span_selector_frame.pack(
-            fill="both", expand=False, padx=10, pady=10)
+            fill="both", expand=False, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.main_fig = Figure(figsize=(5, 4), dpi=100)
         self.main_plot = self.main_fig.add_subplot(111)
         self.main_plot.plot([1, 2, 3, 4, 5], [10, 20, 30, 40, 50])
+        self.main_fig.subplots_adjust(left=figure_padding, bottom=figure_padding+0.01, right=1-figure_padding, top=1-figure_padding)
 
         main_canvas = FigureCanvasTkAgg(self.main_fig, master=self.plot_frame)
         main_canvas.draw()
@@ -42,6 +46,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_fig = Figure(figsize=(5, 1), dpi=100)
         self.span_plot = self.span_fig.add_subplot(111)
         self.span_plot.plot([1, 2, 3, 4, 5], [10, 20, 30, 40, 50])
+        self.span_fig.subplots_adjust(left=figure_padding, bottom=figure_padding, right=1-figure_padding, top=1-figure_padding)
 
         span_canvas = FigureCanvasTkAgg(
             self.span_fig, master=self.span_selector_frame)
@@ -49,7 +54,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.toolbar = NavigationToolbar2Tk(
             main_canvas, self.span_selector_frame)
 
-        unwanted_buttons = ["Subplots", "Save",
+        unwanted_buttons = ["Save",
                             "Back", "Forward", "Home", "Pan", "Zoom"]
         for button in unwanted_buttons:
             self.toolbar._buttons[str(button)].pack_forget()
