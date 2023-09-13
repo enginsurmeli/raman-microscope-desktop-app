@@ -16,7 +16,8 @@ class CameraView(customtkinter.CTkFrame):
         self.vid = cv2.VideoCapture(camera_index)
         if not self.vid.isOpened():
             raise ValueError("Unable to open video source", camera_index)
-        self.canvas = tk.Canvas(self, highlightthickness=0)
+        self.canvas = tk.Canvas(
+            self, highlightthickness=0, width=320, height=240)
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
         self.delay = 15
@@ -40,18 +41,23 @@ class CameraView(customtkinter.CTkFrame):
                 pass
 
         self.after(self.delay, self.update)
-        
+
     def get_frame(self):
         if not self.vid.isOpened():
             return (return_value, None)
 
         return_value, frame = self.vid.read()
+        dim = (self.canvas.winfo_width(), self.canvas.winfo_height())
+        # fit frame to canvas
+        frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+        # flip frame horizontally
+        frame = cv2.flip(frame, 1)
         if return_value:
             # Return a boolean success flag and the current frame converted to BGR
             return (return_value, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         else:
             return (return_value, None)
-        
+
     def closeCamera(self):
         if self.vid.isOpened():
             self.vid.release()
