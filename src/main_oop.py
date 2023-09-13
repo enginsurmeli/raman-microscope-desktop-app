@@ -96,6 +96,7 @@ class App(customtkinter.CTk):
         serial_port = settings_data.get('port')
         camera_index = settings_data.get('camera_index')
         appearance = settings_data.get('appearance')
+        save_folder = settings_data.get('save_folder')
 
         # change serial settings
         self.serial_console_frame.updateSerialSettings(
@@ -116,6 +117,9 @@ class App(customtkinter.CTk):
             color_palette=color_palette.get(appearance))
         self.raman_plot_frame.changeTheme(
             color_palette=color_palette.get(appearance))
+        
+        # change save folder
+        self.raman_plot_frame.changeSaveFolder(save_folder=save_folder)
 
     def sendSettingsData(self):
         return self.settings_data

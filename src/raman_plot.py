@@ -36,7 +36,8 @@ class RamanPlot(customtkinter.CTkFrame):
 
         self.main_fig = Figure(figsize=(5, 4), dpi=100)
         self.main_plot = self.main_fig.add_subplot(111)
-        self.main_plot.plot([1, 2, 3, 4, 5], [10, 20, 30, 40, 50])
+        self.line_main_plot = self.main_plot.plot([], [])
+        self.line_db_plot = {}
         self.main_fig.subplots_adjust(
             left=figure_padding, bottom=figure_padding+0.01, right=1-figure_padding, top=1-figure_padding)
 
@@ -46,7 +47,6 @@ class RamanPlot(customtkinter.CTkFrame):
 
         self.span_fig = Figure(figsize=(5, 1), dpi=100)
         self.span_plot = self.span_fig.add_subplot(111)
-        self.span_plot.plot([1, 2, 3, 4, 5], [10, 20, 30, 40, 50])
         self.span_fig.subplots_adjust(
             left=figure_padding, bottom=figure_padding, right=1-figure_padding, top=1-figure_padding)
 
@@ -63,6 +63,10 @@ class RamanPlot(customtkinter.CTkFrame):
 
         self.toolbar.update()
         span_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        
+        # Create span selector
+        self.span = SpanSelector(self.span_plot, self.OnSpanSelect, "horizontal", useblit=True, props=dict(
+            alpha=0.5, facecolor="tab:blue"), interactive=True, drag_from_anywhere=True, ignore_event_outside=False)
 
     def changeTheme(self, color_palette):
         self.main_fig.set_facecolor(color_palette[0])
@@ -90,3 +94,21 @@ class RamanPlot(customtkinter.CTkFrame):
         self.toolbar.winfo_children()[-2].config(background=color_palette[0])
         self.toolbar._message_label.config(
             background=color_palette[0], foreground=color_palette[3])
+        
+    def LoadSpectrumFile(self):
+        pass
+        
+    def OnSpanSelect(self, xmin, xmax):
+        pass
+    
+    def RemoveBaseline(self):
+        pass
+
+    def exportCSV(self):
+        pass
+    
+    def exportPNG(self):
+        pass
+    
+    def changeSaveFolder(self, save_folder):
+        self.save_folder = save_folder

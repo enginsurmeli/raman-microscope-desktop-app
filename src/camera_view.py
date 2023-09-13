@@ -61,3 +61,6 @@ class CameraView(customtkinter.CTkFrame):
     def closeCamera(self):
         if self.vid.isOpened():
             self.vid.release()
+            
+    def exportImage(self):
+        pass
