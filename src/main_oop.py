@@ -132,6 +132,9 @@ class App(customtkinter.CTk):
 
     # def resetSerialConnection(self):
     #     self.serial_console_frame.resetSerialConnection()
+    
+    def initializeTreeview(self):
+        self.raman_search_frame.initializeTreeview()
 
     def OnQuitApp(self):
         quit_app = quit_app_window.OnQuitApp(self)

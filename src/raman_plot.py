@@ -63,7 +63,7 @@ class RamanPlot(customtkinter.CTkFrame):
 
         self.toolbar.update()
         span_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        
+
         # Create span selector
         self.span = SpanSelector(self.span_plot, self.OnSpanSelect, "horizontal", useblit=True, props=dict(
             alpha=0.5, facecolor="tab:blue"), interactive=True, drag_from_anywhere=True, ignore_event_outside=False)
@@ -94,21 +94,72 @@ class RamanPlot(customtkinter.CTkFrame):
         self.toolbar.winfo_children()[-2].config(background=color_palette[0])
         self.toolbar._message_label.config(
             background=color_palette[0], foreground=color_palette[3])
-        
+
     def LoadSpectrumFile(self):
-        pass
-        
+        filepath = fd.askopenfilename(
+            initialdir=self.save_folder, title="Select file", filetypes=(("all files", "*.*"), ("text files", "*.txt")))
+        if filepath:  # if user wants to load specimen spectrum, open a file dialog
+            # self.search_button.configure(state='disabled')
+            # self.remove_baseline_button.configure(state='disabled')
+            self.main_plot.cla()
+            self.span_plot.cla()
+            self.main_plot.set_yticks([])
+            self.span_plot.set_yticks([])
+            self.span_plot.set_xticks([])
+            self.main_fig.canvas.draw_idle()
+            # for child in self.raman_db_treeview.get_children():
+            #     # self.raman_db_treeview.set(child, column=0, value='--')
+            #     self.raman_db_treeview.delete(child)
+
+            try:
+                self.raman_shift, self.intensity = np.loadtxt(
+                    filepath, unpack=True)
+            except:
+                self.raman_shift, self.intensity = np.loadtxt(
+                    filepath, unpack=True, delimiter=',')
+
+            self.sample_name = filepath.split('/')[-1].replace('.txt', '')
+            norm = np.sqrt(sum(self.intensity**2))
+            self.intensity = self.intensity / norm
+            self.line_main_plot, = self.main_plot.plot(
+                [], [], label=self.sample_name)
+            self.line_main_plot.set_data(self.raman_shift, self.intensity)
+            self.main_plot.set_xlim(
+                self.raman_shift[0], self.raman_shift[-1])
+            self.main_plot.set_ylim(
+                self.intensity.min(), self.intensity.max())
+
+            self.line_span_plot, = self.span_plot.plot([], [])
+            self.line_span_plot.set_data(
+                self.raman_shift, self.intensity)
+            self.span_plot.set_xlim(
+                self.raman_shift[0], self.raman_shift[-1])
+            self.span_plot.set_ylim(
+                self.intensity.min(), self.intensity.max())
+            self.main_plot.set_yticks([])
+            self.span_plot.set_yticks([])
+            self.span_plot.set_xticks([])
+            self.main_plot.legend()
+            self.main_plot.canvas.draw_idle()
+            # self.search_button.configure(state='normal')
+            # self.remove_baseline_button.configure(state='normal')
+
+            self.span_xmin = self.raman_shift[0]
+            self.span_xmax = self.raman_shift[-1]
+            
+            self.master.initializeTreeview()
+
     def OnSpanSelect(self, xmin, xmax):
         pass
-    
+
     def RemoveBaseline(self):
         pass
 
     def exportCSV(self):
         pass
-    
+
     def exportPNG(self):
         pass
-    
+
     def changeSaveFolder(self, save_folder):
         self.save_folder = save_folder

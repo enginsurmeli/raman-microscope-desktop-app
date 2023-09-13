@@ -14,6 +14,9 @@ class RamanSearch(customtkinter.CTkFrame):
         # self.label1.pack(fill="both", expand=True)
 
         self.master = master
+        self.initialdir = os.getcwd()
+        print(self.initialdir)
+        self.raman_db_folder = 'raman_database'
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=0)
         self.grid_columnconfigure(0, weight=1)
@@ -43,6 +46,8 @@ class RamanSearch(customtkinter.CTkFrame):
         scrollbar.grid(row=0, column=1, sticky="ns")
 
         self.treeview.bind("<Double-1>", self.OnDoubleClick)
+        
+        self.initializeTreeview()
 
     def ramanSearch(self):
         pass
@@ -78,3 +83,14 @@ class RamanSearch(customtkinter.CTkFrame):
                            foreground=[('selected', color_palette[2])])
         self.treeview.bind(
             "<<Treeview>>", lambda event: self.treeview.focus_set()) # remove focus from treeview
+        
+    def initializeTreeview(self):
+        # Initialize Raman Spectra Database
+            for subdir, dirs, files in os.walk(os.path.join(self.initialdir, self.raman_db_folder)):
+                self.db_filepath_list = []
+                for file in files:
+                    if file.endswith('.txt'):
+                        self.treeview.insert(
+                            '', tk.END, values=('--', file.replace('.txt', '')))
+                        # TODO: Use this list inside SearchRamanDB method.
+                        self.db_filepath_list.append(os.path.join(subdir, file))
