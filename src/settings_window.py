@@ -123,6 +123,8 @@ class SettingsWindow(customtkinter.CTkToplevel):
         self.line_endings_optionmenu.set(self.settings_data.get('lineending'))
         self.camera_optionmenu.set(self.camera_list[camera_index])
         self.appearance_optionmenu.set(self.settings_data.get('appearance'))
+        self.save_folder_entry.delete(0, "end")
+        self.save_folder_entry.insert(0, self.settings_data.get('save_folder'))
 
     # TODO: implement this, refresh available serial ports and cameras every 1 second
     def refreshPorts(self):
@@ -165,4 +167,5 @@ class SettingsWindow(customtkinter.CTkToplevel):
 
     def select_folder(self):
         folder = filedialog.askdirectory()
+        self.save_folder_entry.delete(0, "end")
         self.save_folder_entry.insert(0, folder)

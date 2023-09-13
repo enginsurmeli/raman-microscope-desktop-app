@@ -9,21 +9,30 @@ from PIL import Image, ImageTk
 class CameraView(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
-
         self.master = master
+        self.connection_active = False
+        self.previous_camera_index = -1
 
     def connect_camera(self, camera_index: int = 0):
+        if self.previous_camera_index == camera_index:
+            return
+
+        if self.connection_active:  # close camera if already connected
+            self.closeCamera()
+
         self.vid = cv2.VideoCapture(camera_index)
         if not self.vid.isOpened():
             raise ValueError("Unable to open video source", camera_index)
+        self.connection_active = True
+        self.previous_camera_index = camera_index
+
         self.canvas = tk.Canvas(
             self, highlightthickness=0, width=320, height=240)
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
-        self.delay = 15
-        self.update()
+        self.stream()  # start streaming
 
-    def update(self):
+    def stream(self):
         # Get a frame from the video source
         return_value, frame = self.get_frame()
 
@@ -40,7 +49,9 @@ class CameraView(customtkinter.CTkFrame):
             finally:
                 pass
 
-        self.after(self.delay, self.update)
+        fps = 30
+        delay = round(1000/fps)
+        self.after(delay, self.stream)
 
     def get_frame(self):
         if not self.vid.isOpened():
@@ -60,7 +71,9 @@ class CameraView(customtkinter.CTkFrame):
 
     def closeCamera(self):
         if self.vid.isOpened():
+            self.canvas.destroy()
             self.vid.release()
-            
+            self.connection_active = False
+
     def exportImage(self):
         pass
