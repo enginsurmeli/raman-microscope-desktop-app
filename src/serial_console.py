@@ -226,11 +226,15 @@ class SerialConsole(customtkinter.CTkFrame):
             return
         preset = time.perf_counter_ns()
         try:
+            text = ''
             while self.currentPort.in_waiting > 0 and time.perf_counter_ns()-preset < 2000000:  # loop duration about 2ms
                 ch = self.currentPort.read()
-                text = ''
                 text += self.getStrOfChr(ch)
-                self.writeConsole(text)
+            if text:
+                if text[0] == '<':
+                    self.master.updateCNCStatus(text)
+                else:
+                    self.writeConsole(text)
         except serial.SerialException as se:
             self.closePort()
         self.after(10, self.rxPolling)  # polling in 10ms interval

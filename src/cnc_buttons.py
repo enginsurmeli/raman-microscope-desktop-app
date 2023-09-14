@@ -169,7 +169,7 @@ class CNCButtons(customtkinter.CTkFrame):
         self.feed_rate_cbox.set("2000")
 
         self.is_connected = False
-        self.after(1000, self.statusPolling)
+        self.statusPolling()
 
     def openSettings(self):
         settings = settings_window.SettingsWindow(
@@ -216,12 +216,13 @@ class CNCButtons(customtkinter.CTkFrame):
 
     def updateCNCStatus(self, status: str):
         state, *rest = status.split('|')
+        state = state.replace('<', '')
         if state == "connected":
             self.is_connected = True
-        if self.is_connected:
-            # posx, posy, posz = rest[0].split(',').strip('WPos:')
-            # print(state, posx, posy, posz)
-            pass
+        if rest:
+            posx, posy, posz = rest[0].split(',')
+            posx = posx.replace('WPos:', '')
+            print(f"state: {state}, posx: {posx}, posy: {posy}, posz: {posz}")
         self.status_box.configure(state="normal")
         self.status_box.delete(0, "end")
         if state == "disconnected":
@@ -230,23 +231,27 @@ class CNCButtons(customtkinter.CTkFrame):
             self.status_led.configure(fg_color=not_connected_status_color)
             self.status_box.insert(0, "Not Connected")
             self.is_connected = False
-        elif state == "idle":
+        if state == "Idle":
             self.status_led.configure(fg_color='#fdbc40')
             self.status_box.insert(0, "Idle")
             self.is_connected = True
-        elif state == "jog":
+        if state == "Run":
             self.status_led.configure(fg_color='#33c748')
             self.status_box.insert(0, "Jogging")
             self.is_connected = True
-        elif state == "alarm":
+        if state == "Alarm":
             self.status_led.configure(fg_color='#fc5753')
             self.status_box.insert(0, "Alarm")
             self.is_connected = True
+        if state == "Home":
+            print("Homing cycle")
+        if state == "Hold":
+            print("Hodor!")
         self.status_box.configure(state="disabled")
 
     def statusPolling(self):
         if self.is_connected:
             self.master.sendSerialCommand('?')
         update_frequency = 4  # Hz
-        self.master.after(round(1000//update_frequency),
-                          self.statusPolling)
+        self.after(round(1000//update_frequency),
+                   self.statusPolling)

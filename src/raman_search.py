@@ -12,7 +12,6 @@ class RamanSearch(customtkinter.CTkFrame):
 
         self.master = master
         self.initialdir = os.getcwd()
-        print(self.initialdir)
         self.raman_db_folder = 'raman_database'
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=0)
