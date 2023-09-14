@@ -111,13 +111,13 @@ class App(customtkinter.CTk):
         # customtkinter.deactivate_automatic_dpi_awareness()
 
         # change color of treeview and plot area
-        color_palette = {'Light': ['#dbdbdb', '#dce4ee', '#1f6aa5', '#252526'], 'Dark': [
-            '#2b2b2b', '#252526', '#1f6aa5', '#dce4ee']}
+        color_palette = {'Light': ['#dbdbdb', '#dce4ee', '#1f6aa5', '#252526', '#cfcfcf'], 'Dark': [
+            '#2b2b2b', '#252526', '#1f6aa5', '#dce4ee', '#333333']}
         self.raman_search_frame.changeTheme(
             color_palette=color_palette.get(appearance))
         self.raman_plot_frame.changeTheme(
             color_palette=color_palette.get(appearance))
-        
+
         # change save folder
         self.raman_plot_frame.changeSaveFolder(save_folder=save_folder)
 
@@ -132,7 +132,7 @@ class App(customtkinter.CTk):
 
     # def resetSerialConnection(self):
     #     self.serial_console_frame.resetSerialConnection()
-    
+
     def initializeTreeview(self):
         self.raman_search_frame.initializeTreeview()
 

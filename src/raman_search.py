@@ -22,7 +22,8 @@ class RamanSearch(customtkinter.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
 
-        self.columns = ('match_percentage_column', 'sample_name_column')
+        # self.columns = ('match_percentage_column', 'sample_name_column')
+        self.columns = ('sample_name_column', 'match_percentage_column')
         self.treeview = ttk.Treeview(
             self, columns=self.columns, show='headings')
         self.treeview.column(
@@ -43,7 +44,7 @@ class RamanSearch(customtkinter.CTkFrame):
         scrollbar = customtkinter.CTkScrollbar(
             self, command=self.treeview.yview)
         self.treeview.configure(yscrollcommand=scrollbar.set)
-        scrollbar.grid(row=0, column=1, sticky="ns")
+        scrollbar.grid(row=0, column=1, sticky="ns", pady=10)
 
         self.treeview.bind("<Double-1>", self.OnDoubleClick)
         
@@ -73,12 +74,14 @@ class RamanSearch(customtkinter.CTkFrame):
     def changeTheme(self, color_palette):
         treestyle = ttk.Style()
         treestyle.theme_use('default')
-        treestyle.configure("Treeview", background=color_palette[0],
+        treestyle.configure("Treeview",
                             foreground=color_palette[3],
                             fieldbackground=color_palette[0],
                             borderwidth=0)
+        self.treeview.tag_configure('oddrow', background=color_palette[0])
+        self.treeview.tag_configure('evenrow', background=color_palette[4])
         treestyle.configure(
-            "Treeview.Heading", background=color_palette[0], foreground=color_palette[3], borderwidth=0)
+            "Treeview.Heading", background=color_palette[4], foreground=color_palette[3], borderwidth=0)
         treestyle.map('Treeview', background=[('selected', color_palette[1])],
                            foreground=[('selected', color_palette[2])])
         self.treeview.bind(
@@ -90,7 +93,10 @@ class RamanSearch(customtkinter.CTkFrame):
                 self.db_filepath_list = []
                 for file in files:
                     if file.endswith('.txt'):
+                        # self.treeview.insert(
+                        #     '', tk.END, values=('--', file.replace('.txt', '')))
+                        tags = ['oddrow', 'evenrow']
                         self.treeview.insert(
-                            '', tk.END, values=('--', file.replace('.txt', '')))
+                            '', tk.END, values=(file.replace('.txt', ''), '--'), tags=tags[len(self.treeview.get_children()) % 2])
                         # TODO: Use this list inside SearchRamanDB method.
                         self.db_filepath_list.append(os.path.join(subdir, file))
