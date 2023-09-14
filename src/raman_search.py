@@ -5,6 +5,7 @@ from tkinter import ttk
 import os
 import numpy as np
 
+
 class RamanSearch(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
@@ -80,7 +81,7 @@ class RamanSearch(customtkinter.CTkFrame):
         self.treeview.tag_configure('oddrow', background=color_palette[0])
         self.treeview.tag_configure('evenrow', background=color_palette[4])
         treestyle.configure(
-            "Treeview.Heading", background=color_palette[4], foreground=color_palette[3], borderwidth=0, font=large_font, rowheight=large_font[1]*4)
+            "Treeview.Heading", background=color_palette[4], foreground=color_palette[3], borderwidth=0, relief='flat', font=large_font, rowheight=large_font[1]*4)
         treestyle.map('Treeview', background=[('selected', color_palette[1])],
                       foreground=[('selected', color_palette[2])])
         self.treeview.bind(

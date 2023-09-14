@@ -36,7 +36,7 @@ class CNCButtons(customtkinter.CTkFrame):
         self.cnc_status_frame.grid_rowconfigure((0, 1, 2), weight=1)
         self.cnc_status_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
-        button_size = (20, 20)
+        button_size = (30, 30)
 
         jog_button_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "jog_button_light.png")),
                                                   dark_image=Image.open(os.path.join(
@@ -100,18 +100,26 @@ class CNCButtons(customtkinter.CTkFrame):
         self.status_led.grid(
             row=2, column=3, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        up_arrow_button_light = Image.open(os.path.join(
-            icons_folder, "up_arrow_button_light.png"))
-        up_arrow_button_dark = Image.open(os.path.join(
-            icons_folder, "up_arrow_button_dark.png"))
-        up_arrow_icon = customtkinter.CTkImage(
-            light_image=up_arrow_button_light, dark_image=up_arrow_button_dark, size=button_size)
-        down_arrow_icon = customtkinter.CTkImage(light_image=up_arrow_button_light.rotate(
-            180), dark_image=up_arrow_button_dark.rotate(180), size=button_size)
-        left_arrow_icon = customtkinter.CTkImage(light_image=up_arrow_button_light.rotate(
-            90), dark_image=up_arrow_button_dark.rotate(90), size=button_size)
-        right_arrow_icon = customtkinter.CTkImage(light_image=up_arrow_button_light.rotate(
-            270), dark_image=up_arrow_button_dark.rotate(270), size=button_size)
+        yplus_icon_light = Image.open(os.path.join(
+            icons_folder, "xy_axis_button_light.png"))
+        yplus_icon_dark = Image.open(os.path.join(
+            icons_folder, "xy_axis_button_dark.png"))
+        yplus_icon = customtkinter.CTkImage(
+            light_image=yplus_icon_light, dark_image=yplus_icon_dark, size=button_size)
+        yminus_icon = customtkinter.CTkImage(light_image=yplus_icon_light.rotate(
+            180), dark_image=yplus_icon_dark.rotate(180), size=button_size)
+        xminus_icon = customtkinter.CTkImage(light_image=yplus_icon_light.rotate(
+            90), dark_image=yplus_icon_dark.rotate(90), size=button_size)
+        xplus_icon = customtkinter.CTkImage(light_image=yplus_icon_light.rotate(
+            270), dark_image=yplus_icon_dark.rotate(270), size=button_size)
+        zplus_icon_light = Image.open(os.path.join(
+            icons_folder, "z_axis_button_light.png"))
+        zplus_icon_dark = Image.open(os.path.join(
+            icons_folder, "z_axis_button_dark.png"))
+        zplus_icon = customtkinter.CTkImage(
+            light_image=zplus_icon_light, dark_image=zplus_icon_dark, size=button_size)
+        zminus_icon = customtkinter.CTkImage(light_image=zplus_icon_light.rotate(
+            180), dark_image=zplus_icon_dark.rotate(180), size=button_size)
         cancel_jog_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
             icons_folder, "cancel_button_light.png")), dark_image=Image.open(os.path.join(icons_folder, "cancel_button_dark.png")), size=button_size)
 
@@ -119,32 +127,32 @@ class CNCButtons(customtkinter.CTkFrame):
         self.jog_buttons_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
         self.yplus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='y+'), width=button_size[0], height=button_size[1], image=up_arrow_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.move(axis='y+'), width=button_size[0], height=button_size[1], image=yplus_icon)
         self.yplus_button.grid(row=0, column=1, padx=inner_frame_padding,
                                pady=inner_frame_padding)
 
         self.yminus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='y-'), width=button_size[0], height=button_size[1], image=down_arrow_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.move(axis='y-'), width=button_size[0], height=button_size[1], image=yminus_icon)
         self.yminus_button.grid(
             row=2, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.xplus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='x+'), width=button_size[0], height=button_size[1], image=right_arrow_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.move(axis='x+'), width=button_size[0], height=button_size[1], image=xplus_icon)
         self.xplus_button.grid(row=1, column=2, padx=inner_frame_padding,
                                pady=inner_frame_padding)
 
         self.xminus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='x-'), width=button_size[0], height=button_size[1], image=left_arrow_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.move(axis='x-'), width=button_size[0], height=button_size[1], image=xminus_icon)
         self.xminus_button.grid(
             row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.zplus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='z+'), width=button_size[0], height=button_size[1], image=up_arrow_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.move(axis='z+'), width=button_size[0], height=button_size[1], image=zplus_icon)
         self.zplus_button.grid(row=0, column=3, padx=inner_frame_padding,
                                pady=inner_frame_padding)
 
         self.zminus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='z-'), width=button_size[0], height=button_size[1], image=down_arrow_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.move(axis='z-'), width=button_size[0], height=button_size[1], image=zminus_icon)
         self.zminus_button.grid(
             row=2, column=3, padx=inner_frame_padding, pady=inner_frame_padding)
 
