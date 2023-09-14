@@ -232,13 +232,13 @@ class CNCButtons(customtkinter.CTkFrame):
         self.master.sendSerialCommand('cancel')
         # print(stop_command)
 
-    def changeStatusLed(self, status: str):
-        # if status == "not_connected":
-        #     self.start_jog_button.configure()
-        # elif status == "idle":
-        #     self.start_jog_button.configure()
-        # elif status == "jog":
-        #     self.start_jog_button.configure()
-        # elif status == "alarm":
-        #     self.start_jog_button.configure()
-        pass
+    def updateCNCConnectionStatus(self, status: str):
+        if status == "not_connected":
+            not_connected_status_color = "#dbdbdb" if customtkinter.get_appearance_mode() == "Light" else "#2b2b2b"
+            self.start_jog_button.configure(fg_color=not_connected_status_color)
+        elif status == "idle":
+            self.start_jog_button.configure(fg_color='#fdbc40')
+        elif status == "jog":
+            self.start_jog_button.configure(fg_color='#33c748')
+        elif status == "alarm":
+            self.start_jog_button.configure(fg_color='#fc5753')
