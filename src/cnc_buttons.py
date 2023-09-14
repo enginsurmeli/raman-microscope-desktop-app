@@ -32,7 +32,7 @@ class CNCButtons(customtkinter.CTkFrame):
         settings_button = customtkinter.CTkButton(
             self.menu_buttons_frame, text="Settings", command=self.openSettings)
         settings_button.pack()
-        
+
         self.cnc_status_frame.grid_rowconfigure((0, 1, 2), weight=1)
         self.cnc_status_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
@@ -43,26 +43,19 @@ class CNCButtons(customtkinter.CTkFrame):
                                                       icons_folder, "jog_button_dark.png")),
                                                   size=(13, 20))
 
-        status_not_connected_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "status_not_connected_light.png")), dark_image=Image.open(os.path.join(
-            icons_folder, "status_not_connected_dark.png")), size=button_size)
-
-        status_alarm_image = customtkinter.CTkImage(
-            Image.open(os.path.join(icons_folder, "status_alarm.png")))
-        status_idle_image = customtkinter.CTkImage(
-            Image.open(os.path.join(icons_folder, "status_idle.png")))
-        status_jog_image = customtkinter.CTkImage(
-            Image.open(os.path.join(icons_folder, "status_jog.png")))
-
         pos_box_width = 75
-        self.posx_box = customtkinter.CTkEntry(self.cnc_status_frame, width=pos_box_width, placeholder_text='X')
+        self.posx_box = customtkinter.CTkEntry(
+            self.cnc_status_frame, width=pos_box_width, placeholder_text='X')
         self.posx_box.grid(
             row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.posy_box = customtkinter.CTkEntry(self.cnc_status_frame, width=pos_box_width, placeholder_text='Y')
+        self.posy_box = customtkinter.CTkEntry(
+            self.cnc_status_frame, width=pos_box_width, placeholder_text='Y')
         self.posy_box.grid(
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.posz_box = customtkinter.CTkEntry(self.cnc_status_frame, width=pos_box_width, placeholder_text='Z')
+        self.posz_box = customtkinter.CTkEntry(
+            self.cnc_status_frame, width=pos_box_width, placeholder_text='Z')
         self.posz_box.grid(
             row=1, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -175,10 +168,13 @@ class CNCButtons(customtkinter.CTkFrame):
         self.step_size_cbox.set("1")
         self.feed_rate_cbox.set("2000")
 
+        self.is_connected = False
+        self.after(1000, self.statusPolling)
+
     def openSettings(self):
         settings = settings_window.SettingsWindow(
             self.master, self.master.sendSettingsData())
-    
+
     def move(self, axis: str):
         if self.step_size_cbox.get() == "Continuous":
             step_size = 200
@@ -218,20 +214,39 @@ class CNCButtons(customtkinter.CTkFrame):
         self.master.sendSerialCommand('cancel')
         # print(stop_command)
 
-    def updateCNCConnectionStatus(self, status: str):
+    def updateCNCStatus(self, status: str):
+        state, *rest = status.split('|')
+        if state == "connected":
+            self.is_connected = True
+        if self.is_connected:
+            # posx, posy, posz = rest[0].split(',').strip('WPos:')
+            # print(state, posx, posy, posz)
+            pass
         self.status_box.configure(state="normal")
         self.status_box.delete(0, "end")
-        if status == "disconnected":
-            not_connected_status_color = "#dbdbdb" if customtkinter.get_appearance_mode() == "Light" else "#2b2b2b"
+        if state == "disconnected":
+            not_connected_status_color = "#dbdbdb" if customtkinter.get_appearance_mode(
+            ) == "Light" else "#2b2b2b"
             self.status_led.configure(fg_color=not_connected_status_color)
             self.status_box.insert(0, "Not Connected")
-        elif status == "idle":
+            self.is_connected = False
+        elif state == "idle":
             self.status_led.configure(fg_color='#fdbc40')
             self.status_box.insert(0, "Idle")
-        elif status == "jog":
+            self.is_connected = True
+        elif state == "jog":
             self.status_led.configure(fg_color='#33c748')
             self.status_box.insert(0, "Jogging")
-        elif status == "alarm":
+            self.is_connected = True
+        elif state == "alarm":
             self.status_led.configure(fg_color='#fc5753')
             self.status_box.insert(0, "Alarm")
+            self.is_connected = True
         self.status_box.configure(state="disabled")
+
+    def statusPolling(self):
+        if self.is_connected:
+            self.master.sendSerialCommand('?')
+        update_frequency = 4  # Hz
+        self.master.after(round(1000//update_frequency),
+                          self.statusPolling)

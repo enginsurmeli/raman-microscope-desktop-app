@@ -37,7 +37,7 @@ class SerialConsole(customtkinter.CTkFrame):
             self, bg_color='#343638', state="disabled", wrap="word", border_width=2, corner_radius=0, height=150)
         self.rx_textbox.grid(row=0, column=0, columnspan=3,
                              padx=5, pady=5, sticky="nsew")
-        
+
         self.tx_entrybox = customtkinter.CTkEntry(
             self, border_width=2, corner_radius=0)
         self.tx_entrybox.grid(row=1, column=0, padx=5, pady=5, sticky="ew")
@@ -137,11 +137,11 @@ class SerialConsole(customtkinter.CTkFrame):
             self.tx_entrybox.delete(0, 'end')
             return
         if tx_text == 'reset':
-            self.currentPort.write(b'\x18') # ctrl+x
+            self.currentPort.write(b'\x18')  # ctrl+x
             self.tx_entrybox.delete(0, 'end')
             return
         if tx_text == 'cancel':
-            self.currentPort.write(b'\x85') # jog cancel command
+            self.currentPort.write(b'\x85')  # jog cancel command
             self.tx_entrybox.delete(0, 'end')
             return
         lst = len(self.sent_texts)
@@ -200,13 +200,13 @@ class SerialConsole(customtkinter.CTkFrame):
         except:
             # portCbo.set('Select port')
             # self.writeConsole('failed.\n')
-            self.master.updateCNCConnectionStatus('disconnected')
+            self.master.updateCNCStatus('disconnected')
             self.currentPort.port = None
         if self.currentPort.is_open:
             self.enableSending()
             self.rxPolling()
             # self.writeConsole('is successful.\n')
-            self.master.updateCNCConnectionStatus('connected')
+            self.master.updateCNCStatus('connected')
 
     def changeBaudrate(self, baudrate):
         if baudrate == self.currentPort.baudrate:
@@ -249,7 +249,7 @@ class SerialConsole(customtkinter.CTkFrame):
             self.writeConsole('Serial port closed.\n')
             self.currentPort.port = None
             self.disableSending()
-            
+
     # def resetConnection(self):
     #     self.closePort()
     #     self.changePort(self.currentPort.port)

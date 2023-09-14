@@ -58,3 +58,5 @@ $132=200.000
 -- Continuous jogging example, go in +z direction (feed rate = 2000 mm/min): $J=G21G91X0.000Y0.000Z200.000F2000
 
 -- matplotlib toolbar icons location: Lib\site-packages\matplotlib\mpl-data\images
+
+-- Typical status report in reply to '?': <Alarm|WPos:199.000,199.000,1.000|Bf:15,127|FS:0,0|WCO:-199.000,-199.000,-1.000>
