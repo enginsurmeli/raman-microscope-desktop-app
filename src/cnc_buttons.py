@@ -53,30 +53,16 @@ class CNCButtons(customtkinter.CTkFrame):
         status_jog_image = customtkinter.CTkImage(
             Image.open(os.path.join(icons_folder, "status_jog.png")))
 
-        self.posx_label = customtkinter.CTkLabel(
-            self.cnc_status_frame, text="X")
-        self.posx_label.grid(
-            row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
-
-        self.posy_label = customtkinter.CTkLabel(
-            self.cnc_status_frame, text="Y")
-        self.posy_label.grid(
-            row=0, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
-
-        self.posz_label = customtkinter.CTkLabel(
-            self.cnc_status_frame, text="Z")
-        self.posz_label.grid(
-            row=0, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
-
-        self.posx_box = customtkinter.CTkEntry(self.cnc_status_frame, width=75)
+        pos_box_width = 75
+        self.posx_box = customtkinter.CTkEntry(self.cnc_status_frame, width=pos_box_width, placeholder_text='X')
         self.posx_box.grid(
             row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.posy_box = customtkinter.CTkEntry(self.cnc_status_frame, width=75)
+        self.posy_box = customtkinter.CTkEntry(self.cnc_status_frame, width=pos_box_width, placeholder_text='Y')
         self.posy_box.grid(
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.posz_box = customtkinter.CTkEntry(self.cnc_status_frame, width=75)
+        self.posz_box = customtkinter.CTkEntry(self.cnc_status_frame, width=pos_box_width, placeholder_text='Z')
         self.posz_box.grid(
             row=1, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -91,7 +77,7 @@ class CNCButtons(customtkinter.CTkFrame):
             row=2, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.status_box = customtkinter.CTkEntry(
-            self.cnc_status_frame, state="disabled", width=100)
+            self.cnc_status_frame, state="disabled", width=100, justify="center")
         self.status_box.grid(row=2, column=1, columnspan=2,
                              padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
@@ -233,12 +219,19 @@ class CNCButtons(customtkinter.CTkFrame):
         # print(stop_command)
 
     def updateCNCConnectionStatus(self, status: str):
-        if status == "not_connected":
+        self.status_box.configure(state="normal")
+        self.status_box.delete(0, "end")
+        if status == "disconnected":
             not_connected_status_color = "#dbdbdb" if customtkinter.get_appearance_mode() == "Light" else "#2b2b2b"
-            self.start_jog_button.configure(fg_color=not_connected_status_color)
+            self.status_led.configure(fg_color=not_connected_status_color)
+            self.status_box.insert(0, "Not Connected")
         elif status == "idle":
-            self.start_jog_button.configure(fg_color='#fdbc40')
+            self.status_led.configure(fg_color='#fdbc40')
+            self.status_box.insert(0, "Idle")
         elif status == "jog":
-            self.start_jog_button.configure(fg_color='#33c748')
+            self.status_led.configure(fg_color='#33c748')
+            self.status_box.insert(0, "Jogging")
         elif status == "alarm":
-            self.start_jog_button.configure(fg_color='#fc5753')
+            self.status_led.configure(fg_color='#fc5753')
+            self.status_box.insert(0, "Alarm")
+        self.status_box.configure(state="disabled")
