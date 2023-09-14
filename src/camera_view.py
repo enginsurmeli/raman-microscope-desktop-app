@@ -27,7 +27,7 @@ class CameraView(customtkinter.CTkFrame):
         self.previous_camera_index = camera_index
 
         self.canvas = tk.Canvas(
-            self, highlightthickness=0, width=320, height=240)
+            self, highlightthickness=0, width=480, height=360)
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
         self.stream()  # start streaming

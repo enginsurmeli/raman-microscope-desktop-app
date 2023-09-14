@@ -39,7 +39,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.line_main_plot = self.main_plot.plot([], [])
         self.line_db_plot = {}
         self.main_fig.subplots_adjust(
-            left=figure_padding, bottom=figure_padding+0.01, right=1-figure_padding, top=1-figure_padding)
+            left=figure_padding, bottom=figure_padding+0.02, right=1-figure_padding, top=1-figure_padding)
 
         main_canvas = FigureCanvasTkAgg(self.main_fig, master=self.plot_frame)
         main_canvas.draw()

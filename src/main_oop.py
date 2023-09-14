@@ -23,7 +23,7 @@ class App(customtkinter.CTk):
         self.title("LST Raman Microscope Scanner")
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        app_window_width = 1280
+        app_window_width = 1440
         app_window_height = 720
         self.geometry(
             f"{app_window_width}x{app_window_height}+{int(screen_width/2-app_window_width/2)}+{int(screen_height/2-app_window_height/2)}")
