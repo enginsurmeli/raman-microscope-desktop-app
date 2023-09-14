@@ -5,15 +5,9 @@ from tkinter import ttk
 import os
 import numpy as np
 
-import random
-
-
 class RamanSearch(customtkinter.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
-
-        # self.label1 = customtkinter.CTkLabel(self, text="Raman Search")
-        # self.label1.pack(fill="both", expand=True)
 
         self.master = master
         self.initialdir = os.getcwd()
@@ -75,16 +69,18 @@ class RamanSearch(customtkinter.CTkFrame):
             treeview, column, not reverse))
 
     def changeTheme(self, color_palette):
+        small_font = ('None', 11)
+        large_font = ('None', 12, 'bold')
         treestyle = ttk.Style()
         treestyle.theme_use('default')
         treestyle.configure("Treeview",
                             foreground=color_palette[3],
                             fieldbackground=color_palette[0],
-                            borderwidth=0)
+                            borderwidth=0, font=small_font, rowheight=small_font[1]*3)
         self.treeview.tag_configure('oddrow', background=color_palette[0])
         self.treeview.tag_configure('evenrow', background=color_palette[4])
         treestyle.configure(
-            "Treeview.Heading", background=color_palette[4], foreground=color_palette[3], borderwidth=0)
+            "Treeview.Heading", background=color_palette[4], foreground=color_palette[3], borderwidth=0, font=large_font, rowheight=large_font[1]*4)
         treestyle.map('Treeview', background=[('selected', color_palette[1])],
                       foreground=[('selected', color_palette[2])])
         self.treeview.bind(
@@ -99,6 +95,6 @@ class RamanSearch(customtkinter.CTkFrame):
                     # self.treeview.insert(
                     #     '', tk.END, values=('--', file.replace('.txt', '')))
                     self.treeview.insert(
-                        '', tk.END, values=(file.replace('.txt', ''), random.randint(0, 100)), tags=('oddrow', 'evenrow')[len(self.treeview.get_children()) % 2])
+                        '', tk.END, values=(file.replace('.txt', ''), '--'), tags=('oddrow', 'evenrow')[len(self.treeview.get_children()) % 2])
                     # TODO: Use this list inside SearchRamanDB method.
                     self.db_filepath_list.append(os.path.join(subdir, file))
