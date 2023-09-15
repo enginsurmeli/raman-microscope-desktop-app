@@ -223,17 +223,17 @@ class CNCButtons(customtkinter.CTkFrame):
             # print(f"state: {state}, posx: {posx}, posy: {posy}, posz: {posz}")
             self.posx_box.configure(state="normal")
             self.posx_box.delete(0, "end")
-            self.posx_box.insert(0, posx)
+            self.posx_box.insert(0, f"X: {posx[:5]}")
             self.posx_box.configure(state="disabled")
-            
+
             self.posy_box.configure(state="normal")
             self.posy_box.delete(0, "end")
-            self.posy_box.insert(0, posy)
+            self.posy_box.insert(0, f"Y: {posy[:5]}")
             self.posy_box.configure(state="disabled")
-            
+
             self.posz_box.configure(state="normal")
             self.posz_box.delete(0, "end")
-            self.posz_box.insert(0, posz)
+            self.posz_box.insert(0, f"Z: {posz[:5]}")
             self.posz_box.configure(state="disabled")
         self.status_box.configure(state="normal")
         self.status_box.delete(0, "end")
@@ -247,7 +247,7 @@ class CNCButtons(customtkinter.CTkFrame):
             self.status_led.configure(fg_color='#fdbc40')
             self.status_box.insert(0, "Idle")
             self.is_connected = True
-        if state == "Run":
+        if state == "Run" or state == "Jog":
             self.status_led.configure(fg_color='#33c748')
             self.status_box.insert(0, "Jogging")
             self.is_connected = True
