@@ -169,7 +169,7 @@ class CNCButtons(customtkinter.CTkFrame):
         self.feed_rate_cbox.set("2000")
 
         self.is_connected = False
-        self.statusPolling()
+        # self.statusPolling()
 
     def openSettings(self):
         settings = settings_window.SettingsWindow(
@@ -222,7 +222,7 @@ class CNCButtons(customtkinter.CTkFrame):
         if rest:
             posx, posy, posz = rest[0].split(',')
             posx = posx.replace('WPos:', '')
-            print(f"state: {state}, posx: {posx}, posy: {posy}, posz: {posz}")
+            # print(f"state: {state}, posx: {posx}, posy: {posy}, posz: {posz}")
         self.status_box.configure(state="normal")
         self.status_box.delete(0, "end")
         if state == "disconnected":

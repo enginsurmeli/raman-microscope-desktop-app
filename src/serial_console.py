@@ -144,6 +144,10 @@ class SerialConsole(customtkinter.CTkFrame):
             self.currentPort.write(b'\x85')  # jog cancel command
             self.tx_entrybox.delete(0, 'end')
             return
+        if tx_text == '?':
+            self.currentPort.write(b'?\r')
+            self.tx_entrybox.delete(0, 'end')
+            return
         lst = len(self.sent_texts)
         bs, err = self.decodeEsc(tx_text)
         if err:
@@ -226,10 +230,19 @@ class SerialConsole(customtkinter.CTkFrame):
             return
         preset = time.perf_counter_ns()
         try:
-            text = ''
-            while self.currentPort.in_waiting > 0 and time.perf_counter_ns()-preset < 2000000:  # loop duration about 2ms
+            
+            # while self.currentPort.in_waiting > 0 and time.perf_counter_ns()-preset < 2000000:  # loop duration about 2ms
+            #     ch = self.currentPort.read()
+            #     # if ch == b'\r':
+            #     #     print('carriage return')
+            #     text += self.getStrOfChr(ch)
+            while self.currentPort.in_waiting > 0:
+                text = ''
                 ch = self.currentPort.read()
-                text += self.getStrOfChr(ch)
+                if ch != b'\r':
+                    text += self.getStrOfChr(ch)
+                else:
+                    break
             if text:
                 if text[0] == '<':
                     self.master.updateCNCStatus(text)
