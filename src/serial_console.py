@@ -130,6 +130,10 @@ class SerialConsole(customtkinter.CTkFrame):
             tx_text = cnc_command
         else:
             tx_text = str(self.tx_entrybox.get())
+        lst = len(self.sent_texts)
+        if lst > 0 and self.sent_texts[lst-1] != tx_text or lst == 0:
+            self.sent_texts.append(tx_text)
+        self.sent_texts_index = len(self.sent_texts)
         if tx_text == '':
             return
         if tx_text == 'cls':
@@ -145,10 +149,10 @@ class SerialConsole(customtkinter.CTkFrame):
             self.tx_entrybox.delete(0, 'end')
             return
         if tx_text == '?':
-            self.currentPort.write(b'?\r')
+            # note: write ? without line ending to not receive a response saying "ok"
+            self.currentPort.write(b'?')
             self.tx_entrybox.delete(0, 'end')
             return
-        lst = len(self.sent_texts)
         bs, err = self.decodeEsc(tx_text)
         if err:
             self.writeConsole(err['msg'] + '\n')
@@ -156,9 +160,6 @@ class SerialConsole(customtkinter.CTkFrame):
             self.tx_entrybox.select_range(err['from'], err['to'])
             self.tx_entrybox.icursor(err['to'])
             return
-        if lst > 0 and self.sent_texts[lst-1] != tx_text or lst == 0:
-            self.sent_texts.append(tx_text)
-        self.sent_texts_index = len(self.sent_texts)
         if self.line_ending == 'LF':
             bs += b'\n'
         elif self.line_ending == 'CR':
@@ -228,26 +229,14 @@ class SerialConsole(customtkinter.CTkFrame):
     def rxPolling(self):
         if not self.currentPort.is_open:
             return
-        preset = time.perf_counter_ns()
         try:
-            
-            # while self.currentPort.in_waiting > 0 and time.perf_counter_ns()-preset < 2000000:  # loop duration about 2ms
-            #     ch = self.currentPort.read()
-            #     # if ch == b'\r':
-            #     #     print('carriage return')
-            #     text += self.getStrOfChr(ch)
+            text = ''
             while self.currentPort.in_waiting > 0:
-                text = ''
                 ch = self.currentPort.read()
-                if ch != b'\r':
-                    text += self.getStrOfChr(ch)
-                else:
-                    break
+                text += self.getStrOfChr(ch)
             if text:
-                if text[0] == '<':
-                    self.master.updateCNCStatus(text)
-                else:
-                    self.writeConsole(text)
+                self.writeConsole(text)
+                print(text)
         except serial.SerialException as se:
             self.closePort()
         self.after(10, self.rxPolling)  # polling in 10ms interval
