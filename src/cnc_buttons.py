@@ -169,6 +169,7 @@ class CNCButtons(customtkinter.CTkFrame):
         self.feed_rate_cbox.set("2000")
 
         self.is_connected = False
+        self.previous_state = None
         self.statusPolling()
 
     def openSettings(self):
@@ -207,9 +208,9 @@ class CNCButtons(customtkinter.CTkFrame):
         self.master.sendSerialCommand(jog_command)
 
     def startRun(self):
-        target_x = self.posx_box.get()
-        target_y = self.posy_box.get()
-        target_z = self.posz_box.get()
+        target_x = float(self.posx_box.get())
+        target_y = float(self.posy_box.get())
+        target_z = float(self.posz_box.get())
 
         self.master.sendSerialCommand(f"G0X{target_x}Y{target_y}Z{target_z}")
 
@@ -219,11 +220,8 @@ class CNCButtons(customtkinter.CTkFrame):
     def updateCNCStatus(self, status: str):
         state, *rest = status.split('|')
         state = state.replace('<', '')
-        
-        if state == "Connected":
-            self.is_connected = True
-            
-        if rest:
+
+        if rest and self.previous_state != 'Idle':
             posx, posy, posz = rest[0].split(',')
             posx = posx.replace('WPos:', '')
             # print(f"state: {state}, posx: {posx}, posy: {posy}, posz: {posz}")
@@ -236,24 +234,31 @@ class CNCButtons(customtkinter.CTkFrame):
             self.posz_box.delete(0, "end")
             self.posz_box.insert(0, f"{float(posz):.1f}")
 
+        if state == "Connected":
+            self.is_connected = True
+
         self.status_box.configure(state="normal")
         self.status_box.delete(0, "end")
+
         if state == "Disconnected":
             not_connected_status_color = "#dbdbdb" if customtkinter.get_appearance_mode(
             ) == "Light" else "#2b2b2b"
             self.status_led.configure(fg_color=not_connected_status_color)
             self.is_connected = False
+
         if state == "Idle":
             self.status_led.configure(fg_color='#fdbc40')
-            self.is_connected = True
+
         if state == "Run" or state == "Jog":
             self.status_led.configure(fg_color='#33c748')
-            self.is_connected = True
+
         if state == "Alarm":
             self.status_led.configure(fg_color='#fc5753')
-            self.is_connected = True
+
         self.status_box.insert(0, state)
         self.status_box.configure(state="disabled")
+
+        self.previous_state = state
 
     def statusPolling(self):
         if self.is_connected:
