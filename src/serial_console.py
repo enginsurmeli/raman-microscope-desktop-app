@@ -151,7 +151,6 @@ class SerialConsole(customtkinter.CTkFrame):
         if tx_text == '?':
             # note: write ? without line ending to not receive a response saying "ok"
             self.currentPort.write(b'?')
-            self.tx_entrybox.delete(0, 'end')
             return
         bs, err = self.decodeEsc(tx_text)
         if err:
@@ -235,8 +234,15 @@ class SerialConsole(customtkinter.CTkFrame):
                 ch = self.currentPort.read()
                 text += self.getStrOfChr(ch)
             if text:
-                self.writeConsole(text)
-                print(text)
+                # text = text.replace('\\r', '')
+                # print(text)
+                if text.__contains__('<'):
+                    self.master.updateCNCStatus(text)
+                # the response contains '>' but not '<' so ignore it
+                elif text.__contains__('>'):
+                    pass
+                else:
+                    self.writeConsole(text)
         except serial.SerialException as se:
             self.closePort()
         self.after(10, self.rxPolling)  # polling in 10ms interval

@@ -169,7 +169,7 @@ class CNCButtons(customtkinter.CTkFrame):
         self.feed_rate_cbox.set("2000")
 
         self.is_connected = False
-        # self.statusPolling()
+        self.statusPolling()
 
     def openSettings(self):
         settings = settings_window.SettingsWindow(
@@ -205,14 +205,12 @@ class CNCButtons(customtkinter.CTkFrame):
 
         jog_command = f"$J=G21G91X{x_step:.3f}Y{y_step:.3f}Z{z_step:.3f}F{feed_rate}"
         self.master.sendSerialCommand(jog_command)
-        # print(jog_command)
 
     def startJog(self):
         pass
 
     def cancelJog(self):
         self.master.sendSerialCommand('cancel')
-        # print(stop_command)
 
     def updateCNCStatus(self, status: str):
         state, *rest = status.split('|')
@@ -223,6 +221,20 @@ class CNCButtons(customtkinter.CTkFrame):
             posx, posy, posz = rest[0].split(',')
             posx = posx.replace('WPos:', '')
             # print(f"state: {state}, posx: {posx}, posy: {posy}, posz: {posz}")
+            self.posx_box.configure(state="normal")
+            self.posx_box.delete(0, "end")
+            self.posx_box.insert(0, posx)
+            self.posx_box.configure(state="disabled")
+            
+            self.posy_box.configure(state="normal")
+            self.posy_box.delete(0, "end")
+            self.posy_box.insert(0, posy)
+            self.posy_box.configure(state="disabled")
+            
+            self.posz_box.configure(state="normal")
+            self.posz_box.delete(0, "end")
+            self.posz_box.insert(0, posz)
+            self.posz_box.configure(state="disabled")
         self.status_box.configure(state="normal")
         self.status_box.delete(0, "end")
         if state == "disconnected":
@@ -244,9 +256,9 @@ class CNCButtons(customtkinter.CTkFrame):
             self.status_box.insert(0, "Alarm")
             self.is_connected = True
         if state == "Home":
-            print("Homing cycle")
+            self.status_box.insert(0, "Homing")
         if state == "Hold":
-            print("Hodor!")
+            self.status_box.insert(0, "Hold")
         self.status_box.configure(state="disabled")
 
     def statusPolling(self):
