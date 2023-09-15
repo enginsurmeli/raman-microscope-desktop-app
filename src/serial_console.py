@@ -204,13 +204,13 @@ class SerialConsole(customtkinter.CTkFrame):
         except:
             # portCbo.set('Select port')
             # self.writeConsole('failed.\n')
-            self.master.updateCNCStatus('disconnected')
+            self.master.updateCNCStatus('Disconnected')
             self.currentPort.port = None
         if self.currentPort.is_open:
             self.enableSending()
             self.rxPolling()
             # self.writeConsole('is successful.\n')
-            self.master.updateCNCStatus('connected')
+            self.master.updateCNCStatus('Connected')
 
     def changeBaudrate(self, baudrate):
         if baudrate == self.currentPort.baudrate:
