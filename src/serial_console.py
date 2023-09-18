@@ -190,7 +190,7 @@ class SerialConsole(customtkinter.CTkFrame):
                     "end", self.sent_texts[self.sent_texts_index])
 
     def changePort(self, serial_port):
-        if serial_port == self.currentPort.port:
+        if serial_port == self.currentPort.port and self.currentPort.is_open:
             return
         self.disableSending()
         if self.currentPort.is_open:
@@ -211,6 +211,9 @@ class SerialConsole(customtkinter.CTkFrame):
             self.rxPolling()
             # self.writeConsole('is successful.\n')
             self.master.updateCNCStatus('Connected')
+        else:
+            # print('Connection failed, retrying.')
+            self.after(1000, self.changePort, serial_port)
 
     def changeBaudrate(self, baudrate):
         if baudrate == self.currentPort.baudrate:
@@ -245,6 +248,8 @@ class SerialConsole(customtkinter.CTkFrame):
                     self.writeConsole(text)
         except serial.SerialException as se:
             self.closePort()
+            # print(f'attempting to reconnect to port {self.currentPort.port} in 1 second.')
+            self.after(1000, self.changePort, self.currentPort.port)
         self.after(10, self.rxPolling)  # polling in 10ms interval
 
     def disableSending(self):

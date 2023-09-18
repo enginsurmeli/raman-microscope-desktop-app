@@ -28,15 +28,18 @@ class CNCButtons(customtkinter.CTkFrame):
         self.jog_settings_frame = customtkinter.CTkFrame(self)
         self.jog_settings_frame.pack(
             side="top",  expand=True, padx=inner_frame_padding, pady=inner_frame_padding)
+        
+        button_size = (30, 30)
+        
+        settings_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
+            icons_folder, "settings_light.png")), dark_image=Image.open(os.path.join(icons_folder, "settings_dark.png")), size=button_size)
 
         settings_button = customtkinter.CTkButton(
-            self.menu_buttons_frame, text="Settings", command=self.openSettings)
+            self.menu_buttons_frame, text="", command=self.openSettings, width=button_size[0], height=button_size[1], image=settings_icon)
         settings_button.pack()
 
         self.cnc_status_frame.grid_rowconfigure((0, 1, 2), weight=1)
         self.cnc_status_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
-
-        button_size = (30, 30)
 
         jog_button_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "jog_button_light.png")),
                                                   dark_image=Image.open(os.path.join(
