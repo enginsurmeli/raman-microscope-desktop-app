@@ -71,10 +71,9 @@ class SettingsWindow(customtkinter.CTkToplevel):
         save_folder_label.grid(row=6, column=0, padx=10, pady=10)
 
         # list available serial ports
-        myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
-        self.ports_list = sorted([p[0] for p in myports])
         self.serial_ports_optionmenu = customtkinter.CTkOptionMenu(
-            self.settings_frame, values=self.ports_list)
+            self.settings_frame, values=[])
+        self.refreshSerialPorts(self.serial_ports_optionmenu)
         self.serial_ports_optionmenu.grid(row=0, column=1, padx=10, pady=10)
 
         # create a list of baud rates
@@ -106,12 +105,14 @@ class SettingsWindow(customtkinter.CTkToplevel):
         # self.accent_color_option = customtkinter.CTkOptionMenu(
         #     self.settings_frame, values=["blue", "green", "dark-blue"])
         # self.accent_color_option.grid(row=4, column=2, padx=10, pady=10)
-        
+
         # entrybox for save data path
         self.save_folder_entry = customtkinter.CTkEntry(self.settings_frame)
-        self.save_folder_entry.grid(row=6, column=1, columnspan=2, padx=10, pady=10, sticky="ew")
-        
-        self.select_folder_button = customtkinter.CTkButton(self.settings_frame, text="Select Folder", command=self.select_folder)
+        self.save_folder_entry.grid(
+            row=6, column=1, columnspan=2, padx=10, pady=10, sticky="ew")
+
+        self.select_folder_button = customtkinter.CTkButton(
+            self.settings_frame, text="Select Folder", command=self.select_folder)
         self.select_folder_button.grid(row=6, column=3, padx=10, pady=10)
 
         self.setCurrentSettings()
@@ -126,9 +127,12 @@ class SettingsWindow(customtkinter.CTkToplevel):
         self.save_folder_entry.delete(0, "end")
         self.save_folder_entry.insert(0, self.settings_data.get('save_folder'))
 
-    # TODO: implement this, refresh available serial ports and cameras every 1 second
-    def refreshPorts(self):
-        pass
+    def refreshSerialPorts(self, serial_ports_optionmenu):
+        # refresh available serial ports and cameras every 1 second
+        myports = [tuple(p) for p in list(serial.tools.list_ports.comports())]
+        self.ports_list = sorted([p[0] for p in myports])
+        serial_ports_optionmenu.configure(values=self.ports_list)
+        self.after(1000, self.refreshSerialPorts, serial_ports_optionmenu)
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)

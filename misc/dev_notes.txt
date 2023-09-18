@@ -60,3 +60,9 @@ $132=200.000
 -- matplotlib toolbar icons location: Lib\site-packages\matplotlib\mpl-data\images
 
 -- Typical status report in reply to '?': <Alarm|WPos:199.000,199.000,1.000|Bf:15,127|FS:0,0|WCO:-199.000,-199.000,-1.000>
+
+-- plot area'nın aşağısına eklenecek butonlar: save, load, remove baseline, clear plots.
+
+-- cnc buttons bölümündekiler: home, park position, center position, reset, unlock, app settings.
+
+-- scan parameters bölümündekiler: integration time cbox, accumulations cbox, start scan butonu.
