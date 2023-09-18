@@ -28,15 +28,55 @@ class CNCButtons(customtkinter.CTkFrame):
         self.jog_settings_frame = customtkinter.CTkFrame(self)
         self.jog_settings_frame.pack(
             side="top",  expand=True, padx=inner_frame_padding, pady=inner_frame_padding)
-        
+
         button_size = (30, 30)
-        
+
+        self.menu_buttons_frame.grid_rowconfigure((0, 1), weight=1)
+        self.menu_buttons_frame.grid_columnconfigure((0, 1, 2), weight=1)
+
+        home_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
+            icons_folder, "home_light.png")), dark_image=Image.open(os.path.join(icons_folder, "home_dark.png")), size=button_size)
+
+        park_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
+            icons_folder, "park_light.png")), dark_image=Image.open(os.path.join(icons_folder, "park_dark.png")), size=button_size)
+
+        center_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
+            icons_folder, "center_light.png")), dark_image=Image.open(os.path.join(icons_folder, "center_dark.png")), size=button_size)
+
+        reset_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
+            icons_folder, "reset_light.png")), dark_image=Image.open(os.path.join(icons_folder, "reset_dark.png")), size=button_size)
+
+        unlock_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
+            icons_folder, "unlock_light.png")), dark_image=Image.open(os.path.join(icons_folder, "unlock_dark.png")), size=button_size)
+
         settings_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
             icons_folder, "settings_light.png")), dark_image=Image.open(os.path.join(icons_folder, "settings_dark.png")), size=button_size)
 
+        home_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+            '$H'), width=button_size[0], height=button_size[1], image=home_icon)
+        home_button.grid(
+            row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
+
+        park_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+            'G0 X1 Y1 Z-1'), width=button_size[0], height=button_size[1], image=park_icon)
+        park_button.grid(row=0, column=1, padx=inner_frame_padding,
+                         pady=inner_frame_padding)
+
+        center_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+            'G0 X145 Y80 Z-1'), width=button_size[0], height=button_size[1], image=center_icon)
+        center_button.grid(
+            row=0, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
+        
+        reset_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand('reset'), width=button_size[0], height=button_size[1], image=reset_icon)
+        reset_button.grid(row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
+        
+        unlock_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand('$X'), width=button_size[0], height=button_size[1], image=unlock_icon)
+        unlock_button.grid(row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
+
         settings_button = customtkinter.CTkButton(
             self.menu_buttons_frame, text="", command=self.openSettings, width=button_size[0], height=button_size[1], image=settings_icon)
-        settings_button.pack()
+        settings_button.grid(
+            row=1, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.cnc_status_frame.grid_rowconfigure((0, 1, 2), weight=1)
         self.cnc_status_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
