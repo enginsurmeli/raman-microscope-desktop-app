@@ -177,6 +177,14 @@ class CNCButtons(customtkinter.CTkFrame):
             self.jog_buttons_frame, text="", command=lambda: self.startJog(axis='z-'), width=button_size[0], height=button_size[1], image=zminus_icon)
         self.zminus_button.grid(
             row=2, column=3, padx=inner_frame_padding, pady=inner_frame_padding)
+        
+        # bind button release to stop continuous jog
+        self.xplus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
+        self.xminus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
+        self.yplus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
+        self.yminus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
+        self.zplus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
+        self.zminus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
 
         self.cancel_jog_button = customtkinter.CTkButton(
             self.jog_buttons_frame, text="", command=self.cancelJog, width=button_size[0], height=button_size[1], image=cancel_jog_icon)
@@ -228,7 +236,6 @@ class CNCButtons(customtkinter.CTkFrame):
         return max(min(n, max_n), min_n)
 
     def startJog(self, axis: str):
-        # TODO: implement continuous jog
         if self.step_size_cbox.get() == "Continuous":
             step_size = 200
         else:
@@ -252,6 +259,13 @@ class CNCButtons(customtkinter.CTkFrame):
 
         jog_command = f"$J=G21G91X{x_step:.3f}Y{y_step:.3f}Z{z_step:.3f}F{feed_rate}"
         self.master.sendSerialCommand(jog_command)
+        
+    def cancelJog(self):
+        self.master.sendSerialCommand('cancel')
+        
+    def stopContinuousJog(self):
+        if self.step_size_cbox.get() == "Continuous":
+            self.cancelJog()
 
     def startRun(self):
         # constrain target position to soft limits
@@ -260,9 +274,6 @@ class CNCButtons(customtkinter.CTkFrame):
         target_z = self.constrain(float(self.posz_box.get()), self.softlimit_z, 0)
         
         self.master.sendSerialCommand(f"G0X{target_x}Y{target_y}Z{target_z}")
-
-    def cancelJog(self):
-        self.master.sendSerialCommand('cancel')
 
     def updateCNCStatus(self, status: str):
         state, *rest = status.split('|')
