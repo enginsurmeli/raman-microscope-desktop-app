@@ -214,12 +214,21 @@ class CNCButtons(customtkinter.CTkFrame):
         self.is_connected = False
         self.previous_state = None
         self.statusPolling()
+        
+        self.is_homed = False
+        self.softlimit_x = 285
+        self.softlimit_y = 150
+        self.softlimit_z = -20
 
     def openSettings(self):
         settings = settings_window.SettingsWindow(
             self.master, self.master.sendSettingsData())
+        
+    def applySoftLimits(self, n, min_n, max_n):
+        return max(min(n, max_n), min_n)
 
     def move(self, axis: str):
+        # TODO: implement continuous jog
         if self.step_size_cbox.get() == "Continuous":
             step_size = 200
         else:
@@ -251,10 +260,10 @@ class CNCButtons(customtkinter.CTkFrame):
         self.master.sendSerialCommand(jog_command)
 
     def startRun(self):
-        target_x = float(self.posx_box.get())
-        target_y = float(self.posy_box.get())
-        target_z = float(self.posz_box.get())
-
+        target_x = self.applySoftLimits(float(self.posx_box.get()), 0, self.softlimit_x)
+        target_y = self.applySoftLimits(float(self.posy_box.get()), 0, self.softlimit_y)
+        target_z = self.applySoftLimits(float(self.posz_box.get()), self.softlimit_z, 0)
+        
         self.master.sendSerialCommand(f"G0X{target_x}Y{target_y}Z{target_z}")
 
     def cancelJog(self):
