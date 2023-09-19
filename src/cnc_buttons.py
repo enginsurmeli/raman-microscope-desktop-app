@@ -11,23 +11,27 @@ class CNCButtons(customtkinter.CTkFrame):
         self.master = master
         icons_folder = os.path.join(os.getcwd(), 'src', 'icons')
 
-        inner_frame_padding = 5
+        inner_frame_padding = 2
 
         self.menu_buttons_frame = customtkinter.CTkFrame(self)
         self.menu_buttons_frame.pack(
-            side="top",  expand=True, padx=inner_frame_padding, pady=inner_frame_padding)
+            side="top",  expand=True)
 
         self.cnc_status_frame = customtkinter.CTkFrame(self)
         self.cnc_status_frame.pack(
-            side="top",  expand=True, padx=inner_frame_padding, pady=inner_frame_padding)
+            side="top",  expand=True)
 
         self.jog_buttons_frame = customtkinter.CTkFrame(self)
         self.jog_buttons_frame.pack(
-            side="top",  expand=True, padx=inner_frame_padding, pady=inner_frame_padding)
+            side="top",  expand=True)
 
         self.jog_settings_frame = customtkinter.CTkFrame(self)
         self.jog_settings_frame.pack(
-            side="top",  expand=True, padx=inner_frame_padding, pady=inner_frame_padding)
+            side="top",  expand=True)
+
+        self.raman_scan_frame = customtkinter.CTkFrame(self)
+        self.raman_scan_frame.pack(
+            side="top",  expand=True)
 
         button_size = (30, 30)
 
@@ -66,12 +70,16 @@ class CNCButtons(customtkinter.CTkFrame):
             'G0 X145 Y80 Z-1'), width=button_size[0], height=button_size[1], image=center_icon)
         center_button.grid(
             row=0, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
-        
-        reset_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand('reset'), width=button_size[0], height=button_size[1], image=reset_icon)
-        reset_button.grid(row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
-        
-        unlock_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand('$X'), width=button_size[0], height=button_size[1], image=unlock_icon)
-        unlock_button.grid(row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
+
+        reset_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+            'reset'), width=button_size[0], height=button_size[1], image=reset_icon)
+        reset_button.grid(
+            row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
+
+        unlock_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+            '$X'), width=button_size[0], height=button_size[1], image=unlock_icon)
+        unlock_button.grid(
+            row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
         settings_button = customtkinter.CTkButton(
             self.menu_buttons_frame, text="", command=self.openSettings, width=button_size[0], height=button_size[1], image=settings_icon)
@@ -86,19 +94,19 @@ class CNCButtons(customtkinter.CTkFrame):
                                                       icons_folder, "jog_button_dark.png")),
                                                   size=(13, 20))
 
-        pos_box_width = 75
+        entry_box_width = 75
         self.posx_box = customtkinter.CTkEntry(
-            self.cnc_status_frame, width=pos_box_width, placeholder_text='X', justify="center")
+            self.cnc_status_frame, width=entry_box_width, placeholder_text='X', justify="center")
         self.posx_box.grid(
             row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.posy_box = customtkinter.CTkEntry(
-            self.cnc_status_frame, width=pos_box_width, placeholder_text='Y', justify="center")
+            self.cnc_status_frame, width=entry_box_width, placeholder_text='Y', justify="center")
         self.posy_box.grid(
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.posz_box = customtkinter.CTkEntry(
-            self.cnc_status_frame, width=pos_box_width, placeholder_text='Z', justify="center")
+            self.cnc_status_frame, width=entry_box_width, placeholder_text='Z', justify="center")
         self.posz_box.grid(
             row=1, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -107,9 +115,9 @@ class CNCButtons(customtkinter.CTkFrame):
         self.start_run_button.grid(
             row=1, column=3, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.status_label = customtkinter.CTkLabel(
+        status_label = customtkinter.CTkLabel(
             self.cnc_status_frame, text="Status:")
-        self.status_label.grid(
+        status_label.grid(
             row=2, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.status_box = customtkinter.CTkEntry(
@@ -177,14 +185,20 @@ class CNCButtons(customtkinter.CTkFrame):
             self.jog_buttons_frame, text="", command=lambda: self.startJog(axis='z-'), width=button_size[0], height=button_size[1], image=zminus_icon)
         self.zminus_button.grid(
             row=2, column=3, padx=inner_frame_padding, pady=inner_frame_padding)
-        
+
         # bind button release to stop continuous jog
-        self.xplus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
-        self.xminus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
-        self.yplus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
-        self.yminus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
-        self.zplus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
-        self.zminus_button.bind("<ButtonRelease-1>", lambda event: self.stopContinuousJog())
+        self.xplus_button.bind("<ButtonRelease-1>",
+                               lambda event: self.stopContinuousJog())
+        self.xminus_button.bind("<ButtonRelease-1>",
+                                lambda event: self.stopContinuousJog())
+        self.yplus_button.bind("<ButtonRelease-1>",
+                               lambda event: self.stopContinuousJog())
+        self.yminus_button.bind("<ButtonRelease-1>",
+                                lambda event: self.stopContinuousJog())
+        self.zplus_button.bind("<ButtonRelease-1>",
+                               lambda event: self.stopContinuousJog())
+        self.zminus_button.bind("<ButtonRelease-1>",
+                                lambda event: self.stopContinuousJog())
 
         self.cancel_jog_button = customtkinter.CTkButton(
             self.jog_buttons_frame, text="", command=self.cancelJog, width=button_size[0], height=button_size[1], image=cancel_jog_icon)
@@ -195,23 +209,23 @@ class CNCButtons(customtkinter.CTkFrame):
         self.jog_settings_frame.columnconfigure(0, weight=1)
         self.jog_settings_frame.columnconfigure(1, weight=5)
 
-        self.step_size_label = customtkinter.CTkLabel(
+        step_size_label = customtkinter.CTkLabel(
             self.jog_settings_frame, text="Step Size (mm)")
-        self.step_size_label.grid(
+        step_size_label.grid(
             row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.step_size_cbox = customtkinter.CTkComboBox(
-            self.jog_settings_frame, values=['Continuous', "0.1", "0.5", "1", "5", "10", "50", "100"], justify="right")
+            self.jog_settings_frame, width=entry_box_width*1.5, values=['Continuous', "0.1", "0.5", "1", "5", "10", "50", "100"], justify="right")
         self.step_size_cbox.grid(
             row=0, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.feed_rate_label = customtkinter.CTkLabel(
+        feed_rate_label = customtkinter.CTkLabel(
             self.jog_settings_frame, text="Feed Rate (mm/min)")
-        self.feed_rate_label.grid(
+        feed_rate_label.grid(
             row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.feed_rate_cbox = customtkinter.CTkComboBox(
-            self.jog_settings_frame, values=["10", "50", "100", "500", "1000", "2000"], justify="right")
+            self.jog_settings_frame, width=entry_box_width*1.5, values=["10", "50", "100", "500", "1000", "2000"], justify="right")
         self.feed_rate_cbox.grid(
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -222,16 +236,58 @@ class CNCButtons(customtkinter.CTkFrame):
         self.is_connected = False
         self.previous_state = None
         self.statusPolling()
-        
+
         self.is_homed = False
         self.softlimit_x = 285
         self.softlimit_y = 150
         self.softlimit_z = -20
 
+        self.raman_scan_frame.rowconfigure((0, 1, 2), weight=1)
+        self.raman_scan_frame.columnconfigure(0, weight=0)
+        self.raman_scan_frame.columnconfigure(1, weight=5)
+        self.raman_scan_frame.columnconfigure(2, weight=0)
+
+        spectral_center_label = customtkinter.CTkLabel(
+            self.raman_scan_frame, text="Spectral Center (cm-1)")
+        spectral_center_label.grid(
+            row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
+
+        self.spectral_center_entry = customtkinter.CTkEntry(
+            self.raman_scan_frame, width=entry_box_width, justify="center")
+        self.spectral_center_entry.grid(row=0, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
+
+        integration_time_label = customtkinter.CTkLabel(
+            self.raman_scan_frame, text="Integration Time (s)")
+        integration_time_label.grid(
+            row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
+        
+        self.integration_time_entry = customtkinter.CTkEntry(
+            self.raman_scan_frame, width=entry_box_width, justify="center")
+        self.integration_time_entry.grid(row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
+
+        accumulation_label = customtkinter.CTkLabel(
+            self.raman_scan_frame, text="No. of accumulations")
+        accumulation_label.grid(
+            row=2, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
+        
+        self.accumulation_entry = customtkinter.CTkEntry(
+            self.raman_scan_frame, width=entry_box_width, justify="center")
+        self.accumulation_entry.grid(row=2, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
+
+        start_scan_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "start_scan_light.png")),
+                                                 dark_image=Image.open(os.path.join(
+                                                     icons_folder, "start_scan_dark.png")),
+                                                 size=(button_size[0]*2, button_size[1]*3))
+
+        self.start_scan_button = customtkinter.CTkButton(
+            self.raman_scan_frame, text="", command=self.startRamanScan, width=button_size[0], height=button_size[1], image=start_scan_icon)
+        self.start_scan_button.grid(row=0, column=2, rowspan=3,
+                               padx=inner_frame_padding, pady=inner_frame_padding, sticky="ns")
+
     def openSettings(self):
         settings = settings_window.SettingsWindow(
             self.master, self.master.sendSettingsData())
-        
+
     def constrain(self, n, min_n, max_n):
         return max(min(n, max_n), min_n)
 
@@ -259,20 +315,23 @@ class CNCButtons(customtkinter.CTkFrame):
 
         jog_command = f"$J=G21G91X{x_step:.3f}Y{y_step:.3f}Z{z_step:.3f}F{feed_rate}"
         self.master.sendSerialCommand(jog_command)
-        
+
     def cancelJog(self):
         self.master.sendSerialCommand('cancel')
-        
+
     def stopContinuousJog(self):
         if self.step_size_cbox.get() == "Continuous":
             self.cancelJog()
 
     def startRun(self):
         # constrain target position to soft limits
-        target_x = self.constrain(float(self.posx_box.get()), 0, self.softlimit_x)
-        target_y = self.constrain(float(self.posy_box.get()), 0, self.softlimit_y)
-        target_z = self.constrain(float(self.posz_box.get()), self.softlimit_z, 0)
-        
+        target_x = self.constrain(
+            float(self.posx_box.get()), 0, self.softlimit_x)
+        target_y = self.constrain(
+            float(self.posy_box.get()), 0, self.softlimit_y)
+        target_z = self.constrain(
+            float(self.posz_box.get()), self.softlimit_z, 0)
+
         self.master.sendSerialCommand(f"G0X{target_x}Y{target_y}Z{target_z}")
 
     def updateCNCStatus(self, status: str):
@@ -324,3 +383,6 @@ class CNCButtons(customtkinter.CTkFrame):
         update_frequency = 4  # Hz
         self.after(round(1000//update_frequency),
                    self.statusPolling)
+
+    def startRamanScan(self):
+        print("start raman scan")
