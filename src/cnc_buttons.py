@@ -149,32 +149,32 @@ class CNCButtons(customtkinter.CTkFrame):
         self.jog_buttons_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
         self.yplus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='y+'), width=button_size[0], height=button_size[1], image=yplus_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.startJog(axis='y+'), width=button_size[0], height=button_size[1], image=yplus_icon)
         self.yplus_button.grid(row=0, column=1, padx=inner_frame_padding,
                                pady=inner_frame_padding)
 
         self.yminus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='y-'), width=button_size[0], height=button_size[1], image=yminus_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.startJog(axis='y-'), width=button_size[0], height=button_size[1], image=yminus_icon)
         self.yminus_button.grid(
             row=2, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.xplus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='x+'), width=button_size[0], height=button_size[1], image=xplus_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.startJog(axis='x+'), width=button_size[0], height=button_size[1], image=xplus_icon)
         self.xplus_button.grid(row=1, column=2, padx=inner_frame_padding,
                                pady=inner_frame_padding)
 
         self.xminus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='x-'), width=button_size[0], height=button_size[1], image=xminus_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.startJog(axis='x-'), width=button_size[0], height=button_size[1], image=xminus_icon)
         self.xminus_button.grid(
             row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.zplus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='z+'), width=button_size[0], height=button_size[1], image=zplus_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.startJog(axis='z+'), width=button_size[0], height=button_size[1], image=zplus_icon)
         self.zplus_button.grid(row=0, column=3, padx=inner_frame_padding,
                                pady=inner_frame_padding)
 
         self.zminus_button = customtkinter.CTkButton(
-            self.jog_buttons_frame, text="", command=lambda: self.move(axis='z-'), width=button_size[0], height=button_size[1], image=zminus_icon)
+            self.jog_buttons_frame, text="", command=lambda: self.startJog(axis='z-'), width=button_size[0], height=button_size[1], image=zminus_icon)
         self.zminus_button.grid(
             row=2, column=3, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -224,26 +224,20 @@ class CNCButtons(customtkinter.CTkFrame):
         settings = settings_window.SettingsWindow(
             self.master, self.master.sendSettingsData())
         
-    def applySoftLimits(self, n, min_n, max_n):
+    def constrain(self, n, min_n, max_n):
         return max(min(n, max_n), min_n)
 
-    def move(self, axis: str):
+    def startJog(self, axis: str):
         # TODO: implement continuous jog
         if self.step_size_cbox.get() == "Continuous":
             step_size = 200
         else:
-            try:
-                step_size = float(self.step_size_cbox.get())
-            except ValueError:
-                return
+            step_size = float(self.step_size_cbox.get())
 
         if '-' in axis:
             step_size = -step_size
 
-        try:
-            feed_rate = int(self.feed_rate_cbox.get())
-        except ValueError:
-            return
+        feed_rate = int(self.feed_rate_cbox.get())
 
         x_step = 0
         y_step = 0
@@ -260,9 +254,10 @@ class CNCButtons(customtkinter.CTkFrame):
         self.master.sendSerialCommand(jog_command)
 
     def startRun(self):
-        target_x = self.applySoftLimits(float(self.posx_box.get()), 0, self.softlimit_x)
-        target_y = self.applySoftLimits(float(self.posy_box.get()), 0, self.softlimit_y)
-        target_z = self.applySoftLimits(float(self.posz_box.get()), self.softlimit_z, 0)
+        # constrain target position to soft limits
+        target_x = self.constrain(float(self.posx_box.get()), 0, self.softlimit_x)
+        target_y = self.constrain(float(self.posy_box.get()), 0, self.softlimit_y)
+        target_z = self.constrain(float(self.posz_box.get()), self.softlimit_z, 0)
         
         self.master.sendSerialCommand(f"G0X{target_x}Y{target_y}Z{target_z}")
 
