@@ -11,7 +11,7 @@ class CNCButtons(customtkinter.CTkFrame):
         self.master = master
         icons_folder = os.path.join(os.getcwd(), 'src', 'icons')
 
-        inner_frame_padding = 2
+        inner_frame_padding = 5
 
         self.menu_buttons_frame = customtkinter.CTkFrame(self)
         self.menu_buttons_frame.pack(
@@ -29,9 +29,9 @@ class CNCButtons(customtkinter.CTkFrame):
         self.jog_settings_frame.pack(
             side="top",  expand=True)
 
-        self.raman_scan_frame = customtkinter.CTkFrame(self)
-        self.raman_scan_frame.pack(
-            side="top",  expand=True)
+        # self.raman_scan_frame = customtkinter.CTkFrame(self)
+        # self.raman_scan_frame.pack(
+        #     side="top",  expand=True)
 
         button_size = (30, 30)
 
@@ -242,48 +242,6 @@ class CNCButtons(customtkinter.CTkFrame):
         self.softlimit_y = 150
         self.softlimit_z = -20
 
-        self.raman_scan_frame.rowconfigure((0, 1, 2), weight=1)
-        self.raman_scan_frame.columnconfigure(0, weight=0)
-        self.raman_scan_frame.columnconfigure(1, weight=5)
-        self.raman_scan_frame.columnconfigure(2, weight=0)
-
-        spectral_center_label = customtkinter.CTkLabel(
-            self.raman_scan_frame, text="Spectral Center (cm-1)")
-        spectral_center_label.grid(
-            row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
-
-        self.spectral_center_entry = customtkinter.CTkEntry(
-            self.raman_scan_frame, width=entry_box_width, justify="center")
-        self.spectral_center_entry.grid(row=0, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
-
-        integration_time_label = customtkinter.CTkLabel(
-            self.raman_scan_frame, text="Integration Time (s)")
-        integration_time_label.grid(
-            row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
-        
-        self.integration_time_entry = customtkinter.CTkEntry(
-            self.raman_scan_frame, width=entry_box_width, justify="center")
-        self.integration_time_entry.grid(row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
-
-        accumulation_label = customtkinter.CTkLabel(
-            self.raman_scan_frame, text="No. of accumulations")
-        accumulation_label.grid(
-            row=2, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
-        
-        self.accumulation_entry = customtkinter.CTkEntry(
-            self.raman_scan_frame, width=entry_box_width, justify="center")
-        self.accumulation_entry.grid(row=2, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
-
-        start_scan_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "start_scan_light.png")),
-                                                 dark_image=Image.open(os.path.join(
-                                                     icons_folder, "start_scan_dark.png")),
-                                                 size=(button_size[0]*2, button_size[1]*3))
-
-        self.start_scan_button = customtkinter.CTkButton(
-            self.raman_scan_frame, text="", command=self.startRamanScan, width=button_size[0], height=button_size[1], image=start_scan_icon)
-        self.start_scan_button.grid(row=0, column=2, rowspan=3,
-                               padx=inner_frame_padding, pady=inner_frame_padding, sticky="ns")
-
     def openSettings(self):
         settings = settings_window.SettingsWindow(
             self.master, self.master.sendSettingsData())
@@ -358,8 +316,8 @@ class CNCButtons(customtkinter.CTkFrame):
         self.status_box.delete(0, "end")
 
         if state == "Disconnected":
-            not_connected_status_color = "#dbdbdb" if customtkinter.get_appearance_mode(
-            ) == "Light" else "#2b2b2b"
+            not_connected_status_color = "#2b2b2b" if customtkinter.get_appearance_mode(
+            ) == "Light" else "#dbdbdb"
             self.status_led.configure(fg_color=not_connected_status_color)
             self.is_connected = False
 
@@ -384,5 +342,4 @@ class CNCButtons(customtkinter.CTkFrame):
         self.after(round(1000//update_frequency),
                    self.statusPolling)
 
-    def startRamanScan(self):
-        print("start raman scan")
+    

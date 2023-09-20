@@ -13,6 +13,7 @@ import serial_console
 import camera_view
 import raman_plot
 import raman_search
+import raman_scan
 
 
 class App(customtkinter.CTk):
@@ -23,7 +24,7 @@ class App(customtkinter.CTk):
         self.title("LST Raman Microscope Scanner")
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        app_window_width = 1600
+        app_window_width = 1440
         app_window_height = 900
         self.geometry(
             f"{app_window_width}x{app_window_height}+{int(screen_width/2-app_window_width/2)}+{int(screen_height/2-app_window_height/2)}")
@@ -46,24 +47,25 @@ class App(customtkinter.CTk):
             pass
 
         # set grid layout 3x4
-        self.grid_rowconfigure((0, 2), weight=1)
-        self.grid_rowconfigure(1, weight=3)
+        self.grid_rowconfigure((0, 1, 2, 3), weight=1)
         self.grid_columnconfigure((0, 2), weight=0)
         self.grid_columnconfigure(1, weight=1)
 
         # create frames
         self.cnc_buttons_frame = cnc_buttons.CNCButtons(self)
         self.cnc_buttons_frame.grid(
-            row=0, column=0, rowspan=2, padx=(20, 10), pady=(20, 10), sticky="nsew")
+            row=0, column=0, rowspan=2, padx=(20, 10), pady=(20, 10), sticky="ns")
+
+        self.raman_scan_frame = raman_scan.RamanScan(self)
+        self.raman_scan_frame.grid(row=2, column=0, padx=(20, 10), pady=10)
 
         self.serial_console_frame = serial_console.SerialConsole(self)
         self.serial_console_frame.grid(
-            row=2, column=0, padx=(20, 10), pady=(10, 20), sticky="nsew")
+            row=3, column=0, padx=(20, 10), pady=(10, 20), sticky="nsew")
 
-        self.raman_plot_frame = raman_plot.RamanPlot(
-            self)
+        self.raman_plot_frame = raman_plot.RamanPlot(self)
         self.raman_plot_frame.grid(
-            row=0, column=1, rowspan=3, padx=10, pady=20, sticky="nsew")
+            row=0, column=1, rowspan=4, padx=10, pady=20, sticky="nsew")
 
         self.camera_view_frame = camera_view.CameraView(self)
         self.camera_view_frame.grid(
@@ -71,7 +73,7 @@ class App(customtkinter.CTk):
 
         self.raman_search_frame = raman_search.RamanSearch(self)
         self.raman_search_frame.grid(
-            row=1, column=2, rowspan=2, padx=(10, 20), pady=(10, 20), sticky="nsew")
+            row=1, column=2, rowspan=3, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
         self.initializeSettings()
 
