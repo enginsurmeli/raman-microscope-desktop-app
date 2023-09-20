@@ -42,7 +42,7 @@ class RamanPlot(customtkinter.CTkFrame):
 
         self.button_toolbar_frame = customtkinter.CTkFrame(self)
         self.button_toolbar_frame.pack(fill="both", expand=False,
-                                       padx=inner_frame_padding, pady=inner_frame_padding)
+                                       padx=inner_frame_padding*4, pady=inner_frame_padding)
 
         self.main_fig = Figure(figsize=(5, 4), dpi=100)
         self.main_plot = self.main_fig.add_subplot(111)
@@ -91,32 +91,37 @@ class RamanPlot(customtkinter.CTkFrame):
                                                  size=button_size)
 
         save_file_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="", image=save_file_icon, command=self.exportCSV, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Save", image=save_file_icon, command=self.exportCSV, width=button_size[0], height=button_size[1])
         save_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
                               pady=inner_frame_padding)
 
         load_file_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="", image=load_file_icon, command=self.LoadSpectrumFile, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Open", image=load_file_icon, command=self.LoadSpectrumFile, width=button_size[0], height=button_size[1])
         load_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
                               pady=inner_frame_padding)
 
         export_image_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="", image=export_image_icon, command=self.exportPNG, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Export\nGraph", image=export_image_icon, command=self.exportPNG, width=button_size[0], height=button_size[1])
         export_image_button.pack(side='left', expand=False, padx=inner_frame_padding,
                                  pady=inner_frame_padding)
 
         camera_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="", image=camera_icon, command=self.exportCameraImage, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Export\nCamera", image=camera_icon, command=self.exportCameraImage, width=button_size[0], height=button_size[1])
         camera_button.pack(side='left', expand=False, padx=inner_frame_padding,
                            pady=inner_frame_padding)
 
+        separator1 = ttk.Separator(
+            self.button_toolbar_frame, orient="vertical")
+        separator1.pack(side='left', expand=False,
+                        padx=inner_frame_padding, pady=inner_frame_padding)
+
         remove_baseline_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="", image=remove_baseline_icon, command=self.removeBaseline, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Remove\nBaseline", image=remove_baseline_icon, command=self.removeBaseline, width=button_size[0], height=button_size[1])
         remove_baseline_button.pack(side='left', expand=False, padx=inner_frame_padding,
                                     pady=inner_frame_padding)
 
         clear_plot_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="", image=clear_plot_icon, command=self.clearPlot, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Clear", image=clear_plot_icon, command=self.clearPlot, width=button_size[0], height=button_size[1])
         clear_plot_button.pack(side='left', expand=False, padx=inner_frame_padding,
                                     pady=inner_frame_padding)
 

@@ -5,6 +5,8 @@ from tkinter import ttk
 import os
 import numpy as np
 
+from PIL import Image
+
 
 class RamanSearch(customtkinter.CTkFrame):
     def __init__(self, master):
@@ -13,6 +15,8 @@ class RamanSearch(customtkinter.CTkFrame):
         self.master = master
         self.initialdir = os.getcwd()
         self.raman_db_folder = 'raman_database'
+        icons_folder = os.path.join(os.getcwd(), 'src', 'icons')
+        button_size = (30, 30)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=0)
         self.grid_columnconfigure(0, weight=1)
@@ -33,8 +37,13 @@ class RamanSearch(customtkinter.CTkFrame):
         self.treeview.grid(
             row=0, column=0, padx=10, pady=10, sticky="nsew")
 
+        search_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "search_light.png")),
+                                             dark_image=Image.open(os.path.join(
+                                                 icons_folder, "search_dark.png")),
+                                             size=button_size)
+
         self.search_button = customtkinter.CTkButton(
-            self, text="Search", command=self.ramanSearch, state="disabled")
+            self, image=search_icon, text="Search", command=self.ramanSearch, state="disabled")
         self.search_button.grid(row=1, column=0, padx=10, pady=(0, 10))
 
         scrollbar = customtkinter.CTkScrollbar(

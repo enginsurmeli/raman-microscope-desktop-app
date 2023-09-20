@@ -52,33 +52,33 @@ class CNCButtons(customtkinter.CTkFrame):
         settings_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
             icons_folder, "settings_light.png")), dark_image=Image.open(os.path.join(icons_folder, "settings_dark.png")), size=button_size)
 
-        home_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+        home_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Home", command=lambda: self.master.sendSerialCommand(
             '$H'), width=button_size[0], height=button_size[1], image=home_icon)
         home_button.grid(
-            row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
+            row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
-        park_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+        park_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Park", command=lambda: self.master.sendSerialCommand(
             'G0 X1 Y1 Z-1'), width=button_size[0], height=button_size[1], image=park_icon)
         park_button.grid(row=0, column=1, padx=inner_frame_padding,
-                         pady=inner_frame_padding)
+                         pady=inner_frame_padding, sticky="ew")
 
-        center_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+        center_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Center", command=lambda: self.master.sendSerialCommand(
             'G0 X145 Y80 Z-1'), width=button_size[0], height=button_size[1], image=center_icon)
         center_button.grid(
-            row=0, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
+            row=0, column=2, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
-        reset_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+        reset_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Reset", command=lambda: self.master.sendSerialCommand(
             'reset'), width=button_size[0], height=button_size[1], image=reset_icon)
         reset_button.grid(
-            row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
+            row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
-        unlock_button = customtkinter.CTkButton(self.menu_buttons_frame, text="", command=lambda: self.master.sendSerialCommand(
+        unlock_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Unlock", command=lambda: self.master.sendSerialCommand(
             '$X'), width=button_size[0], height=button_size[1], image=unlock_icon)
         unlock_button.grid(
-            row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
+            row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
         settings_button = customtkinter.CTkButton(
-            self.menu_buttons_frame, text="", command=self.openSettings, width=button_size[0], height=button_size[1], image=settings_icon)
+            self.menu_buttons_frame, text="Settings", command=self.openSettings, width=button_size[0], height=button_size[1], image=settings_icon)
         settings_button.grid(
             row=1, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -88,23 +88,23 @@ class CNCButtons(customtkinter.CTkFrame):
         jog_button_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "jog_button_light.png")),
                                                   dark_image=Image.open(os.path.join(
                                                       icons_folder, "jog_button_dark.png")),
-                                                  size=(13, 20))
+                                                  size=button_size)
 
         entry_box_width = 75
         self.posx_box = customtkinter.CTkEntry(
             self.cnc_status_frame, width=entry_box_width, placeholder_text='X', justify="center")
         self.posx_box.grid(
-            row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
+            row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ns")
 
         self.posy_box = customtkinter.CTkEntry(
             self.cnc_status_frame, width=entry_box_width, placeholder_text='Y', justify="center")
         self.posy_box.grid(
-            row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
+            row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ns")
 
         self.posz_box = customtkinter.CTkEntry(
             self.cnc_status_frame, width=entry_box_width, placeholder_text='Z', justify="center")
         self.posz_box.grid(
-            row=1, column=2, padx=inner_frame_padding, pady=inner_frame_padding)
+            row=1, column=2, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ns")
 
         self.start_run_button = customtkinter.CTkButton(
             self.cnc_status_frame, text="", command=self.startRun, width=button_size[0], height=button_size[1], image=jog_button_image)

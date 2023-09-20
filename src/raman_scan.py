@@ -55,7 +55,7 @@ class RamanScan(customtkinter.CTkFrame):
                                                  size=(button_size[0]*2, button_size[1]*3))
 
         self.start_scan_button = customtkinter.CTkButton(
-            self, text="", command=self.startRamanScan, width=button_size[0], height=button_size[1], image=start_scan_icon)
+            self, text="Start\nScan", anchor="s", command=self.startRamanScan, width=button_size[0], height=button_size[1], image=start_scan_icon)
         self.start_scan_button.grid(row=0, column=2, rowspan=3,
                                     padx=inner_frame_padding, pady=inner_frame_padding)
 
