@@ -319,12 +319,13 @@ class CNCButtons(customtkinter.CTkFrame):
 
         if state == "Idle":
             self.status_led.configure(fg_color='#fdbc40')
-
+            self.is_homed = True
         if state == "Run" or state == "Jog":
             self.status_led.configure(fg_color='#33c748')
 
         if state == "Alarm":
             self.status_led.configure(fg_color='#fc5753')
+            self.is_homed = False
 
         self.status_box.insert(0, state)
         self.status_box.configure(state="disabled")
