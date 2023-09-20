@@ -10,7 +10,7 @@ class RamanScan(customtkinter.CTkFrame):
         self.master = master
         icons_folder = os.path.join(os.getcwd(), 'src', 'icons')
 
-        inner_frame_padding = 5
+        inner_frame_padding = 4
         entry_box_width = 75
         button_size = (30, 30)
 

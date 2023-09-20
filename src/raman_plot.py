@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 
+from PIL import Image
+
 import os
 
 from BaselineRemoval import BaselineRemoval
@@ -24,8 +26,12 @@ class RamanPlot(customtkinter.CTkFrame):
         super().__init__(master)
 
         self.master = master
+        icons_folder = os.path.join(os.getcwd(), 'src', 'icons')
+
         inner_frame_padding = 5
         figure_padding = 0.02
+        button_size = (30, 30)
+
         self.plot_frame = customtkinter.CTkFrame(self)
         self.plot_frame.pack(fill="both", expand=True,
                              padx=inner_frame_padding, pady=inner_frame_padding)
@@ -33,6 +39,10 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_selector_frame = customtkinter.CTkFrame(self)
         self.span_selector_frame.pack(
             fill="both", expand=False, padx=inner_frame_padding, pady=inner_frame_padding)
+
+        self.button_toolbar_frame = customtkinter.CTkFrame(self)
+        self.button_toolbar_frame.pack(fill="both", expand=False,
+                                       padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.main_fig = Figure(figsize=(5, 4), dpi=100)
         self.main_plot = self.main_fig.add_subplot(111)
@@ -53,16 +63,70 @@ class RamanPlot(customtkinter.CTkFrame):
         span_canvas = FigureCanvasTkAgg(
             self.span_fig, master=self.span_selector_frame)
         span_canvas.draw()
-        self.toolbar = NavigationToolbar2Tk(
-            main_canvas, self.span_selector_frame)
+        span_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
+        save_file_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "save_light.png")),
+                                                dark_image=Image.open(os.path.join(
+                                                    icons_folder, "save_dark.png")),
+                                                size=button_size)
+        export_image_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "export_image_light.png")),
+                                                   dark_image=Image.open(os.path.join(
+                                                       icons_folder, "export_image_dark.png")),
+                                                   size=button_size)
+        load_file_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "open_light.png")),
+                                                dark_image=Image.open(os.path.join(
+                                                    icons_folder, "open_dark.png")),
+                                                size=button_size)
+        camera_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "camera_light.png")),
+                                             dark_image=Image.open(os.path.join(
+                                                 icons_folder, "camera_dark.png")),
+                                             size=button_size)
+        remove_baseline_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "baseline_light.png")),
+                                                      dark_image=Image.open(os.path.join(
+                                                          icons_folder, "baseline_dark.png")),
+                                                      size=button_size)
+        clear_plot_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "clear_plot_light.png")),
+                                                 dark_image=Image.open(os.path.join(
+                                                     icons_folder, "clear_plot_dark.png")),
+                                                 size=button_size)
+
+        save_file_button = customtkinter.CTkButton(
+            master=self.button_toolbar_frame, text="", image=save_file_icon, command=self.exportCSV, width=button_size[0], height=button_size[1])
+        save_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                              pady=inner_frame_padding)
+
+        load_file_button = customtkinter.CTkButton(
+            master=self.button_toolbar_frame, text="", image=load_file_icon, command=self.LoadSpectrumFile, width=button_size[0], height=button_size[1])
+        load_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                              pady=inner_frame_padding)
+
+        export_image_button = customtkinter.CTkButton(
+            master=self.button_toolbar_frame, text="", image=export_image_icon, command=self.exportPNG, width=button_size[0], height=button_size[1])
+        export_image_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                                 pady=inner_frame_padding)
+
+        camera_button = customtkinter.CTkButton(
+            master=self.button_toolbar_frame, text="", image=camera_icon, command=self.exportCameraImage, width=button_size[0], height=button_size[1])
+        camera_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                           pady=inner_frame_padding)
+
+        remove_baseline_button = customtkinter.CTkButton(
+            master=self.button_toolbar_frame, text="", image=remove_baseline_icon, command=self.removeBaseline, width=button_size[0], height=button_size[1])
+        remove_baseline_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                                    pady=inner_frame_padding)
+
+        clear_plot_button = customtkinter.CTkButton(
+            master=self.button_toolbar_frame, text="", image=clear_plot_icon, command=self.clearPlot, width=button_size[0], height=button_size[1])
+        clear_plot_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                                    pady=inner_frame_padding)
+
+        self.toolbar = NavigationToolbar2Tk(
+            main_canvas, self.button_toolbar_frame)
         unwanted_buttons = ["Subplots", "Save",
                             "Back", "Forward", "Home", "Pan", "Zoom"]
         for button in unwanted_buttons:
             self.toolbar._buttons[str(button)].pack_forget()
-
         self.toolbar.update()
-        span_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         # Create span selector
         self.span = SpanSelector(self.span_plot, self.OnSpanSelect, "horizontal", useblit=True, props=dict(
@@ -90,10 +154,10 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_plot.set_yticks([])
         self.span_plot.set_xticks([])
 
-        self.toolbar.config(background=color_palette[0])
-        self.toolbar.winfo_children()[-2].config(background=color_palette[0])
+        self.toolbar.config(background=color_palette[4])
+        self.toolbar.winfo_children()[-2].config(background=color_palette[4])
         self.toolbar._message_label.config(
-            background=color_palette[0], foreground=color_palette[3])
+            background=color_palette[4], foreground=color_palette[3])
 
     def LoadSpectrumFile(self):
         filepath = fd.askopenfilename(
@@ -146,19 +210,25 @@ class RamanPlot(customtkinter.CTkFrame):
 
             self.span_xmin = self.raman_shift[0]
             self.span_xmax = self.raman_shift[-1]
-            
+
             self.master.initializeTreeview()
 
     def OnSpanSelect(self, xmin, xmax):
         pass
 
-    def RemoveBaseline(self):
+    def removeBaseline(self):
         pass
 
     def exportCSV(self):
         pass
 
     def exportPNG(self):
+        pass
+
+    def exportCameraImage(self):
+        pass
+
+    def clearPlot(self):
         pass
 
     def changeSaveFolder(self, save_folder):

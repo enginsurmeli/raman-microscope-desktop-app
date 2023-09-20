@@ -14,20 +14,16 @@ class CNCButtons(customtkinter.CTkFrame):
         inner_frame_padding = 5
 
         self.menu_buttons_frame = customtkinter.CTkFrame(self)
-        self.menu_buttons_frame.pack(
-            side="top",  expand=True)
+        self.menu_buttons_frame.pack(side="top",  expand=True)
 
         self.cnc_status_frame = customtkinter.CTkFrame(self)
-        self.cnc_status_frame.pack(
-            side="top",  expand=True)
+        self.cnc_status_frame.pack(side="top",  expand=True)
 
         self.jog_buttons_frame = customtkinter.CTkFrame(self)
-        self.jog_buttons_frame.pack(
-            side="top",  expand=True)
+        self.jog_buttons_frame.pack(side="top",  expand=True)
 
         self.jog_settings_frame = customtkinter.CTkFrame(self)
-        self.jog_settings_frame.pack(
-            side="top",  expand=True)
+        self.jog_settings_frame.pack(side="top",  expand=True)
 
         # self.raman_scan_frame = customtkinter.CTkFrame(self)
         # self.raman_scan_frame.pack(
@@ -341,5 +337,3 @@ class CNCButtons(customtkinter.CTkFrame):
         update_frequency = 4  # Hz
         self.after(round(1000//update_frequency),
                    self.statusPolling)
-
-    
