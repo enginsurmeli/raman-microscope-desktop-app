@@ -12,7 +12,7 @@ class RamanScan(customtkinter.CTkFrame):
 
         inner_frame_padding = 4
         entry_box_width = 75
-        button_size = (30, 30)
+        button_size = (50, 50)
 
         self.rowconfigure((0, 1, 2), weight=1)
         self.columnconfigure(0, weight=0)
@@ -49,10 +49,10 @@ class RamanScan(customtkinter.CTkFrame):
         self.accumulation_entry.grid(
             row=2, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        start_scan_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "start_scan_light.png")),
+        start_scan_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "laser_light.png")),
                                                  dark_image=Image.open(os.path.join(
-                                                     icons_folder, "start_scan_dark.png")),
-                                                 size=(button_size[0]*1.5, button_size[1]*2.5))
+                                                     icons_folder, "laser_dark.png")),
+                                                 size=button_size)
 
         self.start_scan_button = customtkinter.CTkButton(
             self, text="Start\nScan", command=self.startRamanScan, width=button_size[0], height=button_size[1], image=start_scan_icon, compound="top")
