@@ -59,5 +59,12 @@ class RamanScan(customtkinter.CTkFrame):
         self.start_scan_button.grid(row=0, column=2, rowspan=3,
                                     padx=inner_frame_padding, pady=inner_frame_padding)
 
+        self.configureButtons(['start_scan_button'], 'disabled')
+
+    def configureButtons(self, buttons: tuple, state: str):
+        button_dict = {'start_scan_button': self.start_scan_button}
+        for button in buttons:
+            button_dict.get(button).configure(state=state)
+
     def startRamanScan(self):
         print("start raman scan")

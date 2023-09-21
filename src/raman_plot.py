@@ -91,15 +91,15 @@ class RamanPlot(customtkinter.CTkFrame):
                                                      icons_folder, "clear_plot_dark.png")),
                                                  size=button_size)
 
-        save_file_button = customtkinter.CTkButton(
+        self.save_file_button = customtkinter.CTkButton(
             master=self.button_toolbar_frame, text="Save", image=save_file_icon, command=self.saveFile, width=button_size[0], height=button_size[1])
-        save_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
-                              pady=inner_frame_padding)
+        self.save_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                                   pady=inner_frame_padding)
 
-        load_file_button = customtkinter.CTkButton(
+        self.load_file_button = customtkinter.CTkButton(
             master=self.button_toolbar_frame, text="Open", image=load_file_icon, command=self.loadFile, width=button_size[0], height=button_size[1])
-        load_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
-                              pady=inner_frame_padding)
+        self.load_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                                   pady=inner_frame_padding)
 
         self.export_image_button = customtkinter.CTkButton(
             master=self.button_toolbar_frame, text="Export\nImage", image=export_image_icon, command=self.exportGraphImage, width=button_size[0], height=button_size[1])
@@ -137,6 +137,10 @@ class RamanPlot(customtkinter.CTkFrame):
         # Create span selector
         self.span = SpanSelector(self.span_plot, self.OnSpanSelect, "horizontal", useblit=True, props=dict(
             alpha=0.5, facecolor="tab:blue"), interactive=True, drag_from_anywhere=True, ignore_event_outside=False)
+
+        # Initialize button states
+        self.configureButtons(['save_file_button', 'export_image_button', 'camera_button',
+                             'remove_baseline_button', 'clear_plot_button'], 'disabled')
 
     def changeTheme(self, color_palette):
         self.main_fig.set_facecolor(color_palette[0])
@@ -209,8 +213,10 @@ class RamanPlot(customtkinter.CTkFrame):
             self.span_xmax = self.raman_shift[-1]
 
             self.remove_baseline_button.configure(state='normal')
-            self.master.configureButton(
+            self.master.configureButtons(
                 'raman_search_frame', ['search_button'], 'normal')
+            self.configureButtons(['save_file_button', 'export_image_button',
+                                 'remove_baseline_button', 'clear_plot_button'], 'normal')
 
     def OnSpanSelect(self, xmin, xmax):
         indmin, indmax = np.searchsorted(self.raman_shift, (xmin, xmax))
@@ -274,7 +280,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_fig.canvas.draw_idle()
 
         self.remove_baseline_button.configure(state='disabled')
-        self.master.configureButton(
+        self.master.configureButtons(
             'raman_search_frame', ['search_button'], 'disabled')
 
         self.master.initializeTreeview()
@@ -294,3 +300,9 @@ class RamanPlot(customtkinter.CTkFrame):
             self.line_db_plot[db_filename].remove()
         self.main_plot.legend()
         self.main_fig.canvas.draw_idle()
+
+    def configureButtons(self, buttons: tuple, state: str):
+        button_dict = {'save_file_button': self.save_file_button, 'load_file_button': self.load_file_button, 'export_image_button': self.export_image_button,
+                       'camera_button': self.camera_button, 'remove_baseline_button': self.remove_baseline_button, 'clear_plot_button': self.clear_plot_button}
+        for button in buttons:
+            button_dict.get(button).configure(state=state)

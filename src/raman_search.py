@@ -43,7 +43,7 @@ class RamanSearch(customtkinter.CTkFrame):
                                              size=button_size)
 
         self.search_button = customtkinter.CTkButton(
-            self, image=search_icon, text="Search", command=self.ramanSearch, state="disabled")
+            self, image=search_icon, text="Search", command=self.ramanSearch)
         self.search_button.grid(row=1, column=0, padx=10, pady=(0, 10))
 
         scrollbar = customtkinter.CTkScrollbar(
@@ -54,6 +54,7 @@ class RamanSearch(customtkinter.CTkFrame):
         self.treeview.bind("<Double-1>", self.onDoubleClick)
 
         self.initializeTreeview()
+        self.configureButtons(['search_button'], 'disabled')
 
     def ramanSearch(self):
         pass
@@ -124,7 +125,7 @@ class RamanSearch(customtkinter.CTkFrame):
                     # TODO: Use this list inside SearchRamanDB method.
                     self.db_filepath_list.append(os.path.join(subdir, file))
 
-    def configureButton(self, buttons: tuple, state: str):
+    def configureButtons(self, buttons: tuple, state: str):
         button_dict = {'search_button': self.search_button}
         for button in buttons:
             button_dict.get(button).configure(state=state)

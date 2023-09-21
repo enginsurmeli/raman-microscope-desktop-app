@@ -253,11 +253,13 @@ class SerialConsole(customtkinter.CTkFrame):
         self.after(10, self.rxPolling)  # polling in 10ms interval
 
     def disableSending(self):
-        self.send_button.configure(state="disabled")
+        if self.send_button.cget('state') == 'normal':
+            self.configureButtons(['send_button'], 'disabled')
         self.tx_entrybox.unbind('<Return>')
 
     def enableSending(self):
-        self.send_button.configure(state="normal")
+        if self.send_button.cget('state') == 'disabled':
+            self.configureButtons(['send_button'], 'normal')
         self.tx_entrybox.bind('<Return>', self.send)
 
     def closePort(self):
@@ -270,3 +272,9 @@ class SerialConsole(customtkinter.CTkFrame):
     # def resetConnection(self):
     #     self.closePort()
     #     self.changePort(self.currentPort.port)
+
+    def configureButtons(self, buttons: tuple, state: str):
+        button_dict = {'send_button': self.send_button,
+                       'clear_button': self.clear_button}
+        for button in buttons:
+            button_dict.get(button).configure(state=state)

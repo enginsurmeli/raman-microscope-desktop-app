@@ -52,29 +52,29 @@ class CNCButtons(customtkinter.CTkFrame):
         settings_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
             icons_folder, "settings_light.png")), dark_image=Image.open(os.path.join(icons_folder, "settings_dark.png")), size=button_size)
 
-        home_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Home", command=lambda: self.master.sendSerialCommand(
+        self.home_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Home", command=lambda: self.master.sendSerialCommand(
             '$H'), width=button_size[0], height=button_size[1], image=home_icon)
-        home_button.grid(
+        self.home_button.grid(
             row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
-        park_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Park", command=lambda: self.master.sendSerialCommand(
+        self.park_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Park", command=lambda: self.master.sendSerialCommand(
             'G0 X1 Y1 Z-1'), width=button_size[0], height=button_size[1], image=park_icon)
-        park_button.grid(row=0, column=1, padx=inner_frame_padding,
-                         pady=inner_frame_padding, sticky="ew")
+        self.park_button.grid(row=0, column=1, padx=inner_frame_padding,
+                              pady=inner_frame_padding, sticky="ew")
 
-        center_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Center", command=lambda: self.master.sendSerialCommand(
+        self.center_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Center", command=lambda: self.master.sendSerialCommand(
             'G0 X145 Y80 Z-1'), width=button_size[0], height=button_size[1], image=center_icon)
-        center_button.grid(
+        self.center_button.grid(
             row=0, column=2, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
-        reset_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Reset", command=lambda: self.master.sendSerialCommand(
+        self.reset_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Reset", command=lambda: self.master.sendSerialCommand(
             'reset'), width=button_size[0], height=button_size[1], image=reset_icon)
-        reset_button.grid(
+        self.reset_button.grid(
             row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
-        unlock_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Unlock", command=lambda: self.master.sendSerialCommand(
+        self.unlock_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Unlock", command=lambda: self.master.sendSerialCommand(
             '$X'), width=button_size[0], height=button_size[1], image=unlock_icon)
-        unlock_button.grid(
+        self.unlock_button.grid(
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
         settings_button = customtkinter.CTkButton(
@@ -311,11 +311,13 @@ class CNCButtons(customtkinter.CTkFrame):
         self.status_box.configure(state="normal")
         self.status_box.delete(0, "end")
 
-        if state == "Disconnected":
+        if state == "Disconnected" and self.previous_state != "Disconnected":
             not_connected_status_color = "#2b2b2b" if customtkinter.get_appearance_mode(
             ) == "Light" else "#dbdbdb"
             self.status_led.configure(fg_color=not_connected_status_color)
             self.is_connected = False
+            self.configureButtons(['home_button', 'park_button', 'center_button', 'reset_button', 'unlock_button', 'start_run_button', 'yplus_button',
+                                  'yminus_button', 'xplus_button', 'xminus_button', 'zplus_button', 'zminus_button', 'cancel_jog_button'], 'disabled')
 
         if state == "Idle":
             self.status_led.configure(fg_color='#fdbc40')
@@ -338,3 +340,9 @@ class CNCButtons(customtkinter.CTkFrame):
         update_frequency = 4  # Hz
         self.after(round(1000//update_frequency),
                    self.statusPolling)
+
+    def configureButtons(self, buttons: tuple, state: str):
+        button_dict = {'home_button': self.home_button, 'park_button': self.park_button, 'center_button': self.center_button, 'reset_button': self.reset_button, 'unlock_button': self.unlock_button, 'start_run_button': self.start_run_button, 'yplus_button': self.yplus_button, 'yminus_button': self.yminus_button,
+                       'xplus_button': self.xplus_button, 'xminus_button': self.xminus_button, 'zplus_button': self.zplus_button, 'zminus_button': self.zminus_button, 'cancel_jog_button': self.cancel_jog_button, 'step_size_cbox': self.step_size_cbox, 'feed_rate_cbox': self.feed_rate_cbox}
+        for button in buttons:
+            button_dict.get(button).configure(state=state)
