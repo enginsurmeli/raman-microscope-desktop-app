@@ -214,7 +214,19 @@ class RamanPlot(customtkinter.CTkFrame):
             self.master.initializeTreeview()
 
     def OnSpanSelect(self, xmin, xmax):
-        pass
+        indmin, indmax = np.searchsorted(self.raman_shift, (xmin, xmax))
+        indmax = min(len(self.raman_shift) - 1, indmax)
+        
+        region_x = self.raman_shift[indmin:indmax]
+        region_y = self.intensity[indmin:indmax]
+        self.span_xmin = self.raman_shift[indmin]
+        self.span_xmax = self.raman_shift[indmax]
+        
+        if len(region_x) >= 2:
+            self.line_main_plot.set_data(region_x, region_y)
+            self.main_plot.set_xlim(region_x[0], region_x[-1])
+            self.main_plot.set_ylim(region_y.min(), region_y.max())
+            self.main_fig.canvas.draw_idle()
 
     def removeBaseline(self):
         baseObj = BaselineRemoval(self.intensity.flatten())
