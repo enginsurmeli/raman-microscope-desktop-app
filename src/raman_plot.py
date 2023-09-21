@@ -169,8 +169,6 @@ class RamanPlot(customtkinter.CTkFrame):
         filepath = fd.askopenfilename(
             initialdir=self.save_folder, title="Select file", filetypes=(("all files", "*.*"), ("text files", "*.txt")))
         if filepath:  # if user wants to load specimen spectrum, open a file dialog
-            # self.search_button.configure(state='disabled')
-            # self.remove_baseline_button.configure(state='disabled')
             self.clearPlot()
             # for child in self.raman_db_treeview.get_children():
             #     # self.raman_db_treeview.set(child, column=0, value='--')
@@ -206,12 +204,13 @@ class RamanPlot(customtkinter.CTkFrame):
             self.span_plot.set_xticks([])
             self.main_plot.legend()
             self.main_canvas.draw_idle()
-            # self.search_button.configure(state='normal')
-            # self.remove_baseline_button.configure(state='normal')
 
             self.span_xmin = self.raman_shift[0]
             self.span_xmax = self.raman_shift[-1]
 
+            self.remove_baseline_button.configure(state='normal')
+            self.master.configureButton(
+                'raman_search_frame', 'search_button', 'normal')
             self.master.initializeTreeview()
 
     def OnSpanSelect(self, xmin, xmax):
@@ -265,7 +264,7 @@ class RamanPlot(customtkinter.CTkFrame):
 
         self.remove_baseline_button.configure(state='disabled')
         self.master.configureButton(
-            'raman_search_frame', 'search_button', 'normal')
+            'raman_search_frame', 'search_button', 'disabled')
 
     def changeSaveFolder(self, save_folder):
         self.save_folder = save_folder
