@@ -138,9 +138,14 @@ class App(customtkinter.CTk):
 
     def initializeTreeview(self):
         self.raman_search_frame.initializeTreeview()
-        
+
     def exportCameraImage(self):
         self.camera_view_frame.exportImage()
+
+    def configureButton(self, frame: str, button: str, state: str):
+        frame_dict = {'cnc_buttons_frame': self.cnc_buttons_frame, 'raman_scan_frame': self.raman_scan_frame, 'serial_console_frame': self.serial_console_frame,
+                      'raman_plot_frame': self.raman_plot_frame, 'camera_view_frame': self.camera_view_frame, 'raman_search_frame': self.raman_search_frame}
+        frame_dict.get(frame).configureButton(button, state)
 
     def OnQuitApp(self):
         quit_app = quit_app_window.OnQuitApp(self)

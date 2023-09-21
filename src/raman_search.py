@@ -107,3 +107,7 @@ class RamanSearch(customtkinter.CTkFrame):
                         '', tk.END, values=(file.replace('.txt', ''), '--'), tags=('oddrow', 'evenrow')[len(self.treeview.get_children()) % 2])
                     # TODO: Use this list inside SearchRamanDB method.
                     self.db_filepath_list.append(os.path.join(subdir, file))
+                    
+    def configureButton(self, button: str, state: str):
+        button_dict = {'search_button': self.search_button}
+        button_dict.get(button).configure(state=state)

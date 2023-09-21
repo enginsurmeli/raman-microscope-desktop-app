@@ -101,29 +101,29 @@ class RamanPlot(customtkinter.CTkFrame):
         load_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
                               pady=inner_frame_padding)
 
-        export_image_button = customtkinter.CTkButton(
+        self.export_image_button = customtkinter.CTkButton(
             master=self.button_toolbar_frame, text="Export\nImage", image=export_image_icon, command=self.exportGraphImage, width=button_size[0], height=button_size[1])
-        export_image_button.pack(side='left', expand=False, padx=inner_frame_padding,
-                                 pady=inner_frame_padding)
+        self.export_image_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                                      pady=inner_frame_padding)
 
-        camera_button = customtkinter.CTkButton(
+        self.camera_button = customtkinter.CTkButton(
             master=self.button_toolbar_frame, text="Export\nCamera", image=camera_icon, command=self.exportCameraImage, width=button_size[0], height=button_size[1])
-        camera_button.pack(side='left', expand=False, padx=inner_frame_padding,
-                           pady=inner_frame_padding)
+        self.camera_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                                pady=inner_frame_padding)
 
         separator1 = ttk.Separator(
             self.button_toolbar_frame, orient="vertical")
         separator1.pack(side='left', expand=False,
                         padx=inner_frame_padding, pady=inner_frame_padding)
 
-        remove_baseline_button = customtkinter.CTkButton(
+        self.remove_baseline_button = customtkinter.CTkButton(
             master=self.button_toolbar_frame, text="Remove\nBaseline", image=remove_baseline_icon, command=self.removeBaseline, width=button_size[0], height=button_size[1])
-        remove_baseline_button.pack(side='left', expand=False, padx=inner_frame_padding,
-                                    pady=inner_frame_padding)
+        self.remove_baseline_button.pack(side='left', expand=False, padx=inner_frame_padding,
+                                         pady=inner_frame_padding)
 
-        clear_plot_button = customtkinter.CTkButton(
+        self.clear_plot_button = customtkinter.CTkButton(
             master=self.button_toolbar_frame, text="Clear", image=clear_plot_icon, command=self.clearPlot, width=button_size[0], height=button_size[1])
-        clear_plot_button.pack(side='left', expand=False, padx=inner_frame_padding,
+        self.clear_plot_button.pack(side='left', expand=False, padx=inner_frame_padding,
                                     pady=inner_frame_padding)
 
         self.toolbar = NavigationToolbar2Tk(
@@ -262,6 +262,10 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_plot.set_xticks([])
         self.main_fig.canvas.draw_idle()
         self.span_fig.canvas.draw_idle()
+
+        self.remove_baseline_button.configure(state='disabled')
+        self.master.configureButton(
+            'raman_search_frame', 'search_button', 'normal')
 
     def changeSaveFolder(self, save_folder):
         self.save_folder = save_folder
