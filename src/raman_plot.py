@@ -102,7 +102,7 @@ class RamanPlot(customtkinter.CTkFrame):
                               pady=inner_frame_padding)
 
         export_image_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="Export\nGraph", image=export_image_icon, command=self.exportGraphImage, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Export\nImage", image=export_image_icon, command=self.exportGraphImage, width=button_size[0], height=button_size[1])
         export_image_button.pack(side='left', expand=False, padx=inner_frame_padding,
                                  pady=inner_frame_padding)
 
@@ -253,10 +253,11 @@ class RamanPlot(customtkinter.CTkFrame):
             # plt.savefig(save_filepath, dpi=400, transparent=True,
             #                bbox_inches=extent.expanded(1.1, 1.1))
             # self.main_plot.savefig(save_filepath, dpi=400, transparent=True)
-            self.main_fig.savefig(save_filepath, dpi=400, transparent=False, facecolor=self.main_fig.get_facecolor(), edgecolor='none')
+            self.main_fig.savefig(save_filepath, dpi=400, transparent=False,
+                                  facecolor=self.main_fig.get_facecolor(), edgecolor='none')
 
     def exportCameraImage(self):
-        pass
+        self.master.exportCameraImage()
 
     def clearPlot(self):
         pass

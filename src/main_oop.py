@@ -122,6 +122,7 @@ class App(customtkinter.CTk):
 
         # change save folder
         self.raman_plot_frame.changeSaveFolder(save_folder=save_folder)
+        self.camera_view_frame.changeSaveFolder(save_folder=save_folder)
 
     def sendSettingsData(self):
         return self.settings_data
@@ -137,6 +138,9 @@ class App(customtkinter.CTk):
 
     def initializeTreeview(self):
         self.raman_search_frame.initializeTreeview()
+        
+    def exportCameraImage(self):
+        self.camera_view_frame.exportImage()
 
     def OnQuitApp(self):
         quit_app = quit_app_window.OnQuitApp(self)

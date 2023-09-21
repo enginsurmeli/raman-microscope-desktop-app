@@ -5,6 +5,9 @@ import cv2
 from pygrabber.dshow_graph import FilterGraph
 from PIL import Image, ImageTk
 
+from tkinter import filedialog as fd
+import os
+
 
 class CameraView(customtkinter.CTkFrame):
     def __init__(self, master):
@@ -76,4 +79,13 @@ class CameraView(customtkinter.CTkFrame):
             self.connection_active = False
 
     def exportImage(self):
-        pass
+        save_filepath = fd.asksaveasfilename(initialdir=f"{self.save_folder}/", title="Select a file", filetypes=(
+            ("PNG files", ".png"), ("JPG files", ".jpg")), defaultextension="*.*")
+        if save_filepath:
+            return_value, frame = self.get_frame()
+            if return_value:
+                image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                cv2.imwrite(save_filepath, image)
+
+    def changeSaveFolder(self, save_folder):
+        self.save_folder = save_folder
