@@ -171,12 +171,7 @@ class RamanPlot(customtkinter.CTkFrame):
         if filepath:  # if user wants to load specimen spectrum, open a file dialog
             # self.search_button.configure(state='disabled')
             # self.remove_baseline_button.configure(state='disabled')
-            self.main_plot.cla()
-            self.span_plot.cla()
-            self.main_plot.set_yticks([])
-            self.span_plot.set_yticks([])
-            self.span_plot.set_xticks([])
-            self.main_fig.canvas.draw_idle()
+            self.clearPlot()
             # for child in self.raman_db_treeview.get_children():
             #     # self.raman_db_treeview.set(child, column=0, value='--')
             #     self.raman_db_treeview.delete(child)
@@ -260,7 +255,13 @@ class RamanPlot(customtkinter.CTkFrame):
         self.master.exportCameraImage()
 
     def clearPlot(self):
-        pass
+        self.main_plot.cla()
+        self.span_plot.cla()
+        self.main_plot.set_yticks([])
+        self.span_plot.set_yticks([])
+        self.span_plot.set_xticks([])
+        self.main_fig.canvas.draw_idle()
+        self.span_fig.canvas.draw_idle()
 
     def changeSaveFolder(self, save_folder):
         self.save_folder = save_folder
