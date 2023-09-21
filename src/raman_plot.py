@@ -51,9 +51,9 @@ class RamanPlot(customtkinter.CTkFrame):
         self.main_fig.subplots_adjust(
             left=figure_padding, bottom=figure_padding+0.02, right=1-figure_padding, top=1-figure_padding)
 
-        main_canvas = FigureCanvasTkAgg(self.main_fig, master=self.plot_frame)
-        main_canvas.draw()
-        main_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.main_canvas = FigureCanvasTkAgg(self.main_fig, master=self.plot_frame)
+        self.main_canvas.draw()
+        self.main_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.span_fig = Figure(figsize=(5, 1), dpi=100)
         self.span_plot = self.span_fig.add_subplot(111)
@@ -126,7 +126,7 @@ class RamanPlot(customtkinter.CTkFrame):
                                     pady=inner_frame_padding)
 
         self.toolbar = NavigationToolbar2Tk(
-            main_canvas, self.button_toolbar_frame)
+            self.main_canvas, self.button_toolbar_frame)
         unwanted_buttons = ["Subplots", "Save",
                             "Back", "Forward", "Home", "Pan", "Zoom"]
         for button in unwanted_buttons:
@@ -209,7 +209,7 @@ class RamanPlot(customtkinter.CTkFrame):
             self.span_plot.set_yticks([])
             self.span_plot.set_xticks([])
             self.main_plot.legend()
-            self.main_plot.canvas.draw_idle()
+            self.main_canvas.draw_idle()
             # self.search_button.configure(state='normal')
             # self.remove_baseline_button.configure(state='normal')
 
