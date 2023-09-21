@@ -51,7 +51,8 @@ class RamanPlot(customtkinter.CTkFrame):
         self.main_fig.subplots_adjust(
             left=figure_padding, bottom=figure_padding+0.02, right=1-figure_padding, top=1-figure_padding)
 
-        self.main_canvas = FigureCanvasTkAgg(self.main_fig, master=self.plot_frame)
+        self.main_canvas = FigureCanvasTkAgg(
+            self.main_fig, master=self.plot_frame)
         self.main_canvas.draw()
         self.main_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
@@ -222,7 +223,15 @@ class RamanPlot(customtkinter.CTkFrame):
         pass
 
     def removeBaseline(self):
-        pass
+        baseObj = BaselineRemoval(self.intensity.flatten())
+        self.intensity = baseObj.ZhangFit()
+        norm = np.sqrt(sum(self.intensity**2))
+        self.intensity = self.intensity / norm
+        self.line_main_plot.set_data(self.raman_shift, self.intensity)
+        self.main_plot.set_ylim(self.intensity.min(), self.intensity.max())
+        self.line_span_plot.set_data(self.raman_shift, self.intensity)
+        self.span_plot.set_ylim(self.intensity.min(), self.intensity.max())
+        self.main_canvas.draw_idle()
 
     def exportCSV(self):
         pass
