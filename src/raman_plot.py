@@ -92,17 +92,17 @@ class RamanPlot(customtkinter.CTkFrame):
                                                  size=button_size)
 
         save_file_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="Save", image=save_file_icon, command=self.exportCSV, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Save", image=save_file_icon, command=self.saveFile, width=button_size[0], height=button_size[1])
         save_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
                               pady=inner_frame_padding)
 
         load_file_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="Open", image=load_file_icon, command=self.LoadSpectrumFile, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Open", image=load_file_icon, command=self.loadFile, width=button_size[0], height=button_size[1])
         load_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
                               pady=inner_frame_padding)
 
         export_image_button = customtkinter.CTkButton(
-            master=self.button_toolbar_frame, text="Export\nGraph", image=export_image_icon, command=self.exportPNG, width=button_size[0], height=button_size[1])
+            master=self.button_toolbar_frame, text="Export\nGraph", image=export_image_icon, command=self.exportGraphImage, width=button_size[0], height=button_size[1])
         export_image_button.pack(side='left', expand=False, padx=inner_frame_padding,
                                  pady=inner_frame_padding)
 
@@ -165,7 +165,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.toolbar._message_label.config(
             background=color_palette[4], foreground=color_palette[3])
 
-    def LoadSpectrumFile(self):
+    def loadFile(self):
         filepath = fd.askopenfilename(
             initialdir=self.save_folder, title="Select file", filetypes=(("all files", "*.*"), ("text files", "*.txt")))
         if filepath:  # if user wants to load specimen spectrum, open a file dialog
@@ -233,11 +233,27 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_plot.set_ylim(self.intensity.min(), self.intensity.max())
         self.main_canvas.draw_idle()
 
-    def exportCSV(self):
-        pass
+    def saveFile(self):
+        save_filepath = fd.asksaveasfilename(
+            initialdir=f"{self.save_folder}/", title="Select a file", filetypes=(("CSV files", ".csv"), ("Text files", ".txt")), defaultextension="*.*")
+        if save_filepath:
+            with open(save_filepath, 'w') as f:
+                f.write(f"Sample name: {self.sample_name}\n")
+                f.write("Raman Shift,Intensity\n")
+                for i in range(len(self.raman_shift)):
+                    f.write(f"{self.raman_shift[i]},{self.intensity[i]}\n")
+                f.close()
 
-    def exportPNG(self):
-        pass
+    def exportGraphImage(self):
+        save_filepath = fd.asksaveasfilename(
+            initialdir=f"{self.save_folder}/", title="Select a file", filetypes=(("PNG files", ".png"), ("PDF files", ".pdf"), ("SVG files", ".svg"), ("EPS files", ".eps")), defaultextension="*.*")
+        if save_filepath:
+            # extent = self.main_plot.get_window_extent().transformed(
+            #     self.main_fig.dpi_scale_trans.inverted())
+            # plt.savefig(save_filepath, dpi=400, transparent=True,
+            #                bbox_inches=extent.expanded(1.1, 1.1))
+            # self.main_plot.savefig(save_filepath, dpi=400, transparent=True)
+            self.main_fig.savefig(save_filepath, dpi=400, transparent=False, facecolor=self.main_fig.get_facecolor(), edgecolor='none')
 
     def exportCameraImage(self):
         pass
