@@ -15,7 +15,7 @@ class RamanSearch(customtkinter.CTkFrame):
         self.master = master
         self.initialdir = os.getcwd()
         self.raman_db_folder = 'raman_database'
-        icons_folder = os.path.join(os.getcwd(), 'src', 'icons')
+        icons_folder = 'src\icons'
         button_size = (30, 30)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=0)
@@ -30,16 +30,16 @@ class RamanSearch(customtkinter.CTkFrame):
             'match_percentage_column', width=100, anchor='center')
         self.treeview.column(
             'sample_name_column', width=200, anchor='center')
-        self.treeview.heading('match_percentage_column', text="Correlation (%)", command=lambda: self.SortTreeviewColumn(
+        self.treeview.heading('match_percentage_column', text="Correlation (%)", command=lambda: self.sortTreeviewColumn(
             self.treeview, 'match_percentage_column', True))
-        self.treeview.heading('sample_name_column', text="Sample Name", command=lambda: self.SortTreeviewColumn(
+        self.treeview.heading('sample_name_column', text="Sample Name", command=lambda: self.sortTreeviewColumn(
             self.treeview, 'sample_name_column', False))
         self.treeview.grid(
             row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        search_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "search_light.png")),
+        search_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(self.initialdir, icons_folder, "search_light.png")),
                                              dark_image=Image.open(os.path.join(
-                                                 icons_folder, "search_dark.png")),
+                                                 self.initialdir, icons_folder, "search_dark.png")),
                                              size=button_size)
 
         self.search_button = customtkinter.CTkButton(
@@ -51,17 +51,31 @@ class RamanSearch(customtkinter.CTkFrame):
         self.treeview.configure(yscrollcommand=scrollbar.set)
         scrollbar.grid(row=0, column=1, sticky="ns", pady=10)
 
-        self.treeview.bind("<Double-1>", self.OnDoubleClick)
+        self.treeview.bind("<Double-1>", self.onDoubleClick)
 
         self.initializeTreeview()
 
     def ramanSearch(self):
         pass
 
-    def OnDoubleClick(self, event):
-        pass
+    def onDoubleClick(self, event):
+        item = self.treeview.selection()[0]
+        match_percentage = self.treeview.item(item, 'values')[-1]
+        db_filename = self.treeview.item(item, 'values')[0]
+        db_filepath = os.path.join(
+            self.initialdir, self.raman_db_folder, db_filename + '.txt')  # TODO: change this to csv in the future
 
-    def SortTreeviewColumn(self, treeview, column, reverse):
+        if '<' not in db_filename:
+            self.treeview.item(item, values=(
+                '<' + db_filename, match_percentage))
+            self.master.plotFromLibrary(db_filepath, db_filename, add=True)
+        else:
+            db_filename = db_filename.replace('<', '')
+            self.treeview.item(item, values=(
+                db_filename, match_percentage))
+            self.master.plotFromLibrary(db_filepath, db_filename, add=False)
+
+    def sortTreeviewColumn(self, treeview, column, reverse):
         l = [(treeview.set(k, column), k) for k in treeview.get_children('')]
         try:
             l.sort(key=lambda t: float(t[0]), reverse=reverse)
@@ -74,7 +88,7 @@ class RamanSearch(customtkinter.CTkFrame):
             treeview.item(k, tags=('oddrow', 'evenrow')[index % 2])
 
         # reverse sort next time
-        treeview.heading(column, command=lambda: self.SortTreeviewColumn(
+        treeview.heading(column, command=lambda: self.sortTreeviewColumn(
             treeview, column, not reverse))
 
     def changeTheme(self, color_palette):
@@ -96,7 +110,9 @@ class RamanSearch(customtkinter.CTkFrame):
             "<<Treeview>>", lambda event: self.treeview.focus_set())  # remove focus from treeview
 
     def initializeTreeview(self):
-        # Initialize Raman Spectra Database
+        for item in self.treeview.get_children():
+            self.treeview.delete(item)
+
         for subdir, dirs, files in os.walk(os.path.join(self.initialdir, self.raman_db_folder)):
             self.db_filepath_list = []
             for file in files:
@@ -107,7 +123,7 @@ class RamanSearch(customtkinter.CTkFrame):
                         '', tk.END, values=(file.replace('.txt', ''), '--'), tags=('oddrow', 'evenrow')[len(self.treeview.get_children()) % 2])
                     # TODO: Use this list inside SearchRamanDB method.
                     self.db_filepath_list.append(os.path.join(subdir, file))
-                    
+
     def configureButton(self, button: str, state: str):
         button_dict = {'search_button': self.search_button}
         button_dict.get(button).configure(state=state)

@@ -168,7 +168,7 @@ class RamanPlot(customtkinter.CTkFrame):
     def loadFile(self):
         filepath = fd.askopenfilename(
             initialdir=self.save_folder, title="Select file", filetypes=(("all files", "*.*"), ("text files", "*.txt")))
-        if filepath:  # if user wants to load specimen spectrum, open a file dialog
+        if filepath:
             self.clearPlot()
             # for child in self.raman_db_treeview.get_children():
             #     # self.raman_db_treeview.set(child, column=0, value='--')
@@ -211,7 +211,6 @@ class RamanPlot(customtkinter.CTkFrame):
             self.remove_baseline_button.configure(state='normal')
             self.master.configureButton(
                 'raman_search_frame', 'search_button', 'normal')
-            self.master.initializeTreeview()
 
     def OnSpanSelect(self, xmin, xmax):
         indmin, indmax = np.searchsorted(self.raman_shift, (xmin, xmax))
@@ -277,6 +276,18 @@ class RamanPlot(customtkinter.CTkFrame):
         self.remove_baseline_button.configure(state='disabled')
         self.master.configureButton(
             'raman_search_frame', 'search_button', 'disabled')
+        
+        self.master.initializeTreeview()
 
     def changeSaveFolder(self, save_folder):
         self.save_folder = save_folder
+
+    def plotFromLibrary(self, db_filepath, db_filename: str, add: bool):
+        if add:
+            self.line_db_plot[db_filename], = self.main_plot.plot([], [], label=db_filename)
+            db_raman_shift, db_intensity = np.loadtxt(db_filepath, unpack=True, delimiter=',')
+            self.line_db_plot[db_filename].set_data(db_raman_shift, db_intensity)
+        else:
+            self.line_db_plot[db_filename].remove()
+        self.main_plot.legend()
+        self.main_fig.canvas.draw_idle()
