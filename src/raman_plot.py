@@ -210,17 +210,17 @@ class RamanPlot(customtkinter.CTkFrame):
 
             self.remove_baseline_button.configure(state='normal')
             self.master.configureButton(
-                'raman_search_frame', 'search_button', 'normal')
+                'raman_search_frame', ['search_button'], 'normal')
 
     def OnSpanSelect(self, xmin, xmax):
         indmin, indmax = np.searchsorted(self.raman_shift, (xmin, xmax))
         indmax = min(len(self.raman_shift) - 1, indmax)
-        
+
         region_x = self.raman_shift[indmin:indmax]
         region_y = self.intensity[indmin:indmax]
         self.span_xmin = self.raman_shift[indmin]
         self.span_xmax = self.raman_shift[indmax]
-        
+
         if len(region_x) >= 2:
             self.line_main_plot.set_data(region_x, region_y)
             self.main_plot.set_xlim(region_x[0], region_x[-1])
@@ -275,8 +275,8 @@ class RamanPlot(customtkinter.CTkFrame):
 
         self.remove_baseline_button.configure(state='disabled')
         self.master.configureButton(
-            'raman_search_frame', 'search_button', 'disabled')
-        
+            'raman_search_frame', ['search_button'], 'disabled')
+
         self.master.initializeTreeview()
 
     def changeSaveFolder(self, save_folder):
@@ -284,9 +284,12 @@ class RamanPlot(customtkinter.CTkFrame):
 
     def plotFromLibrary(self, db_filepath, db_filename: str, add: bool):
         if add:
-            self.line_db_plot[db_filename], = self.main_plot.plot([], [], label=db_filename)
-            db_raman_shift, db_intensity = np.loadtxt(db_filepath, unpack=True, delimiter=',')
-            self.line_db_plot[db_filename].set_data(db_raman_shift, db_intensity)
+            self.line_db_plot[db_filename], = self.main_plot.plot(
+                [], [], label=db_filename)
+            db_raman_shift, db_intensity = np.loadtxt(
+                db_filepath, unpack=True, delimiter=',')
+            self.line_db_plot[db_filename].set_data(
+                db_raman_shift, db_intensity)
         else:
             self.line_db_plot[db_filename].remove()
         self.main_plot.legend()

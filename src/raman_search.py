@@ -124,6 +124,7 @@ class RamanSearch(customtkinter.CTkFrame):
                     # TODO: Use this list inside SearchRamanDB method.
                     self.db_filepath_list.append(os.path.join(subdir, file))
 
-    def configureButton(self, button: str, state: str):
+    def configureButton(self, buttons: tuple, state: str):
         button_dict = {'search_button': self.search_button}
-        button_dict.get(button).configure(state=state)
+        for button in buttons:
+            button_dict.get(button).configure(state=state)
