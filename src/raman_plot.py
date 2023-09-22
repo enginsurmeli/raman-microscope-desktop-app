@@ -47,7 +47,6 @@ class RamanPlot(customtkinter.CTkFrame):
         self.main_fig = Figure(figsize=(5, 4), dpi=100)
         self.main_plot = self.main_fig.add_subplot(111)
         self.line_main_plot = self.main_plot.plot([], [])
-        self.line_db_plot = {}
         self.main_fig.subplots_adjust(
             left=figure_padding, bottom=figure_padding+0.02, right=1-figure_padding, top=1-figure_padding)
 
@@ -140,7 +139,7 @@ class RamanPlot(customtkinter.CTkFrame):
 
         # Initialize button states
         self.configureButtons(['save_file_button', 'export_image_button', 'camera_button',
-                             'remove_baseline_button', 'clear_plot_button'], 'disabled')
+                               'remove_baseline_button', 'clear_plot_button'], 'disabled')
 
     def changeTheme(self, color_palette):
         self.main_fig.set_facecolor(color_palette[0])
@@ -216,7 +215,7 @@ class RamanPlot(customtkinter.CTkFrame):
             self.master.configureButtons(
                 'raman_search_frame', ['search_button'], 'normal')
             self.configureButtons(['save_file_button', 'export_image_button',
-                                 'remove_baseline_button', 'clear_plot_button'], 'normal')
+                                   'remove_baseline_button', 'clear_plot_button'], 'normal')
 
     def OnSpanSelect(self, xmin, xmax):
         indmin, indmax = np.searchsorted(self.raman_shift, (xmin, xmax))
@@ -271,6 +270,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.master.exportCameraImage()
 
     def clearPlot(self):
+        self.line_db_plot = {}
         self.main_plot.cla()
         self.span_plot.cla()
         self.main_plot.set_yticks([])
@@ -279,7 +279,8 @@ class RamanPlot(customtkinter.CTkFrame):
         self.main_fig.canvas.draw_idle()
         self.span_fig.canvas.draw_idle()
 
-        self.remove_baseline_button.configure(state='disabled')
+        self.configureButtons(
+            ['save_file_button', 'export_image_button', 'remove_baseline_button'], 'disabled')
         self.master.configureButtons(
             'raman_search_frame', ['search_button'], 'disabled')
 

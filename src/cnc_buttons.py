@@ -305,8 +305,10 @@ class CNCButtons(customtkinter.CTkFrame):
             self.posz_box.delete(0, "end")
             self.posz_box.insert(0, f"{float(posz):.1f}")
 
-        if state == "Connected":
+        if state == "Connected" and self.previous_state != "Connected":
             self.is_connected = True
+            self.configureButtons(['home_button', 'park_button', 'center_button', 'reset_button', 'unlock_button', 'start_run_button', 'yplus_button',
+                                  'yminus_button', 'xplus_button', 'xminus_button', 'zplus_button', 'zminus_button', 'cancel_jog_button'], 'normal')
 
         self.status_box.configure(state="normal")
         self.status_box.delete(0, "end")
@@ -322,6 +324,7 @@ class CNCButtons(customtkinter.CTkFrame):
         if state == "Idle":
             self.status_led.configure(fg_color='#fdbc40')
             self.is_homed = True
+            
         if state == "Run" or state == "Jog":
             self.status_led.configure(fg_color='#33c748')
 

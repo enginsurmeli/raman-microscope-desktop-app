@@ -33,6 +33,9 @@ class CameraView(customtkinter.CTkFrame):
             self, highlightthickness=0, width=480, height=360)
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
+        self.master.configureButtons(
+            'raman_plot_frame', ['camera_button'], 'normal')
+
         self.stream()  # start streaming
 
     def stream(self):
@@ -77,6 +80,8 @@ class CameraView(customtkinter.CTkFrame):
             self.canvas.destroy()
             self.vid.release()
             self.connection_active = False
+            self.master.configureButtons(
+                'raman_plot_frame', ['camera_button'], 'disabled')
 
     def exportImage(self):
         save_filepath = fd.asksaveasfilename(initialdir=f"{self.save_folder}/", title="Select a file", filetypes=(
