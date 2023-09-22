@@ -43,7 +43,7 @@ class RamanSearch(customtkinter.CTkFrame):
                                              size=button_size)
 
         self.search_button = customtkinter.CTkButton(
-            self, image=search_icon, text="Search", command=self.ramanSearch)
+            self, image=search_icon, text="Search", command=self.searchRamanDB)
         self.search_button.grid(row=1, column=0, padx=10, pady=(0, 10))
 
         scrollbar = customtkinter.CTkScrollbar(
@@ -56,8 +56,49 @@ class RamanSearch(customtkinter.CTkFrame):
         self.initializeTreeview()
         self.configureButtons(['search_button'], 'disabled')
 
-    def ramanSearch(self):
-        pass
+    def searchRamanDB(self):
+        self.search_button.configure(text='Searching', state='disabled')
+        self.master.configureButtons('raman_plot_frame', [
+                                     'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'disabled')
+        self.update_idletasks()
+
+        span_xmin, span_xmax, raman_shift, intensity = self.master.getSpanSelection()
+
+        # NOTE: To avoid redundancy, we assume that each database file has the same xmin and xmax.
+        interp_size = 1024
+        xmin = 150
+        xmax = 1300
+
+        search_xmin = max(xmin, span_xmin)
+        search_xmax = min(xmax, span_xmax)
+        xnew = np.linspace(xmin, xmax, interp_size)
+        xnew_indices = np.where(np.logical_and(
+            xnew >= search_xmin, xnew <= search_xmax))
+
+        search_sample_intensity = np.interp(xnew, raman_shift, intensity, 0, 0)
+        search_sample_intensity = search_sample_intensity[xnew_indices]
+
+        for child in self.treeview.get_children():
+            db_filename = self.treeview.item(child, 'values')[
+                0].replace('<', '')
+            db_filepath = os.path.join(
+                self.initialdir, self.raman_db_folder, f'{db_filename}.txt')
+            with open(db_filepath, 'r') as f:
+                db_raman_shift, db_intensity = np.loadtxt(
+                    db_filepath, unpack=True, delimiter=',')
+                search_db_indices = np.where(np.logical_and(
+                    db_raman_shift >= search_xmin, db_raman_shift <= search_xmax))
+                search_db_raman_shift = db_raman_shift[xnew_indices]
+                search_db_intensity = db_intensity[xnew_indices]
+                match_percentage = round(np.corrcoef(
+                    search_sample_intensity, search_db_intensity)[0, 1] * 100)
+                self.treeview.set(
+                    child, column='match_percentage_column', value=match_percentage)
+
+        self.search_button.configure(text='Search', state='normal')
+        self.master.configureButtons('raman_plot_frame', [
+                                     'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'normal')
+        self.sortTreeviewColumn(self.treeview, 'match_percentage_column', True)
 
     def onDoubleClick(self, event):
         item = self.treeview.selection()[0]

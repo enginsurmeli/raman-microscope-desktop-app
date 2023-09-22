@@ -191,11 +191,12 @@ class RamanPlot(customtkinter.CTkFrame):
         indmin, indmax = np.searchsorted(self.raman_shift, (xmin, xmax))
         indmax = min(len(self.raman_shift) - 1, indmax)
 
-        region_x = self.raman_shift[indmin:indmax]
-        region_y = self.intensity[indmin:indmax]
+        self.span_x = self.raman_shift[indmin:indmax]
+        self.span_y = self.intensity[indmin:indmax]
         self.span_xmin = self.raman_shift[indmin]
         self.span_xmax = self.raman_shift[indmax]
 
+        db_max_y = 0
         previous_db_max_y = 0
         db_sample_list = list(self.line_db_plot.keys())
         for sample in db_sample_list:
@@ -203,12 +204,15 @@ class RamanPlot(customtkinter.CTkFrame):
                                                   [indmin:indmax]))
             previous_db_max_y = db_max_y
 
-        if len(region_x) >= 2:
-            self.line_main_plot.set_data(region_x, region_y)
-            self.main_plot.set_xlim(region_x[0], region_x[-1])
+        if len(self.span_x) >= 2:
+            self.line_main_plot.set_data(self.span_x, self.span_y)
+            self.main_plot.set_xlim(self.span_x[0], self.span_x[-1])
             self.main_plot.set_ylim(
-                region_y.min(), max(region_y.max(), db_max_y))
+                self.span_y.min(), max(self.span_y.max(), db_max_y))
             self.main_fig.canvas.draw_idle()
+            
+    def getSpanSelection(self):
+        return self.span_xmin, self.span_xmax, self.span_x, self.span_y
 
     def removeBaseline(self):
         baseObj = BaselineRemoval(self.intensity.flatten())

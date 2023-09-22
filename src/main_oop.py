@@ -149,6 +149,9 @@ class App(customtkinter.CTk):
         
     def plotFromLibrary(self, db_filepath: str, db_filename: str, add: bool):
         self.raman_plot_frame.plotFromLibrary(db_filepath, db_filename, add)
+        
+    def getSpanSelection(self):
+        return self.raman_plot_frame.getSpanSelection()
 
     def OnQuitApp(self):
         quit_app = quit_app_window.OnQuitApp(self)
