@@ -226,10 +226,18 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_xmin = self.raman_shift[indmin]
         self.span_xmax = self.raman_shift[indmax]
 
+        previous_db_max_y = 0
+        db_sample_list = list(self.line_db_plot.keys())
+        for sample in db_sample_list:
+            db_max_y = max(previous_db_max_y, max(self.line_db_plot.get(sample).get_ydata()
+                                                  [indmin:indmax]))
+            previous_db_max_y = db_max_y
+
         if len(region_x) >= 2:
             self.line_main_plot.set_data(region_x, region_y)
             self.main_plot.set_xlim(region_x[0], region_x[-1])
-            self.main_plot.set_ylim(region_y.min(), region_y.max())
+            self.main_plot.set_ylim(
+                region_y.min(), max(region_y.max(), db_max_y))
             self.main_fig.canvas.draw_idle()
 
     def removeBaseline(self):
@@ -299,6 +307,7 @@ class RamanPlot(customtkinter.CTkFrame):
                 db_raman_shift, db_intensity)
         else:
             self.line_db_plot[db_filename].remove()
+            self.line_db_plot.pop(db_filename)
         self.main_plot.legend()
         self.main_fig.canvas.draw_idle()
 
