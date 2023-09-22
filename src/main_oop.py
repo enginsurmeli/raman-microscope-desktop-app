@@ -146,10 +146,10 @@ class App(customtkinter.CTk):
         frame_dict = {'cnc_buttons_frame': self.cnc_buttons_frame, 'raman_scan_frame': self.raman_scan_frame, 'serial_console_frame': self.serial_console_frame,
                       'raman_plot_frame': self.raman_plot_frame, 'camera_view_frame': self.camera_view_frame, 'raman_search_frame': self.raman_search_frame}
         frame_dict.get(frame).configureButtons(buttons, state)
-        
+
     def plotFromLibrary(self, db_filepath: str, db_filename: str, add: bool):
         self.raman_plot_frame.plotFromLibrary(db_filepath, db_filename, add)
-        
+
     def getSpanSelection(self):
         return self.raman_plot_frame.getSpanSelection()
 

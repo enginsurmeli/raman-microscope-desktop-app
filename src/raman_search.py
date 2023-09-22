@@ -58,8 +58,9 @@ class RamanSearch(customtkinter.CTkFrame):
 
     def searchRamanDB(self):
         self.search_button.configure(text='Searching', state='disabled')
-        self.master.configureButtons('raman_plot_frame', [
-                                     'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'disabled')
+        self.initializeTreeview()
+        # self.master.configureButtons('raman_plot_frame', [
+        #                              'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'disabled')
         self.update_idletasks()
 
         span_xmin, span_xmax, raman_shift, intensity = self.master.getSpanSelection()
@@ -80,7 +81,7 @@ class RamanSearch(customtkinter.CTkFrame):
 
         for child in self.treeview.get_children():
             db_filename = self.treeview.item(child, 'values')[
-                0].replace('<', '')
+                0]
             db_filepath = os.path.join(
                 self.initialdir, self.raman_db_folder, f'{db_filename}.txt')
             with open(db_filepath, 'r') as f:
@@ -96,8 +97,8 @@ class RamanSearch(customtkinter.CTkFrame):
                     child, column='match_percentage_column', value=match_percentage)
 
         self.search_button.configure(text='Search', state='normal')
-        self.master.configureButtons('raman_plot_frame', [
-                                     'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'normal')
+        # self.master.configureButtons('raman_plot_frame', [
+        #                              'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'normal')
         self.sortTreeviewColumn(self.treeview, 'match_percentage_column', True)
 
     def onDoubleClick(self, event):
@@ -116,7 +117,7 @@ class RamanSearch(customtkinter.CTkFrame):
             self.treeview.item(item, values=(
                 db_filename, match_percentage))
             self.master.plotFromLibrary(db_filepath, db_filename, add=False)
-
+            
     def sortTreeviewColumn(self, treeview, column, reverse):
         l = [(treeview.set(k, column), k) for k in treeview.get_children('')]
         try:
