@@ -185,37 +185,7 @@ class RamanPlot(customtkinter.CTkFrame):
                     filepath, unpack=True, delimiter=',')
 
             self.sample_name = filepath.split('/')[-1].replace('.txt', '')
-            norm = np.sqrt(sum(self.intensity**2))
-            self.intensity = self.intensity / norm
-            self.line_main_plot, = self.main_plot.plot(
-                [], [], label=self.sample_name)
-            self.line_main_plot.set_data(self.raman_shift, self.intensity)
-            self.main_plot.set_xlim(
-                self.raman_shift[0], self.raman_shift[-1])
-            self.main_plot.set_ylim(
-                self.intensity.min(), self.intensity.max())
-
-            self.line_span_plot, = self.span_plot.plot([], [])
-            self.line_span_plot.set_data(
-                self.raman_shift, self.intensity)
-            self.span_plot.set_xlim(
-                self.raman_shift[0], self.raman_shift[-1])
-            self.span_plot.set_ylim(
-                self.intensity.min(), self.intensity.max())
-            self.main_plot.set_yticks([])
-            self.span_plot.set_yticks([])
-            self.span_plot.set_xticks([])
-            self.main_plot.legend()
-            self.main_canvas.draw_idle()
-
-            self.span_xmin = self.raman_shift[0]
-            self.span_xmax = self.raman_shift[-1]
-
-            self.remove_baseline_button.configure(state='normal')
-            self.master.configureButtons(
-                'raman_search_frame', ['search_button'], 'normal')
-            self.configureButtons(['save_file_button', 'export_image_button',
-                                   'remove_baseline_button', 'clear_plot_button'], 'normal')
+            self.plotSample(self.sample_name, self.raman_shift, self.intensity)
 
     def OnSpanSelect(self, xmin, xmax):
         indmin, indmax = np.searchsorted(self.raman_shift, (xmin, xmax))
@@ -296,6 +266,39 @@ class RamanPlot(customtkinter.CTkFrame):
 
     def changeSaveFolder(self, save_folder):
         self.save_folder = save_folder
+
+    def plotSample(self, sample_name: str, raman_shift: np.ndarray, intensity: np.ndarray):
+        norm = np.sqrt(sum(intensity**2))
+        intensity = intensity / norm
+        self.line_main_plot, = self.main_plot.plot(
+            [], [], label=sample_name)
+        self.line_main_plot.set_data(raman_shift, intensity)
+        self.main_plot.set_xlim(
+            raman_shift[0], raman_shift[-1])
+        self.main_plot.set_ylim(
+            intensity.min(), intensity.max())
+
+        self.line_span_plot, = self.span_plot.plot([], [])
+        self.line_span_plot.set_data(
+            raman_shift, intensity)
+        self.span_plot.set_xlim(
+            raman_shift[0], raman_shift[-1])
+        self.span_plot.set_ylim(
+            intensity.min(), intensity.max())
+        self.main_plot.set_yticks([])
+        self.span_plot.set_yticks([])
+        self.span_plot.set_xticks([])
+        self.main_plot.legend()
+        self.main_canvas.draw_idle()
+
+        self.span_xmin = raman_shift[0]
+        self.span_xmax = raman_shift[-1]
+
+        self.remove_baseline_button.configure(state='normal')
+        self.master.configureButtons(
+            'raman_search_frame', ['search_button'], 'normal')
+        self.configureButtons(['save_file_button', 'export_image_button',
+                               'remove_baseline_button', 'clear_plot_button'], 'normal')
 
     def plotFromLibrary(self, db_filepath, db_filename: str, add: bool):
         if add:
