@@ -167,6 +167,9 @@ class RamanPlot(customtkinter.CTkFrame):
         self.toolbar.winfo_children()[-2].config(background=color_palette[4])
         self.toolbar._message_label.config(
             background=color_palette[4], foreground=color_palette[3])
+        
+        self.main_fig.canvas.draw_idle()
+        self.span_fig.canvas.draw_idle()
 
     def loadFile(self):
         filepath = fd.askopenfilename(
