@@ -147,8 +147,11 @@ class App(customtkinter.CTk):
                       'raman_plot_frame': self.raman_plot_frame, 'camera_view_frame': self.camera_view_frame, 'raman_search_frame': self.raman_search_frame}
         frame_dict.get(frame).configureButtons(buttons, state)
 
-    def plotFromLibrary(self, db_filepath: str, db_filename: str, add: bool):
-        self.raman_plot_frame.plotFromLibrary(db_filepath, db_filename, add)
+    def plotFromRamanDB(self, db_filepath: str, db_filename: str, add: bool):
+        self.raman_plot_frame.plotFromRamanDB(db_filepath, db_filename, add)
+        
+    def clearDBPlot(self):
+        self.raman_plot_frame.clearDBPlot()
 
     def getSpanSelection(self):
         return self.raman_plot_frame.getSpanSelection()

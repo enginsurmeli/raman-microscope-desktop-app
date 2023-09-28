@@ -59,6 +59,7 @@ class RamanSearch(customtkinter.CTkFrame):
     def searchRamanDB(self):
         self.search_button.configure(text='Searching', state='disabled')
         self.initializeTreeview()
+        self.master.clearDBPlot()
         # self.master.configureButtons('raman_plot_frame', [
         #                              'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'disabled')
         self.update_idletasks()
@@ -87,9 +88,9 @@ class RamanSearch(customtkinter.CTkFrame):
             with open(db_filepath, 'r') as f:
                 db_raman_shift, db_intensity = np.loadtxt(
                     db_filepath, unpack=True, delimiter=',')
-                search_db_indices = np.where(np.logical_and(
-                    db_raman_shift >= search_xmin, db_raman_shift <= search_xmax))
-                search_db_raman_shift = db_raman_shift[xnew_indices]
+                # search_db_indices = np.where(np.logical_and(
+                #     db_raman_shift >= search_xmin, db_raman_shift <= search_xmax))
+                # search_db_raman_shift = db_raman_shift[xnew_indices]
                 search_db_intensity = db_intensity[xnew_indices]
                 match_percentage = round(np.corrcoef(
                     search_sample_intensity, search_db_intensity)[0, 1] * 100)
@@ -111,13 +112,13 @@ class RamanSearch(customtkinter.CTkFrame):
         if '<' not in db_filename:
             self.treeview.item(item, values=(
                 '<' + db_filename, match_percentage))
-            self.master.plotFromLibrary(db_filepath, db_filename, add=True)
+            self.master.plotFromRamanDB(db_filepath, db_filename, add=True)
         else:
             db_filename = db_filename.replace('<', '')
             self.treeview.item(item, values=(
                 db_filename, match_percentage))
-            self.master.plotFromLibrary(db_filepath, db_filename, add=False)
-            
+            self.master.plotFromRamanDB(db_filepath, db_filename, add=False)
+
     def sortTreeviewColumn(self, treeview, column, reverse):
         l = [(treeview.set(k, column), k) for k in treeview.get_children('')]
         try:

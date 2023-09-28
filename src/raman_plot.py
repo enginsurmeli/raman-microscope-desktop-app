@@ -141,6 +141,8 @@ class RamanPlot(customtkinter.CTkFrame):
         self.configureButtons(['save_file_button', 'export_image_button', 'camera_button',
                                'remove_baseline_button', 'clear_plot_button'], 'disabled')
 
+        self.line_db_plot = {}
+
     def changeTheme(self, color_palette):
         self.main_fig.set_facecolor(color_palette[0])
         self.main_plot.set_facecolor(color_palette[0])
@@ -167,7 +169,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.toolbar.winfo_children()[-2].config(background=color_palette[4])
         self.toolbar._message_label.config(
             background=color_palette[4], foreground=color_palette[3])
-        
+
         self.main_fig.canvas.draw_idle()
         self.span_fig.canvas.draw_idle()
 
@@ -213,7 +215,7 @@ class RamanPlot(customtkinter.CTkFrame):
             self.main_plot.set_ylim(
                 self.span_y.min(), max(self.span_y.max(), db_max_y))
             self.main_fig.canvas.draw_idle()
-            
+
     def getSpanSelection(self):
         return self.span_xmin, self.span_xmax, self.span_x, self.span_y
 
@@ -255,7 +257,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.master.exportCameraImage()
 
     def clearPlot(self):
-        self.line_db_plot = {}
+        self.clearDBPlot()
         self.main_plot.cla()
         self.span_plot.cla()
         self.main_plot.set_yticks([])
@@ -271,6 +273,16 @@ class RamanPlot(customtkinter.CTkFrame):
             'raman_search_frame', ['search_button'], 'disabled')
 
         self.master.initializeTreeview()
+
+    def clearDBPlot(self):
+        db_sample_list = list(self.line_db_plot.keys())
+        
+        for item in db_sample_list:
+            self.line_db_plot[item].remove()
+            self.line_db_plot.pop(item)
+
+        self.main_plot.legend()
+        self.main_fig.canvas.draw_idle()
 
     def changeSaveFolder(self, save_folder):
         self.save_folder = save_folder
@@ -308,7 +320,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.configureButtons(['save_file_button', 'export_image_button',
                                'remove_baseline_button', 'clear_plot_button'], 'normal')
 
-    def plotFromLibrary(self, db_filepath, db_filename: str, add: bool):
+    def plotFromRamanDB(self, db_filepath, db_filename: str, add: bool):
         if add:
             self.line_db_plot[db_filename], = self.main_plot.plot(
                 [], [], label=db_filename)
@@ -321,7 +333,8 @@ class RamanPlot(customtkinter.CTkFrame):
             self.line_db_plot.pop(db_filename)
         self.main_plot.legend()
         self.main_fig.canvas.draw_idle()
-        
+
+        # this updates max y on the plot
         self.OnSpanSelect(self.span_xmin, self.span_xmax)
 
     def configureButtons(self, buttons: tuple, state: str):
