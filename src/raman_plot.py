@@ -261,6 +261,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.main_plot.set_yticks([])
         self.span_plot.set_yticks([])
         self.span_plot.set_xticks([])
+        self.span.clear()
         self.main_fig.canvas.draw_idle()
         self.span_fig.canvas.draw_idle()
 
@@ -320,6 +321,8 @@ class RamanPlot(customtkinter.CTkFrame):
             self.line_db_plot.pop(db_filename)
         self.main_plot.legend()
         self.main_fig.canvas.draw_idle()
+        
+        self.OnSpanSelect(self.span_xmin, self.span_xmax)
 
     def configureButtons(self, buttons: tuple, state: str):
         button_dict = {'save_file_button': self.save_file_button, 'load_file_button': self.load_file_button, 'export_image_button': self.export_image_button,
