@@ -184,18 +184,11 @@ class CNCButtons(customtkinter.CTkFrame):
             row=2, column=3, padx=inner_frame_padding, pady=inner_frame_padding)
 
         # bind button release to stop continuous jog
-        self.xplus_button.bind("<ButtonRelease-1>",
-                               lambda event: self.stopContinuousJog())
-        self.xminus_button.bind("<ButtonRelease-1>",
-                                lambda event: self.stopContinuousJog())
-        self.yplus_button.bind("<ButtonRelease-1>",
-                               lambda event: self.stopContinuousJog())
-        self.yminus_button.bind("<ButtonRelease-1>",
-                                lambda event: self.stopContinuousJog())
-        self.zplus_button.bind("<ButtonRelease-1>",
-                               lambda event: self.stopContinuousJog())
-        self.zminus_button.bind("<ButtonRelease-1>",
-                                lambda event: self.stopContinuousJog())
+        jog_buttons_list = [self.xplus_button, self.xminus_button, self.yplus_button, self.yminus_button,
+                            self.zplus_button, self.zminus_button]
+        for button in jog_buttons_list:
+            button.bind("<ButtonRelease-1>",
+                        lambda event: self.stopContinuousJog())
 
         self.cancel_jog_button = customtkinter.CTkButton(
             self.jog_buttons_frame, text="", command=self.cancelJog, width=button_size[0], height=button_size[1], image=cancel_jog_icon)
@@ -203,7 +196,7 @@ class CNCButtons(customtkinter.CTkFrame):
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.keyboard_control_checkbox = customtkinter.CTkCheckBox(
-            self.jog_buttons_frame, text="Keyboard Controls", command=self.keyboardControls)
+            self.jog_buttons_frame, text="Keyboard controls", command=self.keyboardControls)
         self.keyboard_control_checkbox.grid(
             row=3, column=0, columnspan=4, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -243,7 +236,7 @@ class CNCButtons(customtkinter.CTkFrame):
         self.softlimit_x = 285
         self.softlimit_y = 150
         self.softlimit_z = -20
-        
+
         self.jogging_active = False
 
     def openSettings(self):
