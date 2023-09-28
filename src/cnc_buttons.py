@@ -150,6 +150,7 @@ class CNCButtons(customtkinter.CTkFrame):
             icons_folder, "cancel_button_light.png")), dark_image=Image.open(os.path.join(icons_folder, "cancel_button_dark.png")), size=button_size)
 
         self.jog_buttons_frame.grid_rowconfigure((0, 1, 2), weight=1)
+        self.jog_buttons_frame.grid_rowconfigure(3, weight=0)
         self.jog_buttons_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
         self.yplus_button = customtkinter.CTkButton(
@@ -201,6 +202,11 @@ class CNCButtons(customtkinter.CTkFrame):
         self.cancel_jog_button.grid(
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
+        self.keyboard_control_checkbox = customtkinter.CTkCheckBox(
+            self.jog_buttons_frame, text="Keyboard Controls", command=self.keyboardControls)
+        self.keyboard_control_checkbox.grid(
+            row=3, column=0, columnspan=4, padx=inner_frame_padding, pady=inner_frame_padding)
+
         self.jog_settings_frame.rowconfigure((0, 1), weight=1)
         self.jog_settings_frame.columnconfigure(0, weight=1)
         self.jog_settings_frame.columnconfigure(1, weight=5)
@@ -237,6 +243,8 @@ class CNCButtons(customtkinter.CTkFrame):
         self.softlimit_x = 285
         self.softlimit_y = 150
         self.softlimit_z = -20
+        
+        self.jogging_active = False
 
     def openSettings(self):
         settings = settings_window.SettingsWindow(
@@ -246,6 +254,8 @@ class CNCButtons(customtkinter.CTkFrame):
         return max(min(n, max_n), min_n)
 
     def startJog(self, axis: str):
+        if self.jogging_active:
+            return
         if self.step_size_cbox.get() == "Continuous":
             step_size = 200
         else:
@@ -268,6 +278,7 @@ class CNCButtons(customtkinter.CTkFrame):
             z_step = step_size
 
         jog_command = f"$J=G21G91X{x_step:.3f}Y{y_step:.3f}Z{z_step:.3f}F{feed_rate}"
+        self.jogging_active = True
         self.master.sendSerialCommand(jog_command)
 
     def cancelJog(self):
@@ -324,7 +335,8 @@ class CNCButtons(customtkinter.CTkFrame):
         if state == "Idle":
             self.status_led.configure(fg_color='#fdbc40')
             self.is_homed = True
-            
+            self.jogging_active = False
+
         if state == "Run" or state == "Jog":
             self.status_led.configure(fg_color='#33c748')
 
@@ -349,3 +361,23 @@ class CNCButtons(customtkinter.CTkFrame):
                        'xplus_button': self.xplus_button, 'xminus_button': self.xminus_button, 'zplus_button': self.zplus_button, 'zminus_button': self.zminus_button, 'cancel_jog_button': self.cancel_jog_button, 'step_size_cbox': self.step_size_cbox, 'feed_rate_cbox': self.feed_rate_cbox}
         for button in buttons:
             button_dict.get(button).configure(state=state)
+
+    def keyboardControls(self):
+        keyboard_enabled = self.keyboard_control_checkbox.get()
+        key_mapping = {'d': 'x+', 'a': 'x-', 'w': 'y+',
+                       's': 'y-', 'e': 'z+', 'q': 'z-'}
+        for key in list(key_mapping.keys()):
+            if keyboard_enabled:
+                key_release_string = f"<KeyRelease-{key}>"
+                # self.master.bind(key, lambda event,
+                #                  axis=key_mapping.get(key): print(axis))
+                # self.master.bind(key_release_string,
+                #                  lambda event, released_key=key_release_string: print(f'{released_key} released'))
+                self.master.bind(key, lambda event,
+                                 axis=key_mapping.get(key): self.startJog(axis=axis))
+                self.master.bind(key_release_string,
+                                 lambda event: self.stopContinuousJog())
+                self.master.bind('<Escape>', lambda event: self.cancelJog())
+            else:
+                self.master.unbind(key)
+                self.master.unbind('<Escape>')
