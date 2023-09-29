@@ -45,8 +45,9 @@ class RamanPlot(customtkinter.CTkFrame):
                                        padx=inner_frame_padding*4, pady=inner_frame_padding)
 
         self.main_fig = Figure(figsize=(5, 4), dpi=100)
-        self.main_plot = self.main_fig.add_subplot(111)
-        self.line_main_plot = self.main_plot.plot([], [])
+        self.main_ax = self.main_fig.add_subplot(111)
+        # self.main_fig, self.main_ax = plt.subplots(figsize=(5, 4), dpi=100)
+        self.line_main_plot, = self.main_ax.plot([], [])
         self.main_fig.subplots_adjust(
             left=figure_padding, bottom=figure_padding+0.02, right=1-figure_padding, top=1-figure_padding)
 
@@ -56,7 +57,8 @@ class RamanPlot(customtkinter.CTkFrame):
         self.main_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.span_fig = Figure(figsize=(5, 1), dpi=100)
-        self.span_plot = self.span_fig.add_subplot(111)
+        self.span_ax = self.span_fig.add_subplot(111)
+        # self.span_fig, self.span_ax = plt.subplots(figsize=(5, 1), dpi=100)
         self.span_fig.subplots_adjust(
             left=figure_padding, bottom=figure_padding, right=1-figure_padding, top=1-figure_padding)
 
@@ -125,6 +127,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.clear_plot_button.pack(side='left', expand=False, padx=inner_frame_padding,
                                     pady=inner_frame_padding)
 
+        # Create a navigation toolbar
         self.toolbar = NavigationToolbar2Tk(
             self.main_canvas, self.button_toolbar_frame)
         unwanted_buttons = ["Subplots", "Save",
@@ -134,7 +137,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.toolbar.update()
 
         # Create span selector
-        self.span = SpanSelector(self.span_plot, self.OnSpanSelect, "horizontal", useblit=True, props=dict(
+        self.span = SpanSelector(self.span_ax, self.OnSpanSelect, "horizontal", useblit=True, props=dict(
             alpha=0.5, facecolor="tab:blue"), interactive=True, drag_from_anywhere=True, ignore_event_outside=False)
 
         # Initialize button states
@@ -145,25 +148,25 @@ class RamanPlot(customtkinter.CTkFrame):
 
     def changeTheme(self, color_palette):
         self.main_fig.set_facecolor(color_palette[0])
-        self.main_plot.set_facecolor(color_palette[0])
-        self.main_plot.tick_params(axis='x', colors=color_palette[3])
-        self.main_plot.xaxis.label.set_color(color_palette[3])
-        self.main_plot.spines['bottom'].set_color(color_palette[3])
-        self.main_plot.spines['top'].set_color(color_palette[3])
-        self.main_plot.spines['left'].set_color(color_palette[3])
-        self.main_plot.spines['right'].set_color(color_palette[3])
-        self.main_plot.set_yticks([])
+        self.main_ax.set_facecolor(color_palette[0])
+        self.main_ax.tick_params(axis='x', colors=color_palette[3])
+        self.main_ax.xaxis.label.set_color(color_palette[3])
+        self.main_ax.spines['bottom'].set_color(color_palette[3])
+        self.main_ax.spines['top'].set_color(color_palette[3])
+        self.main_ax.spines['left'].set_color(color_palette[3])
+        self.main_ax.spines['right'].set_color(color_palette[3])
+        self.main_ax.set_yticks([])
 
         self.span_fig.set_facecolor(color_palette[0])
-        self.span_plot.set_facecolor(color_palette[0])
-        self.span_plot.tick_params(axis='x', colors=color_palette[3])
-        self.span_plot.xaxis.label.set_color(color_palette[3])
-        self.span_plot.spines['bottom'].set_color(color_palette[3])
-        self.span_plot.spines['top'].set_color(color_palette[3])
-        self.span_plot.spines['left'].set_color(color_palette[3])
-        self.span_plot.spines['right'].set_color(color_palette[3])
-        self.span_plot.set_yticks([])
-        self.span_plot.set_xticks([])
+        self.span_ax.set_facecolor(color_palette[0])
+        self.span_ax.tick_params(axis='x', colors=color_palette[3])
+        self.span_ax.xaxis.label.set_color(color_palette[3])
+        self.span_ax.spines['bottom'].set_color(color_palette[3])
+        self.span_ax.spines['top'].set_color(color_palette[3])
+        self.span_ax.spines['left'].set_color(color_palette[3])
+        self.span_ax.spines['right'].set_color(color_palette[3])
+        self.span_ax.set_yticks([])
+        self.span_ax.set_xticks([])
 
         self.toolbar.config(background=color_palette[4])
         self.toolbar.winfo_children()[-2].config(background=color_palette[4])
@@ -211,8 +214,8 @@ class RamanPlot(customtkinter.CTkFrame):
 
         if len(self.span_x) >= 2:
             self.line_main_plot.set_data(self.span_x, self.span_y)
-            self.main_plot.set_xlim(self.span_x[0], self.span_x[-1])
-            self.main_plot.set_ylim(
+            self.main_ax.set_xlim(self.span_x[0], self.span_x[-1])
+            self.main_ax.set_ylim(
                 self.span_y.min(), max(self.span_y.max(), db_max_y))
             self.main_fig.canvas.draw_idle()
 
@@ -225,9 +228,9 @@ class RamanPlot(customtkinter.CTkFrame):
         norm = np.sqrt(sum(self.intensity**2))
         self.intensity = self.intensity / norm
         self.line_main_plot.set_data(self.raman_shift, self.intensity)
-        self.main_plot.set_ylim(self.intensity.min(), self.intensity.max())
+        self.main_ax.set_ylim(self.intensity.min(), self.intensity.max())
         self.line_span_plot.set_data(self.raman_shift, self.intensity)
-        self.span_plot.set_ylim(self.intensity.min(), self.intensity.max())
+        self.span_ax.set_ylim(self.intensity.min(), self.intensity.max())
         self.main_canvas.draw_idle()
 
     def saveFile(self):
@@ -245,11 +248,11 @@ class RamanPlot(customtkinter.CTkFrame):
         save_filepath = fd.asksaveasfilename(
             initialdir=f"{self.save_folder}/", title="Select a file", filetypes=(("PNG files", ".png"), ("PDF files", ".pdf"), ("SVG files", ".svg"), ("EPS files", ".eps")), defaultextension="*.*")
         if save_filepath:
-            # extent = self.main_plot.get_window_extent().transformed(
+            # extent = self.main_ax.get_window_extent().transformed(
             #     self.main_fig.dpi_scale_trans.inverted())
             # plt.savefig(save_filepath, dpi=400, transparent=True,
             #                bbox_inches=extent.expanded(1.1, 1.1))
-            # self.main_plot.savefig(save_filepath, dpi=400, transparent=True)
+            # self.main_ax.savefig(save_filepath, dpi=400, transparent=True)
             self.main_fig.savefig(save_filepath, dpi=400, transparent=False,
                                   facecolor=self.main_fig.get_facecolor(), edgecolor='none')
 
@@ -258,11 +261,11 @@ class RamanPlot(customtkinter.CTkFrame):
 
     def clearPlot(self):
         self.clearDBPlot()
-        self.main_plot.cla()
-        self.span_plot.cla()
-        self.main_plot.set_yticks([])
-        self.span_plot.set_yticks([])
-        self.span_plot.set_xticks([])
+        self.main_ax.cla()
+        self.span_ax.cla()
+        self.main_ax.set_yticks([])
+        self.span_ax.set_yticks([])
+        self.span_ax.set_xticks([])
         self.span.clear()
         self.main_fig.canvas.draw_idle()
         self.span_fig.canvas.draw_idle()
@@ -276,12 +279,12 @@ class RamanPlot(customtkinter.CTkFrame):
 
     def clearDBPlot(self):
         db_sample_list = list(self.line_db_plot.keys())
-        
+
         for item in db_sample_list:
             self.line_db_plot[item].remove()
             self.line_db_plot.pop(item)
 
-        self.main_plot.legend()
+        self.main_ax.legend()
         self.main_fig.canvas.draw_idle()
 
     def changeSaveFolder(self, save_folder):
@@ -290,25 +293,25 @@ class RamanPlot(customtkinter.CTkFrame):
     def plotSample(self, sample_name: str, raman_shift: np.ndarray, intensity: np.ndarray):
         norm = np.sqrt(sum(intensity**2))
         intensity = intensity / norm
-        self.line_main_plot, = self.main_plot.plot(
+        self.line_main_plot, = self.main_ax.plot(
             [], [], label=sample_name)
         self.line_main_plot.set_data(raman_shift, intensity)
-        self.main_plot.set_xlim(
+        self.main_ax.set_xlim(
             raman_shift[0], raman_shift[-1])
-        self.main_plot.set_ylim(
+        self.main_ax.set_ylim(
             intensity.min(), intensity.max())
 
-        self.line_span_plot, = self.span_plot.plot([], [])
+        self.line_span_plot, = self.span_ax.plot([], [])
         self.line_span_plot.set_data(
             raman_shift, intensity)
-        self.span_plot.set_xlim(
+        self.span_ax.set_xlim(
             raman_shift[0], raman_shift[-1])
-        self.span_plot.set_ylim(
+        self.span_ax.set_ylim(
             intensity.min(), intensity.max())
-        self.main_plot.set_yticks([])
-        self.span_plot.set_yticks([])
-        self.span_plot.set_xticks([])
-        self.main_plot.legend()
+        self.main_ax.set_yticks([])
+        self.span_ax.set_yticks([])
+        self.span_ax.set_xticks([])
+        self.main_ax.legend()
         self.main_canvas.draw_idle()
 
         self.span_xmin = raman_shift[0]
@@ -322,7 +325,7 @@ class RamanPlot(customtkinter.CTkFrame):
 
     def plotFromRamanDB(self, db_filepath, db_filename: str, add: bool):
         if add:
-            self.line_db_plot[db_filename], = self.main_plot.plot(
+            self.line_db_plot[db_filename], = self.main_ax.plot(
                 [], [], label=db_filename)
             db_raman_shift, db_intensity = np.loadtxt(
                 db_filepath, unpack=True, delimiter=',')
@@ -331,7 +334,7 @@ class RamanPlot(customtkinter.CTkFrame):
         else:
             self.line_db_plot[db_filename].remove()
             self.line_db_plot.pop(db_filename)
-        self.main_plot.legend()
+        self.main_ax.legend()
         self.main_fig.canvas.draw_idle()
 
         # this updates max y on the plot
