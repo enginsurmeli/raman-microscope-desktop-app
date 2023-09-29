@@ -41,19 +41,19 @@ class RamanPlot(customtkinter.CTkFrame):
         self.button_toolbar_frame.pack(fill="both", expand=False,
                                        padx=inner_frame_padding*4, pady=inner_frame_padding)
 
-        self.main_fig = Figure(figsize=(5, 5), dpi=100)
+        self.fig = Figure(figsize=(5, 5), dpi=100)
         spec = gridspec.GridSpec(
-            ncols=1, nrows=2, figure=self.main_fig, height_ratios=[6, 1], wspace=0, hspace=0.075)
-        self.main_ax = self.main_fig.add_subplot(spec[0])
-        self.span_ax = self.main_fig.add_subplot(spec[1])
+            ncols=1, nrows=2, figure=self.fig, height_ratios=[6, 1], wspace=0, hspace=0.075)
+        self.main_ax = self.fig.add_subplot(spec[0])
+        self.span_ax = self.fig.add_subplot(spec[1])
         self.line_main_plot, = self.main_ax.plot([], [])
-        self.main_fig.subplots_adjust(
+        self.fig.subplots_adjust(
             left=figure_padding, bottom=figure_padding, right=1-figure_padding, top=1-figure_padding)
 
-        self.main_canvas = FigureCanvasTkAgg(
-            self.main_fig, master=self.plot_frame)
-        self.main_canvas.draw()
-        self.main_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.canvas = FigureCanvasTkAgg(
+            self.fig, master=self.plot_frame)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         save_file_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "save_light.png")),
                                                 dark_image=Image.open(os.path.join(
@@ -90,6 +90,11 @@ class RamanPlot(customtkinter.CTkFrame):
         self.load_file_button.pack(side='left', expand=False, padx=inner_frame_padding,
                                    pady=inner_frame_padding)
 
+        separator1 = ttk.Separator(
+            self.button_toolbar_frame, orient="vertical")
+        separator1.pack(side='left', expand=False,
+                        padx=inner_frame_padding, pady=inner_frame_padding)
+
         self.export_image_button = customtkinter.CTkButton(
             master=self.button_toolbar_frame, text="Export\nImage", image=export_image_icon, command=self.exportGraphImage, width=button_size[0], height=button_size[1])
         self.export_image_button.pack(side='left', expand=False, padx=inner_frame_padding,
@@ -100,9 +105,9 @@ class RamanPlot(customtkinter.CTkFrame):
         self.camera_button.pack(side='left', expand=False, padx=inner_frame_padding,
                                 pady=inner_frame_padding)
 
-        separator1 = ttk.Separator(
+        separator2 = ttk.Separator(
             self.button_toolbar_frame, orient="vertical")
-        separator1.pack(side='left', expand=False,
+        separator2.pack(side='left', expand=False,
                         padx=inner_frame_padding, pady=inner_frame_padding)
 
         self.remove_baseline_button = customtkinter.CTkButton(
@@ -117,11 +122,13 @@ class RamanPlot(customtkinter.CTkFrame):
 
         # Create a navigation toolbar
         self.toolbar = NavigationToolbar2Tk(
-            self.main_canvas, self.button_toolbar_frame)
+            self.canvas, self.button_toolbar_frame)
         unwanted_buttons = ["Subplots", "Save",
                             "Back", "Forward", "Home", "Pan", "Zoom"]
         for button in unwanted_buttons:
             self.toolbar._buttons[str(button)].pack_forget()
+        self.toolbar.pack(side='left', expand=False,
+                          padx=inner_frame_padding, pady=inner_frame_padding)
         self.toolbar.update()
 
         # Create span selector
@@ -135,7 +142,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.line_db_plot = {}
 
     def changeTheme(self, color_palette):
-        self.main_fig.set_facecolor(color_palette[0])
+        self.fig.set_facecolor(color_palette[0])
         self.main_ax.set_facecolor(color_palette[0])
         self.main_ax.tick_params(axis='x', colors=color_palette[3])
         self.main_ax.xaxis.label.set_color(color_palette[3])
@@ -160,7 +167,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.toolbar._message_label.config(
             background=color_palette[4], foreground=color_palette[3])
 
-        self.main_fig.canvas.draw_idle()
+        self.fig.canvas.draw_idle()
 
     def loadFile(self):
         filepath = fd.askopenfilename(
@@ -203,7 +210,7 @@ class RamanPlot(customtkinter.CTkFrame):
             self.main_ax.set_xlim(self.span_x[0], self.span_x[-1])
             self.main_ax.set_ylim(
                 self.span_y.min(), max(self.span_y.max(), db_max_y))
-            self.main_fig.canvas.draw_idle()
+            self.fig.canvas.draw_idle()
 
     def getSpanSelection(self):
         return self.span_xmin, self.span_xmax, self.span_x, self.span_y
@@ -217,7 +224,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.main_ax.set_ylim(self.intensity.min(), self.intensity.max())
         self.line_span_plot.set_data(self.raman_shift, self.intensity)
         self.span_ax.set_ylim(self.intensity.min(), self.intensity.max())
-        self.main_canvas.draw_idle()
+        self.canvas.draw_idle()
 
     def saveFile(self):
         save_filepath = fd.asksaveasfilename(
@@ -234,8 +241,8 @@ class RamanPlot(customtkinter.CTkFrame):
         save_filepath = fd.asksaveasfilename(
             initialdir=f"{self.save_folder}/", title="Select a file", filetypes=(("PNG files", ".png"), ("PDF files", ".pdf"), ("SVG files", ".svg"), ("EPS files", ".eps")), defaultextension="*.*")
         if save_filepath:
-            self.main_fig.savefig(save_filepath, dpi=400, transparent=False,
-                                  facecolor=self.main_fig.get_facecolor(), edgecolor='none')
+            self.fig.savefig(save_filepath, dpi=400, transparent=False,
+                             facecolor=self.fig.get_facecolor(), edgecolor='none')
 
     def exportCameraImage(self):
         self.master.exportCameraImage()
@@ -248,7 +255,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_ax.set_yticks([])
         self.span_ax.set_xticks([])
         self.span.clear()
-        self.main_fig.canvas.draw_idle()
+        self.fig.canvas.draw_idle()
 
         self.configureButtons(
             ['save_file_button', 'export_image_button', 'remove_baseline_button'], 'disabled')
@@ -265,7 +272,7 @@ class RamanPlot(customtkinter.CTkFrame):
             self.line_db_plot.pop(item)
 
         self.main_ax.legend()
-        self.main_fig.canvas.draw_idle()
+        self.fig.canvas.draw_idle()
 
     def changeSaveFolder(self, save_folder):
         self.save_folder = save_folder
@@ -292,7 +299,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_ax.set_yticks([])
         self.span_ax.set_xticks([])
         self.main_ax.legend()
-        self.main_canvas.draw_idle()
+        self.canvas.draw_idle()
 
         self.span_xmin = raman_shift[0]
         self.span_xmax = raman_shift[-1]
@@ -315,7 +322,7 @@ class RamanPlot(customtkinter.CTkFrame):
             self.line_db_plot[db_filename].remove()
             self.line_db_plot.pop(db_filename)
         self.main_ax.legend()
-        self.main_fig.canvas.draw_idle()
+        self.fig.canvas.draw_idle()
 
         # this updates max y on the plot
         self.OnSpanSelect(self.span_xmin, self.span_xmax)
