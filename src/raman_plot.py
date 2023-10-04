@@ -31,7 +31,8 @@ class RamanPlot(customtkinter.CTkFrame):
 
         inner_frame_padding = 5
         figure_padding = 0.02
-        button_size = (30, 30)
+        button_size = (90, 35)
+        icon_size = (button_size[1], button_size[1])
 
         self.plot_frame = customtkinter.CTkFrame(self)
         self.plot_frame.pack(fill="both", expand=True,
@@ -58,27 +59,27 @@ class RamanPlot(customtkinter.CTkFrame):
         save_file_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "save_light.png")),
                                                 dark_image=Image.open(os.path.join(
                                                     icons_folder, "save_dark.png")),
-                                                size=button_size)
+                                                size=icon_size)
         export_image_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "export_image_light.png")),
                                                    dark_image=Image.open(os.path.join(
                                                        icons_folder, "export_image_dark.png")),
-                                                   size=button_size)
+                                                   size=icon_size)
         load_file_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "open_light.png")),
                                                 dark_image=Image.open(os.path.join(
                                                     icons_folder, "open_dark.png")),
-                                                size=button_size)
+                                                size=icon_size)
         camera_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "camera_light.png")),
                                              dark_image=Image.open(os.path.join(
                                                  icons_folder, "camera_dark.png")),
-                                             size=button_size)
+                                             size=icon_size)
         remove_baseline_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "baseline_light.png")),
                                                       dark_image=Image.open(os.path.join(
                                                           icons_folder, "baseline_dark.png")),
-                                                      size=button_size)
+                                                      size=icon_size)
         clear_plot_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "clear_plot_light.png")),
                                                  dark_image=Image.open(os.path.join(
                                                      icons_folder, "clear_plot_dark.png")),
-                                                 size=button_size)
+                                                 size=icon_size)
 
         self.save_file_button = customtkinter.CTkButton(
             master=self.button_toolbar_frame, text="Save", image=save_file_icon, command=self.saveFile, width=button_size[0], height=button_size[1])
@@ -127,7 +128,7 @@ class RamanPlot(customtkinter.CTkFrame):
                             "Back", "Forward", "Home", "Pan", "Zoom"]
         for button in unwanted_buttons:
             self.toolbar._buttons[str(button)].pack_forget()
-        self.toolbar.pack(side='left', expand=False,
+        self.toolbar.pack(side='right', expand=False,
                           padx=inner_frame_padding, pady=inner_frame_padding)
         self.toolbar.update()
 

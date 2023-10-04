@@ -16,7 +16,8 @@ class RamanSearch(customtkinter.CTkFrame):
         self.initialdir = os.getcwd()
         self.raman_db_folder = 'raman_database'
         icons_folder = 'src\icons'
-        button_size = (30, 30)
+        button_size = (150, 35)
+        icon_size = (button_size[1], button_size[1])
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=0)
         self.grid_columnconfigure(0, weight=1)
@@ -40,7 +41,7 @@ class RamanSearch(customtkinter.CTkFrame):
         search_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(self.initialdir, icons_folder, "search_light.png")),
                                              dark_image=Image.open(os.path.join(
                                                  self.initialdir, icons_folder, "search_dark.png")),
-                                             size=button_size)
+                                             size=icon_size)
 
         self.search_button = customtkinter.CTkButton(
             self, image=search_icon, text="Search", command=self.searchRamanDB)
@@ -60,8 +61,8 @@ class RamanSearch(customtkinter.CTkFrame):
         self.search_button.configure(text='Searching', state='disabled')
         self.initializeTreeview()
         self.master.clearDBPlot()
-        # self.master.configureButtons('raman_plot_frame', [
-        #                              'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'disabled')
+        self.master.configureButtons('raman_plot_frame', [
+                                     'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'disabled')
         self.update_idletasks()
 
         span_xmin, span_xmax, raman_shift, intensity = self.master.getSpanSelection()
@@ -98,8 +99,8 @@ class RamanSearch(customtkinter.CTkFrame):
                     child, column='match_percentage_column', value=match_percentage)
 
         self.search_button.configure(text='Search', state='normal')
-        # self.master.configureButtons('raman_plot_frame', [
-        #                              'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'normal')
+        self.master.configureButtons('raman_plot_frame', [
+                                     'save_file_button', 'load_file_button', 'export_image_button', 'remove_baseline_button', 'clear_plot_button'], 'normal')
         self.sortTreeviewColumn(self.treeview, 'match_percentage_column', True)
 
     def onDoubleClick(self, event):
