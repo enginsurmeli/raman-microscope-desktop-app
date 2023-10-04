@@ -87,11 +87,8 @@ class RamanSearch(customtkinter.CTkFrame):
             db_filepath = os.path.join(
                 self.initialdir, self.raman_db_folder, f'{db_filename}.txt')
             with open(db_filepath, 'r') as f:
-                db_raman_shift, db_intensity = np.loadtxt(
+                _, db_intensity = np.loadtxt(
                     db_filepath, unpack=True, delimiter=',')
-                # search_db_indices = np.where(np.logical_and(
-                #     db_raman_shift >= search_xmin, db_raman_shift <= search_xmax))
-                # search_db_raman_shift = db_raman_shift[xnew_indices]
                 search_db_intensity = db_intensity[xnew_indices]
                 match_percentage = round(np.corrcoef(
                     search_sample_intensity, search_db_intensity)[0, 1] * 100)
