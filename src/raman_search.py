@@ -7,6 +7,8 @@ import numpy as np
 
 from PIL import Image
 
+import json
+
 
 class RamanSearch(customtkinter.CTkFrame):
     def __init__(self, master):
@@ -56,7 +58,14 @@ class RamanSearch(customtkinter.CTkFrame):
 
         self.initializeTreeview()
         self.configureButtons(['search_button'], 'disabled')
-
+        
+        # Initiliaze raman_db dictionary:
+        db_file = os.path.join(self.initialdir, self.raman_db_folder, 'raman_database.json')
+        with open(db_file, 'r') as jsonfile:
+            self.raman_db_dict = json.load(jsonfile)
+            self.db_raman_shift = np.array(self.raman_db_dict['raman_shift'])
+            self.raman_db_dict.pop('raman_shift')
+        
     def searchRamanDB(self):
         self.search_button.configure(text='Searching', state='disabled')
         self.initializeTreeview()
@@ -82,18 +91,13 @@ class RamanSearch(customtkinter.CTkFrame):
         search_sample_intensity = search_sample_intensity[xnew_indices]
 
         for child in self.treeview.get_children():
-            db_filename = self.treeview.item(child, 'values')[
-                0]
-            db_filepath = os.path.join(
-                self.initialdir, self.raman_db_folder, f'{db_filename}.txt')
-            with open(db_filepath, 'r') as f:
-                _, db_intensity = np.loadtxt(
-                    db_filepath, unpack=True, delimiter=',')
-                search_db_intensity = db_intensity[xnew_indices]
-                match_percentage = round(np.corrcoef(
+            db_sample = self.treeview.item(child, 'values')[0]
+            db_intensity = np.array(self.raman_db_dict[db_sample])
+            search_db_intensity = db_intensity[xnew_indices]
+            match_percentage = round(np.corrcoef(
                     search_sample_intensity, search_db_intensity)[0, 1] * 100)
-                self.treeview.set(
-                    child, column='match_percentage_column', value=match_percentage)
+            self.treeview.set(
+                child, column='match_percentage_column', value=match_percentage)
 
         self.search_button.configure(text='Search', state='normal')
         self.master.configureButtons('raman_plot_frame', [
