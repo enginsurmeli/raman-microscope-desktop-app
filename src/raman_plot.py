@@ -284,10 +284,10 @@ class RamanPlot(customtkinter.CTkFrame):
         self.line_main_plot, = self.main_ax.plot(
             [], [], label=sample_name)
         self.line_main_plot.set_data(raman_shift, intensity)
-        self.main_ax.set_xlim(
-            raman_shift[0], raman_shift[-1])
-        self.main_ax.set_ylim(
-            intensity.min(), intensity.max())
+        self.span_xmin = raman_shift[0]
+        self.span_xmax = raman_shift[-1]
+        # this updates max y on the plot
+        self.OnSpanSelect(self.span_xmin, self.span_xmax)
 
         self.line_span_plot, = self.span_ax.plot([], [])
         self.line_span_plot.set_data(
@@ -301,9 +301,6 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_ax.set_xticks([])
         self.main_ax.legend()
         self.canvas.draw_idle()
-
-        self.span_xmin = raman_shift[0]
-        self.span_xmax = raman_shift[-1]
 
         self.remove_baseline_button.configure(state='normal')
         self.master.configureButtons(
