@@ -187,7 +187,8 @@ class RamanPlot(customtkinter.CTkFrame):
                     filepath, unpack=True, delimiter=',')
 
             self.sample_name = filepath.split('/')[-1].replace('.txt', '')
-            self.plotSample(self.sample_name, self.raman_shift, self.intensity)
+            self.plotRamanData(
+                self.sample_name, self.raman_shift, self.intensity)
 
     def OnSpanSelect(self, xmin, xmax):
         indmin, indmax = np.searchsorted(self.raman_shift, (xmin, xmax))
@@ -278,12 +279,14 @@ class RamanPlot(customtkinter.CTkFrame):
     def changeSaveFolder(self, save_folder):
         self.save_folder = save_folder
 
-    def plotSample(self, sample_name: str, raman_shift: np.ndarray, intensity: np.ndarray):
+    def plotRamanData(self, sample_name: str, raman_shift: np.ndarray, intensity: np.ndarray):
         norm = np.sqrt(sum(intensity**2))
         intensity = intensity / norm
         self.line_main_plot, = self.main_ax.plot(
             [], [], label=sample_name)
-        self.line_main_plot.set_data(raman_shift, intensity)
+        self.raman_shift = raman_shift
+        self.intensity = intensity
+        self.line_main_plot.set_data(self.raman_shift, self.intensity)
         self.span_xmin = raman_shift[0]
         self.span_xmax = raman_shift[-1]
         # this updates max y on the plot

@@ -10,7 +10,8 @@ from ctypes import *
 import numpy as np
 
 lib_folder = 'thorlabs_lib'
-dll_filepath = os.path.join(os.path.dirname(__file__), '..', lib_folder, 'TLCCS_64.dll')
+dll_filepath = os.path.join(os.path.dirname(
+    __file__), '..', lib_folder, 'TLCCS_64.dll')
 lib = cdll.LoadLibrary(dll_filepath)
 
 # documentation: C:\Program Files\IVI Foundation\VISA\Win64\TLCCS\Manual
@@ -31,12 +32,10 @@ lib = cdll.LoadLibrary(dll_filepath)
 # E.g.: "USB0::0x1313::0x8081::M00822009::RAW" for a CCS100 with serial number M00822009
 
 ccs_handle = c_int(0)
-# serial_number = "M00822009"
-# product_id = "0x8081"
-# usb_port = "0"
-# address = f"USB{usb_port}::0x1313::{product_id}::{serial_number}::RAW"
-connect_spectrometer = lib.tlccs_init(b"USB0::0x1313::0x8081::M00822009::RAW",
-                                      1, 1, byref(ccs_handle))
+serial_number = "M00822009"
+product_id = "0x8081"
+device_address = bytes(f"USB0::0x1313::{product_id}::{serial_number}::RAW", 'utf-8')
+connect_spectrometer = lib.tlccs_init(device_address, 1, 1, byref(ccs_handle))
 
 if connect_spectrometer == 0:
     is_connected = True
