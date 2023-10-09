@@ -7,40 +7,63 @@ import os
 import time
 import matplotlib.pyplot as plt
 from ctypes import *
+import numpy as np
 
 os.chdir(r"C:\Program Files\IVI Foundation\VISA\Win64\Bin")
 lib = cdll.LoadLibrary("TLCCS_64.dll")
 
-ccs_handle=c_int(0)
+# documentation: C:\Program Files\IVI Foundation\VISA\Win64\TLCCS\Manual
 
-#documentation: C:\Program Files\IVI Foundation\VISA\Win64\TLCCS\Manual
+# Start Scan- Resource name will need to be adjusted
+# windows device manager -> NI-VISA USB Device -> Spectrometer -> Properties -> Details -> Device Instance ID
+# The resource name has this format: USB0::0x1313::<product ID>::<serial number>::RAW
+#
+# Product IDs are:
+# 0x8081   // CCS100 Compact Spectrometer
+# 0x8083   // CCS125 Special Spectrometer
+# 0x8085   // CCS150 UV Spectrometer
+# 0x8087   // CCS175 NIR Spectrometer
+# 0x8089   // CCS200 UV-NIR Spectrometer
+#
+# The serial number is printed on the CCS spectrometer.
+#
+# E.g.: "USB0::0x1313::0x8081::M00822009::RAW" for a CCS100 with serial number M00822009
 
-#Start Scan- Resource name will need to be adjusted
-#windows device manager -> NI-VISA USB Device -> Spectrometer -> Properties -> Details -> Device Instance ID
-lib.tlccs_init(b"USB0::0x1313::0x8089::M00245773::RAW", 1, 1, byref(ccs_handle))   
+ccs_handle = c_int(0)
+# serial_number = "M00822009"
+# product_id = "0x8081"
+# usb_port = "0"
+# address = f"USB{usb_port}::0x1313::{product_id}::{serial_number}::RAW"
+lib.tlccs_init(b"USB0::0x1313::0x8081::M00822009::RAW",
+               1, 1, byref(ccs_handle))
 
-#set integration time in  seconds, ranging from 1e-5 to 6e1
-integration_time=c_double(10.0e-3)
+# set integration time in  seconds, ranging from 1e-5 to 6e1
+integration_time = c_double(10.0e-3)
 lib.tlccs_setIntegrationTime(ccs_handle, integration_time)
 
 
-#start scan
+# start scan
 lib.tlccs_startScan(ccs_handle)
 
-wavelengths=(c_double*3648)()
+wavelengths = (c_double*3648)()
 
-lib.tlccs_getWavelengthData(ccs_handle, 0, byref(wavelengths), c_void_p(None), c_void_p(None))
+lib.tlccs_getWavelengthData(ccs_handle, 0, byref(
+    wavelengths), c_void_p(None), c_void_p(None))
 
-#retrieve data
-data_array=(c_double*3648)()
+# retrieve data
+data_array = (c_double*3648)()
 lib.tlccs_getScanData(ccs_handle, byref(data_array))
 
-#plot data
-plt.plot(wavelengths, data_array)
+raman_shift_nm = np.ndarray(shape=(3648,), dtype=float, buffer=wavelengths)
+raman_shift_inverse_cm = 1e7*(1/532 - 1/raman_shift_nm)
+intensity = np.ndarray(shape=(3648,), dtype=float, buffer=data_array)
+
+# plot data
+plt.plot(raman_shift_inverse_cm, intensity)
 plt.xlabel("Wavelength [nm]")
 plt.ylabel("Intensity [a.u.]")
 plt.grid(True)
 plt.show()
 
-#close
-lib.tlccs_close (ccs_handle)
+# close
+lib.tlccs_close(ccs_handle)
