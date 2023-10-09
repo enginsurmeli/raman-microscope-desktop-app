@@ -162,3 +162,4 @@ cython_debug/
 # icons, images etc.
 icons/
 raman_database/
+thorlabs_lib/
