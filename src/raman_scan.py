@@ -109,15 +109,15 @@ class RamanScan(customtkinter.CTkFrame):
         self.is_connected = False
         self.spectrometer.tlccs_close(self.ccs_handle)
 
-    def setScanParameters(self):
-        # set integration time in  seconds, ranging from 1e-5 to 6e1
+    def setIntegrationTime(self):
+        # set integration time in  seconds, ranging from 1e-5 to 5e1
         integration_time = c_double(self.constrain(
-            float(self.integration_time_entry.get())*1000, 1e-5, 6e1))
+            float(self.integration_time_entry.get()), 1e-5, 5e1))
         self.spectrometer.tlccs_setIntegrationTime(
             self.ccs_handle, integration_time)
 
     def startRamanScan(self):
-        self.setScanParameters()
+        self.setIntegrationTime()
         self.spectrometer.tlccs_startScan(self.ccs_handle)
 
         wavelengths = (c_double*3648)()

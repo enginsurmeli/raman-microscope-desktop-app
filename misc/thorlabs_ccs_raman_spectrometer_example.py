@@ -47,7 +47,7 @@ else:
 if is_connected:
 
     # set integration time in  seconds, ranging from 1e-5 to 6e1
-    integration_time = c_double(10.0e-3)
+    integration_time = c_double(10)
     lib.tlccs_setIntegrationTime(ccs_handle, integration_time)
 
     # start scan
