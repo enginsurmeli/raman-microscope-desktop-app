@@ -92,7 +92,7 @@ class App(customtkinter.CTk):
 
         return settings_data
 
-    def saveSettings(self):
+    def saveSettingsOnExit(self):
         settings_data = self.loadSettings()
         cnc_settings_data = self.cnc_buttons_frame.getSettingsData()
         spectrometer_settings_data = self.raman_scan_frame.getSettingsData()

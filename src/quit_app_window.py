@@ -30,7 +30,7 @@ class OnQuitApp(customtkinter.CTkToplevel):
         no_button.grid(row=1, column=1, padx=10, pady=10)
 
     def _quit(self):
+        self.master.saveSettingsOnExit()
         self.master.disconnectDevices()
-        self.master.saveSettings()
         self.master.quit()
         self.master.destroy()
