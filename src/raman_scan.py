@@ -3,6 +3,7 @@ from PIL import Image
 import os
 from ctypes import *
 import numpy as np
+from datetime import datetime
 
 
 class RamanScan(customtkinter.CTkFrame):
@@ -138,8 +139,10 @@ class RamanScan(customtkinter.CTkFrame):
         self.sendDataToPlot()
 
     def sendDataToPlot(self):
-        # TODO: Add sample name
-        self.master.plotRamanData('', self.raman_shift, self.intensity)
+        datetime_string = datetime.now().strftime("%Y-%m-%d_%H-%M")
+        sample_name = f"Sample_{datetime_string}"
+        self.master.plotRamanData(
+            sample_name, self.raman_shift, self.intensity)
 
     def configureButtons(self, buttons: tuple, state: str):
         button_dict = {'start_scan_button': self.start_scan_button, 'spectral_center_entry': self.spectral_center_entry,
