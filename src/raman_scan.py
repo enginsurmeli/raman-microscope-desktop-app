@@ -45,14 +45,14 @@ class RamanScan(customtkinter.CTkFrame):
         self.integration_time_entry.grid(
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        accumulation_label = customtkinter.CTkLabel(
+        accumulations_label = customtkinter.CTkLabel(
             self, text="No. of accumulations")
-        accumulation_label.grid(
+        accumulations_label.grid(
             row=2, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.accumulation_entry = customtkinter.CTkEntry(
+        self.accumulations_entry = customtkinter.CTkEntry(
             self, width=entry_box_width, justify="center")
-        self.accumulation_entry.grid(
+        self.accumulations_entry.grid(
             row=2, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
         start_scan_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(icons_folder, "laser_light.png")),
@@ -68,8 +68,7 @@ class RamanScan(customtkinter.CTkFrame):
         self.raman_shift = []
         self.intensity = []
 
-        self.configureButtons(['start_scan_button', 'spectral_center_entry',
-                              'integration_time_entry', 'accumulation_entry'], 'disabled')
+        self.configureButtons(['start_scan_button'], 'disabled')
         self.is_connected = False
 
         self.connectSpectrometer()
@@ -100,21 +99,19 @@ class RamanScan(customtkinter.CTkFrame):
         self.is_connected = True if connect_spectrometer == 0 else False
 
         if self.is_connected:
-            self.configureButtons(['start_scan_button', 'spectral_center_entry',
-                                  'integration_time_entry', 'accumulation_entry'], 'normal')
+            self.configureButtons(['start_scan_button'], 'normal')
         else:
             self.after(1000, self.connectSpectrometer)
 
     def disconnectSpectrometer(self):
-        self.configureButtons(['start_scan_button', 'spectral_center_entry',
-                              'integration_time_entry', 'accumulation_entry'], 'disabled')
+        self.configureButtons(['start_scan_button'], 'disabled')
         self.is_connected = False
         self.spectrometer.tlccs_close(self.ccs_handle)
 
     def setScanParameters(self):
         # set integration time in  seconds, ranging from 1e-5 to 6e1
         integration_time = c_double(self.constrain(
-            float(self.integration_time_entry.get()), 1e-5, 6e1))
+            float(self.integration_time_entry.get())*1000, 1e-5, 6e1))
         self.spectrometer.tlccs_setIntegrationTime(
             self.ccs_handle, integration_time)
 
@@ -137,7 +134,7 @@ class RamanScan(customtkinter.CTkFrame):
         self.raman_shift = raman_shift_inverse_cm
         self.intensity = np.ndarray(
             shape=(3648,), dtype=float, buffer=data_array)
-        
+
         self.sendDataToPlot()
 
     def sendDataToPlot(self):
@@ -146,9 +143,24 @@ class RamanScan(customtkinter.CTkFrame):
 
     def configureButtons(self, buttons: tuple, state: str):
         button_dict = {'start_scan_button': self.start_scan_button, 'spectral_center_entry': self.spectral_center_entry,
-                       'integration_time_entry': self.integration_time_entry, 'accumulation_entry': self.accumulation_entry}
+                       'integration_time_entry': self.integration_time_entry, 'accumulations_entry': self.accumulations_entry}
         for button in buttons:
             button_dict.get(button).configure(state=state)
 
     def constrain(self, value, min_value, max_value):
         return min(max(value, min_value), max_value)
+
+    def getSettingsData(self):
+        settings_data = {}
+        settings_data['spectral_center'] = self.spectral_center_entry.get()
+        settings_data['integration_time'] = self.integration_time_entry.get()
+        settings_data['accumulations'] = self.accumulations_entry.get()
+        return settings_data
+
+    def updateSettings(self, spectral_center: str, integration_time: str, accumulations: str):
+        self.spectral_center_entry.delete(0, "end")
+        self.spectral_center_entry.insert(0, spectral_center)
+        self.integration_time_entry.delete(0, "end")
+        self.integration_time_entry.insert(0, integration_time)
+        self.accumulations_entry.delete(0, "end")
+        self.accumulations_entry.insert(0, accumulations)

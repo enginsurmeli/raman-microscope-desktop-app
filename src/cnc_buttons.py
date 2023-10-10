@@ -224,10 +224,6 @@ class CNCButtons(customtkinter.CTkFrame):
         self.feed_rate_cbox.grid(
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        # set default values for step size and feed rate
-        self.step_size_cbox.set("1")
-        self.feed_rate_cbox.set("2000")
-
         self.is_connected = False
         self.previous_state = None
         self.statusPolling()
@@ -362,10 +358,6 @@ class CNCButtons(customtkinter.CTkFrame):
         for key in list(key_mapping.keys()):
             if keyboard_enabled:
                 key_release_string = f"<KeyRelease-{key}>"
-                # self.master.bind(key, lambda event,
-                #                  axis=key_mapping.get(key): print(axis))
-                # self.master.bind(key_release_string,
-                #                  lambda event, released_key=key_release_string: print(f'{released_key} released'))
                 self.master.bind(key, lambda event,
                                  axis=key_mapping.get(key): self.startJog(axis=axis))
                 self.master.bind(key_release_string,
@@ -374,3 +366,17 @@ class CNCButtons(customtkinter.CTkFrame):
             else:
                 self.master.unbind(key)
                 self.master.unbind('<Escape>')
+
+    def getSettingsData(self):
+        settings_data = {}
+        settings_data['last_x'] = self.posx_box.get()
+        settings_data['last_y'] = self.posy_box.get()
+        settings_data['last_z'] = self.posz_box.get()
+        settings_data['last_cnc_state'] = self.status_box.get()
+        settings_data['step_size'] = self.step_size_cbox.get()
+        settings_data['feed_rate'] = self.feed_rate_cbox.get()
+        return settings_data
+
+    def updateSettings(self, step_size: str, feed_rate: str):
+        self.step_size_cbox.set(step_size)
+        self.feed_rate_cbox.set(feed_rate)

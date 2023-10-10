@@ -15,5 +15,14 @@
         "OBS Virtual Camera"
     ],
     "appearance": "Dark",
-    "save_folder": "C:/Users/surme/OneDrive/Belgeler/GitHub/raman-microscope-cnc-3018/raman_database"
+    "save_folder": "C:/Users/surme/OneDrive/Belgeler/GitHub/raman-microscope-cnc-3018/raman_database",
+    "last_y": "",
+    "last_z": "",
+    "last_cnc_state": "Disconnected",
+    "step_size": "10",
+    "feed_rate": "2000",
+    "last_x": "",
+    "spectral_center": "2000",
+    "integration_time": "10",
+    "accumulations": "10"
 }

@@ -75,9 +75,10 @@ class App(customtkinter.CTk):
         self.raman_search_frame.grid(
             row=1, column=2, rowspan=3, padx=(10, 20), pady=(10, 20), sticky="nsew")
 
-        self.initializeSettings()
+        settings_data = self.loadSettings()
+        self.updateSettings(settings_data)
 
-    def initializeSettings(self):
+    def loadSettings(self):
         settings_data = {}
         jfile = None
 
@@ -89,7 +90,31 @@ class App(customtkinter.CTk):
         if jfile:
             jfile.close()
 
-        self.updateSettings(settings_data)
+        return settings_data
+
+    def saveSettings(self):
+        settings_data = self.loadSettings()
+        cnc_settings_data = self.cnc_buttons_frame.getSettingsData()
+        spectrometer_settings_data = self.raman_scan_frame.getSettingsData()
+
+        settings_data['last_y'] = cnc_settings_data.get('last_y')
+        settings_data['last_z'] = cnc_settings_data.get('last_z')
+        settings_data['last_cnc_state'] = cnc_settings_data.get(
+            'last_cnc_state')
+        settings_data['step_size'] = cnc_settings_data.get('step_size')
+        settings_data['feed_rate'] = cnc_settings_data.get('feed_rate')
+        settings_data['last_x'] = cnc_settings_data.get('last_x')
+
+        settings_data['spectral_center'] = spectrometer_settings_data.get(
+            'spectral_center')
+        settings_data['integration_time'] = spectrometer_settings_data.get(
+            'integration_time')
+        settings_data['accumulations'] = spectrometer_settings_data.get(
+            'accumulations')
+
+        with open('settings.json', 'w') as jfile:
+            json.dump(settings_data, jfile, indent=4)
+            jfile.close()
 
     def updateSettings(self, settings_data: dict):
         self.settings_data = settings_data
@@ -99,6 +124,11 @@ class App(customtkinter.CTk):
         camera_index = settings_data.get('camera_index')
         appearance = settings_data.get('appearance')
         save_folder = settings_data.get('save_folder')
+        step_size = settings_data.get('step_size')
+        feed_rate = settings_data.get('feed_rate')
+        spectral_center = settings_data.get('spectral_center')
+        integration_time = settings_data.get('integration_time')
+        accumulations = settings_data.get('accumulations')
 
         # change serial settings
         self.serial_console_frame.updateSerialSettings(
@@ -123,6 +153,13 @@ class App(customtkinter.CTk):
         # change save folder
         self.raman_plot_frame.changeSaveFolder(save_folder=save_folder)
         self.camera_view_frame.changeSaveFolder(save_folder=save_folder)
+
+        # change cnc settings
+        self.cnc_buttons_frame.updateSettings(step_size, feed_rate)
+
+        # change spectrometer settings
+        self.raman_scan_frame.updateSettings(
+            spectral_center, integration_time, accumulations)
 
     def sendSettingsData(self):
         return self.settings_data
@@ -159,6 +196,11 @@ class App(customtkinter.CTk):
 
     def getSpanSelection(self):
         return self.raman_plot_frame.getSpanSelection()
+
+    def disconnectDevices(self):
+        self.serial_console_frame.closePort()
+        self.camera_view_frame.closeCamera()
+        self.raman_scan_frame.disconnectSpectrometer()
 
     def OnQuitApp(self):
         quit_app = quit_app_window.OnQuitApp(self)
