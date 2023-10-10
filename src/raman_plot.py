@@ -174,11 +174,6 @@ class RamanPlot(customtkinter.CTkFrame):
         filepath = fd.askopenfilename(
             initialdir=self.save_folder, title="Select file", filetypes=(("all files", "*.*"), ("text files", "*.txt")))
         if filepath:
-            self.clearPlot()
-            # for child in self.raman_db_treeview.get_children():
-            #     # self.raman_db_treeview.set(child, column=0, value='--')
-            #     self.raman_db_treeview.delete(child)
-
             try:
                 self.raman_shift, self.intensity = np.loadtxt(
                     filepath, unpack=True)
@@ -280,6 +275,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.save_folder = save_folder
 
     def plotRamanData(self, sample_name: str, raman_shift: np.ndarray, intensity: np.ndarray):
+        self.clearPlot()
         norm = np.sqrt(sum(intensity**2))
         intensity = intensity / norm
         self.line_main_plot, = self.main_ax.plot(
@@ -295,8 +291,8 @@ class RamanPlot(customtkinter.CTkFrame):
         self.line_span_plot, = self.span_ax.plot([], [])
         self.line_span_plot.set_data(
             raman_shift, intensity)
-        self.span_ax.set_xlim(
-            raman_shift[0], raman_shift[-1])
+        # NOTE: As of now, the search only happens betweens these values so i hardcoded them. Might need to change this in the future.
+        self.span_ax.set_xlim(150, 1300)
         self.span_ax.set_ylim(
             intensity.min(), intensity.max())
         self.main_ax.set_yticks([])
