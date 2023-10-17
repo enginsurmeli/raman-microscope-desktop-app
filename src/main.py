@@ -40,7 +40,7 @@ class App(customtkinter.CTk):
         try:
             # self.iconbitmap(os.path.join(self.image_path, "microscope_logo.ico"))
             iconpath = ImageTk.PhotoImage(file=os.path.join(
-                self.image_path, "app_logo_light.png"))
+                self.image_path, "app_logo.png"))
             self.wm_iconbitmap()
             self.after(300, lambda: self.iconphoto(False, iconpath))
         except:
