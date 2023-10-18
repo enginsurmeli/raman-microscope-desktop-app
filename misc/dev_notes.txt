@@ -66,3 +66,14 @@ $132=200.000
 -- cnc buttons bölümündekiler: home, park position, center position, reset, unlock, app settings.
 
 -- scan parameters bölümündekiler: integration time cbox, accumulations cbox, start scan butonu.
+
+-- when start scan button is pressed:
+
+1. check connection status of the spectrometer. if not connected, return and retry for connection every one second. if connected, continue.
+2. disable app buttons accordingly for the duration of the scan.
+3. set integration time.
+4. get no of accumulations.
+5. if accumulations = 1, run the scan only once and return a 2d array.
+6. if accumulations > 1, repeat the scan and take an average of raman intensities and return a 2d array.
+7. reactivate buttons.
+8. send data to plot.
