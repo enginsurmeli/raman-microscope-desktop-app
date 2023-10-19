@@ -1,5 +1,4 @@
 import customtkinter as ctk
-from typing import Callable
 
 
 class Spinbox(ctk.CTkFrame):
@@ -9,7 +8,6 @@ class Spinbox(ctk.CTkFrame):
                  step_size: float = 1,
                  decimal_places: int = 0,
                  min_value, max_value,
-                 command: Callable = None,
                  **kwargs):
         self.min_value = min_value
         self.max_value = max_value
@@ -17,19 +15,20 @@ class Spinbox(ctk.CTkFrame):
 
         self.step_size = step_size
         self.decimal_places = decimal_places
-        self.command = command
 
         self.configure(fg_color=("gray78", "gray28"))
 
         self.grid_columnconfigure((0, 2), weight=0)
         self.grid_columnconfigure(1, weight=1)
 
+        validation = self.register(self.only_numbers)
+
         self.subtract_button = ctk.CTkButton(self, text="-", width=height-6, height=height-6,
                                                         command=self.subtract_button_callback)
         self.subtract_button.grid(row=0, column=0, padx=(3, 0), pady=3)
 
         self.entry = ctk.CTkEntry(
-            self, width=width-(70), height=height-6, border_width=0)
+            self, width=width-(70), height=height-6, border_width=0, validate="key", validatecommand=(validation, '%P'))
         self.entry.grid(row=0, column=1, columnspan=1,
                         padx=3, pady=3, sticky="nsew")
 
@@ -39,15 +38,16 @@ class Spinbox(ctk.CTkFrame):
 
         # default value
         self.entry.insert(0, "0")
-        # All elements on mouswhel event
+        # All elements on mousewheel and keyboard events
         self.entry.bind("<MouseWheel>", self.on_mouse_wheel)
         self.subtract_button.bind("<MouseWheel>", self.on_mouse_wheel)
         self.add_button.bind("<MouseWheel>", self.on_mouse_wheel)
         self.bind("<MouseWheel>", self.on_mouse_wheel)
 
+        self.entry.bind("<Up>", lambda e: self.add_button_callback())
+        self.entry.bind("<Down>", lambda e: self.subtract_button_callback())
+
     def add_button_callback(self):
-        if self.command is not None:
-            self.command()
         try:
             value = float(self.entry.get()) + self.step_size
             if value <= self.max_value:
@@ -56,20 +56,12 @@ class Spinbox(ctk.CTkFrame):
             return
 
     def subtract_button_callback(self):
-        if self.command is not None:
-            self.command()
         try:
             value = float(self.entry.get()) - self.step_size
             if value >= self.min_value:
                 self.set(value)
         except ValueError:
             return
-
-    def get(self) -> float:
-        try:
-            return float(self.entry.get())
-        except ValueError:
-            return 0
 
     def on_mouse_wheel(self, event):
         if event.delta > 0:
@@ -82,12 +74,26 @@ class Spinbox(ctk.CTkFrame):
         text = f"{value:.{self.decimal_places}f}"
         self.entry.insert(0, text)
 
+    def only_numbers(self, char):
+        def is_float(char):
+            try:
+                float(char)
+                return True
+            except ValueError:
+                return False
+
+        # Validate true for only numbers
+        if (is_float(char) or char == ""):
+            return True
+        else:
+            return False
+
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Spinbox_sample")
-        self.geometry(f"{300}x{100}")
+        self.geometry(f"{400}x{100}")
         # Creating Main_Frame
         self.main_frame = ctk.CTkFrame(
             self, width=510, height=290, corner_radius=0)
