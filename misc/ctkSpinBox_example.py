@@ -3,36 +3,34 @@ import customtkinter as ctk
 
 class Spinbox(ctk.CTkFrame):
     def __init__(self, *args,
-                 width: int = 100,
-                 height: int = 32,
                  step_size: float = 1,
                  decimal_places: int = 0,
                  min_value, max_value,
                  **kwargs):
         self.min_value = min_value
         self.max_value = max_value
-        super().__init__(*args, width=width, height=height, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.step_size = step_size
         self.decimal_places = decimal_places
-
-        self.configure(fg_color=("gray78", "gray28"))
 
         self.grid_columnconfigure((0, 2), weight=0)
         self.grid_columnconfigure(1, weight=1)
 
         validation = self.register(self.only_numbers)
 
-        self.subtract_button = ctk.CTkButton(self, text="-", width=height-6, height=height-6,
-                                                        command=self.subtract_button_callback)
-        self.subtract_button.grid(row=0, column=0, padx=(3, 0), pady=3)
-
         self.entry = ctk.CTkEntry(
-            self, width=width-(70), height=height-6, border_width=0, validate="key", validatecommand=(validation, '%P'))
+            self, width=50, border_width=0, validate="key", validatecommand=(validation, '%P'))
         self.entry.grid(row=0, column=1, columnspan=1,
                         padx=3, pady=3, sticky="nsew")
 
-        self.add_button = ctk.CTkButton(self, text="+", width=height-6, height=height-6,
+        entrybox_height = self.entry.winfo_reqheight() - 2
+
+        self.subtract_button = ctk.CTkButton(self, text="-", width=entrybox_height, height=entrybox_height,
+                                                        command=self.subtract_button_callback)
+        self.subtract_button.grid(row=0, column=0, padx=(3, 0), pady=3)
+
+        self.add_button = ctk.CTkButton(self, text="+", width=entrybox_height, height=entrybox_height,
                                         command=self.add_button_callback)
         self.add_button.grid(row=0, column=2, padx=(0, 3), pady=3)
 
@@ -71,8 +69,8 @@ class Spinbox(ctk.CTkFrame):
 
     def set(self, value: float):
         self.entry.delete(0, "end")
-        text = f"{value:.{self.decimal_places}f}"
-        self.entry.insert(0, text)
+        str_value = f"{value:.{self.decimal_places}f}"
+        self.entry.insert(0, str_value)
 
     def only_numbers(self, char):
         def is_float(char):
@@ -102,17 +100,17 @@ class App(ctk.CTk):
         self.main_frame.grid_rowconfigure(3, weight=1)
         # Spinboxes
         self.spinbox_hours = Spinbox(
-            self.main_frame, width=125, step_size=0.1, min_value=0, max_value=23, decimal_places=1)
+            self.main_frame, step_size=0.1, min_value=0, max_value=23, decimal_places=1)
         self.spinbox_hours.grid(
             row=0, column=2, rowspan=1, ipadx=0, ipady=0, padx=0, pady=0)
         self.spinbox_hours.set(0)
         self.spinbox_minutes = Spinbox(
-            self.main_frame, width=125, step_size=0.5, min_value=0, max_value=59, decimal_places=1)
+            self.main_frame, step_size=0.5, min_value=0, max_value=59, decimal_places=1)
         self.spinbox_minutes.grid(
             row=0, column=4, rowspan=1, ipadx=0, ipady=0, padx=0, pady=0)
         self.spinbox_minutes.set(0)
         self.spinbox_seconds = Spinbox(
-            self.main_frame, width=125, step_size=1, min_value=0, max_value=59, decimal_places=0)
+            self.main_frame, step_size=1, min_value=0, max_value=59, decimal_places=0)
         self.spinbox_seconds.grid(
             row=0, column=6, rowspan=1, ipadx=0, ipady=0, padx=0, pady=0)
         self.spinbox_seconds.set(0)
