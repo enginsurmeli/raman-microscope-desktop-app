@@ -52,8 +52,8 @@ class CNCButtons(customtkinter.CTkFrame):
         settings_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(
             icons_folder, "settings_light.png")), dark_image=Image.open(os.path.join(icons_folder, "settings_dark.png")), size=button_size)
 
-        self.home_button = customtkinter.CTkButton(self.menu_buttons_frame, text="Home", command=lambda: self.master.sendSerialCommand(
-            '$H'), width=button_size[0], height=button_size[1], image=home_icon)
+        self.home_button = customtkinter.CTkButton(
+            self.menu_buttons_frame, text="Home", command=self.homingCycle, width=button_size[0], height=button_size[1], image=home_icon)
         self.home_button.grid(
             row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding, sticky="ew")
 
@@ -380,3 +380,11 @@ class CNCButtons(customtkinter.CTkFrame):
     def updateSettings(self, step_size: str, feed_rate: str):
         self.step_size_cbox.set(step_size)
         self.feed_rate_cbox.set(feed_rate)
+
+    def homingCycle(self):
+        self.master.sendSerialCommand('$H')
+        self.status_box.configure(state="normal")
+        self.status_box.delete(0, "end")
+        self.status_box.insert(0, "Homing Cycle")
+        self.status_box.configure(state="disabled")
+        self.status_led.configure(fg_color='#fd8a4a')

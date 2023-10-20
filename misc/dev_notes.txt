@@ -77,3 +77,15 @@ $132=200.000
 6. if accumulations > 1, repeat the scan and take an average of raman intensities and return a 2d array.
 7. reactivate buttons.
 8. send data to plot.
+
+-- değişiklik önerileri:
+
+1. start scan butonunu aşağı çek
+2. ayarlar menüsüne spektrometre seri no ve model seçeneği ekle. bağlantıyı bu bilgilere göre yap.
+3. stop scan dendiğinde process'i olduğu yerde kaydedip koddan çıkmamız lazım.
+4. yabancı bir data yüklendiğinde x eksenini database'e uygun olacak şekilde interpolate et.
+5. spike removal butonu ekle.
+6. cross correlation with phase difference konusunu araştır.
+7. entry box'lardan escape tuşu ile unfocus yapılabilir.
+8. settings menüsüne logo eklenebilir.
+9. homing cycle status bar'a ekle.
