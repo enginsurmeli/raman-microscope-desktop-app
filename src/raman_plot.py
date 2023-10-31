@@ -181,9 +181,9 @@ class RamanPlot(customtkinter.CTkFrame):
                 self.raman_shift, self.intensity = np.loadtxt(
                     filepath, unpack=True, delimiter=',')
 
-            self.sample_name = filepath.split('/')[-1].replace('.txt', '')
+            sample_name = filepath.split('/')[-1].replace('.txt', '')
             self.plotRamanData(
-                self.sample_name, self.raman_shift, self.intensity)
+                sample_name, self.raman_shift, self.intensity)
 
     def OnSpanSelect(self, xmin, xmax):
         indmin, indmax = np.searchsorted(self.raman_shift, (xmin, xmax))
@@ -275,6 +275,7 @@ class RamanPlot(customtkinter.CTkFrame):
         self.save_folder = save_folder
 
     def plotRamanData(self, sample_name: str, raman_shift: np.ndarray, intensity: np.ndarray):
+        self.sample_name = sample_name
         self.clearPlot()
         norm = np.sqrt(sum(intensity**2))
         intensity = intensity / norm

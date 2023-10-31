@@ -89,3 +89,6 @@ $132=200.000
 7. entry box'lardan escape tuşu ile unfocus yapılabilir.
 8. settings menüsüne logo eklenebilir.
 9. homing cycle status bar'a ekle.
+10. plot üzerine sağ tık menğ -> copy to clipboard ekle.
+11. plot range x ve y eksenleri üzerinden değiştirilebilsin.
+12. axis label (Intensity ve Raman Shift) ekle.

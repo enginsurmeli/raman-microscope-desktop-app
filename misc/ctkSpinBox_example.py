@@ -129,4 +129,3 @@ if __name__ == "__main__":
     app = App()
     app.resizable(width=True, height=False)
     app.mainloop()
-# https://github.com/TomSchimansky/CustomTkinter and CodeSame @2023
