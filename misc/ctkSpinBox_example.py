@@ -27,45 +27,42 @@ class Spinbox(ctk.CTkFrame):
         entrybox_height = self.entry.winfo_reqheight() - 2
 
         self.subtract_button = ctk.CTkButton(self, text="-", width=entrybox_height, height=entrybox_height,
-                                                        command=self.subtract_button_callback)
+                                                        command=self.increment_callback('subtract'))
         self.subtract_button.grid(row=0, column=0, padx=(3, 0), pady=3)
 
         self.add_button = ctk.CTkButton(self, text="+", width=entrybox_height, height=entrybox_height,
-                                        command=self.add_button_callback)
+                                        command=self.increment_callback('add'))
         self.add_button.grid(row=0, column=2, padx=(0, 3), pady=3)
 
         # default value
         self.entry.insert(0, "0")
-        # All elements on mousewheel and keyboard events
+        # Bind all elements on mousewheel and keyboard events
         self.entry.bind("<MouseWheel>", self.on_mouse_wheel)
         self.subtract_button.bind("<MouseWheel>", self.on_mouse_wheel)
         self.add_button.bind("<MouseWheel>", self.on_mouse_wheel)
         self.bind("<MouseWheel>", self.on_mouse_wheel)
 
-        self.entry.bind("<Up>", lambda e: self.add_button_callback())
-        self.entry.bind("<Down>", lambda e: self.subtract_button_callback())
+        self.entry.bind("<Up>", lambda e: self.increment_callback('add'))
+        self.entry.bind(
+            "<Down>", lambda e: self.increment_callback('subtract'))
+        self.entry.bind("<FocusOut>", self.focusOutEvent)
 
-    def add_button_callback(self):
+    def increment_callback(self, operation: str = "add"):
         try:
-            value = float(self.entry.get()) + self.step_size
-            if value <= self.max_value:
-                self.set(value)
-        except ValueError:
-            return
-
-    def subtract_button_callback(self):
-        try:
-            value = float(self.entry.get()) - self.step_size
-            if value >= self.min_value:
-                self.set(value)
+            if operation == "add":
+                value = float(self.entry.get()) + self.step_size
+            if operation == "subtract":
+                value = float(self.entry.get()) - self.step_size
+            value = self.constrain(value, self.min_value, self.max_value)
+            self.set(value)
         except ValueError:
             return
 
     def on_mouse_wheel(self, event):
         if event.delta > 0:
-            self.add_button_callback()
+            self.increment_callback('add')
         else:
-            self.subtract_button_callback()
+            self.increment_callback('subtract')
 
     def set(self, value: float):
         self.entry.delete(0, "end")
@@ -86,6 +83,18 @@ class Spinbox(ctk.CTkFrame):
         else:
             return False
 
+    def constrain(self, value, min_value, max_value):
+        if value < min_value:
+            return min_value
+        elif value > max_value:
+            return max_value
+        else:
+            return value
+
+    def focusOutEvent(self, event):
+        self.set(self.constrain(float(self.entry.get()),
+                 self.min_value, self.max_value))
+
 
 class App(ctk.CTk):
     def __init__(self):
@@ -100,17 +109,17 @@ class App(ctk.CTk):
         self.main_frame.grid_rowconfigure(3, weight=1)
         # Spinboxes
         self.spinbox_hours = Spinbox(
-            self.main_frame, step_size=0.1, min_value=0, max_value=23, decimal_places=1)
+            self.main_frame, step_size=0.1, min_value=0, max_value=10, decimal_places=1)
         self.spinbox_hours.grid(
             row=0, column=2, rowspan=1, ipadx=0, ipady=0, padx=0, pady=0)
         self.spinbox_hours.set(0)
         self.spinbox_minutes = Spinbox(
-            self.main_frame, step_size=0.5, min_value=0, max_value=59, decimal_places=1)
+            self.main_frame, step_size=0.5, min_value=0, max_value=20, decimal_places=1)
         self.spinbox_minutes.grid(
             row=0, column=4, rowspan=1, ipadx=0, ipady=0, padx=0, pady=0)
         self.spinbox_minutes.set(0)
         self.spinbox_seconds = Spinbox(
-            self.main_frame, step_size=1, min_value=0, max_value=59, decimal_places=0)
+            self.main_frame, step_size=1, min_value=0, max_value=100, decimal_places=0)
         self.spinbox_seconds.grid(
             row=0, column=6, rowspan=1, ipadx=0, ipady=0, padx=0, pady=0)
         self.spinbox_seconds.set(0)
