@@ -46,6 +46,7 @@ class Spinbox(ctk.CTkFrame):
         self.entry.bind(
             "<Down>", lambda e: self.increment_callback('subtract'))
         self.entry.bind("<FocusOut>", self.focusOutEvent)
+        self.entry.bind("<Return>", lambda event: self.focus_set())
 
     def increment_callback(self, operation: str = "add"):
         try:
