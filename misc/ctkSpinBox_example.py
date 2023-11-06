@@ -27,11 +27,11 @@ class Spinbox(ctk.CTkFrame):
         entrybox_height = self.entry.winfo_reqheight() - 2
 
         self.subtract_button = ctk.CTkButton(self, text="-", width=entrybox_height, height=entrybox_height,
-                                                        command=self.increment_callback('subtract'))
+                                                        command=lambda: self.increment_callback('subtract'))
         self.subtract_button.grid(row=0, column=0, padx=(3, 0), pady=3)
 
         self.add_button = ctk.CTkButton(self, text="+", width=entrybox_height, height=entrybox_height,
-                                        command=self.increment_callback('add'))
+                                        command=lambda: self.increment_callback('add'))
         self.add_button.grid(row=0, column=2, padx=(0, 3), pady=3)
 
         # default value
