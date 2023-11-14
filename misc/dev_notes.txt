@@ -80,15 +80,15 @@ $132=200.000
 
 -- değişiklik önerileri:
 
-1. start scan butonunu aşağı çek
-2. ayarlar menüsüne spektrometre seri no ve model seçeneği ekle. bağlantıyı bu bilgilere göre yap.
+1. start scan butonunu aşağı çek çünkü spinbox'lar yatayda çok yer kaplayacak.
+2. (ON HOLD, şimdilik spektrometreyi değiştirebiliriz dedik.) ayarlar menüsüne spektrometre seri no ve model seçeneği ekle. bağlantıyı bu bilgilere göre yap.
 3. stop scan dendiğinde process'i olduğu yerde kaydedip koddan çıkmamız lazım.
 4. yabancı bir data yüklendiğinde x eksenini database'e uygun olacak şekilde interpolate et.
 5. spike removal butonu ekle.
-6. cross correlation with phase difference konusunu araştır.
-7. entry box'lardan escape tuşu ile unfocus yapılabilir.
+6. (DONE, tek çözüm interpolation yapmak) cross correlation with different sampling rates konusunu araştır.
+7. (DONE) entry box'lardan escape tuşu ile unfocus yapılabilir.
 8. settings menüsüne logo eklenebilir.
-9. homing cycle status bar'a ekle.
-10. plot üzerine sağ tık menğ -> copy to clipboard ekle.
+9. (DONE) homing cycle status bar'a ekle.
+10. plot üzerine sağ tık menü -> copy to clipboard ekle.
 11. plot range x ve y eksenleri üzerinden değiştirilebilsin.
 12. axis label (Intensity ve Raman Shift) ekle.
