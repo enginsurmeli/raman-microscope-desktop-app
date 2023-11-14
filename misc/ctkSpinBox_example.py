@@ -7,11 +7,11 @@ class Spinbox(ctk.CTkFrame):
                  decimal_places: int = 0,
                  min_value, max_value,
                  **kwargs):
-        self.min_value = min_value
-        self.max_value = max_value
         super().__init__(*args, **kwargs)
 
         self.step_size = step_size
+        self.min_value = min_value
+        self.max_value = max_value
         self.decimal_places = decimal_places
 
         self.grid_columnconfigure((0, 2), weight=0)
@@ -19,12 +19,12 @@ class Spinbox(ctk.CTkFrame):
 
         validation = self.register(self.only_numbers)
 
-        self.entry = ctk.CTkEntry(
+        self.entrybox = ctk.CTkEntry(
             self, width=50, border_width=0, validate="key", validatecommand=(validation, '%P'))
-        self.entry.grid(row=0, column=1, columnspan=1,
-                        padx=3, pady=3, sticky="nsew")
+        self.entrybox.grid(row=0, column=1, columnspan=1,
+                           padx=3, pady=3, sticky="nsew")
 
-        entrybox_height = self.entry.winfo_reqheight() - 2
+        entrybox_height = self.entrybox.winfo_reqheight() - 2
 
         self.subtract_button = ctk.CTkButton(self, text="-", width=entrybox_height, height=entrybox_height,
                                                         command=lambda: self.increment_callback('subtract'))
@@ -35,25 +35,25 @@ class Spinbox(ctk.CTkFrame):
         self.add_button.grid(row=0, column=2, padx=(0, 3), pady=3)
 
         # default value
-        self.entry.insert(0, "0")
+        self.entrybox.insert(0, "0")
         # Bind all elements on mousewheel and keyboard events
-        self.entry.bind("<MouseWheel>", self.on_mouse_wheel)
+        self.entrybox.bind("<MouseWheel>", self.on_mouse_wheel)
         self.subtract_button.bind("<MouseWheel>", self.on_mouse_wheel)
         self.add_button.bind("<MouseWheel>", self.on_mouse_wheel)
         self.bind("<MouseWheel>", self.on_mouse_wheel)
 
-        self.entry.bind("<Up>", lambda e: self.increment_callback('add'))
-        self.entry.bind(
+        self.entrybox.bind("<Up>", lambda e: self.increment_callback('add'))
+        self.entrybox.bind(
             "<Down>", lambda e: self.increment_callback('subtract'))
-        self.entry.bind("<FocusOut>", self.focusOutEvent)
-        self.entry.bind("<Return>", lambda event: self.focus_set())
+        self.entrybox.bind("<FocusOut>", self.focusOutEvent)
+        self.entrybox.bind("<Return>", lambda event: self.focus_set())
 
     def increment_callback(self, operation: str = "add"):
         try:
             if operation == "add":
-                value = float(self.entry.get()) + self.step_size
+                value = float(self.entrybox.get()) + self.step_size
             if operation == "subtract":
-                value = float(self.entry.get()) - self.step_size
+                value = float(self.entrybox.get()) - self.step_size
             value = self.constrain(value, self.min_value, self.max_value)
             self.set(value)
         except ValueError:
@@ -66,9 +66,9 @@ class Spinbox(ctk.CTkFrame):
             self.increment_callback('subtract')
 
     def set(self, value: float):
-        self.entry.delete(0, "end")
+        self.entrybox.delete(0, "end")
         str_value = f"{value:.{self.decimal_places}f}"
-        self.entry.insert(0, str_value)
+        self.entrybox.insert(0, str_value)
 
     def only_numbers(self, char):
         def is_float(char):
@@ -93,7 +93,7 @@ class Spinbox(ctk.CTkFrame):
             return value
 
     def focusOutEvent(self, event):
-        self.set(self.constrain(float(self.entry.get()),
+        self.set(self.constrain(float(self.entrybox.get()),
                  self.min_value, self.max_value))
 
 

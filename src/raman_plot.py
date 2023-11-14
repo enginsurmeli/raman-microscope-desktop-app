@@ -30,7 +30,7 @@ class RamanPlot(customtkinter.CTkFrame):
         icons_folder = os.path.join(os.getcwd(), 'src', 'icons')
 
         inner_frame_padding = 5
-        figure_padding = 0.02
+        figure_padding = 0.03
         button_size = (90, 35)
         icon_size = (button_size[1], button_size[1])
 
@@ -145,13 +145,18 @@ class RamanPlot(customtkinter.CTkFrame):
     def changeTheme(self, color_palette):
         self.fig.set_facecolor(color_palette[0])
         self.main_ax.set_facecolor(color_palette[0])
-        self.main_ax.tick_params(axis='x', colors=color_palette[3])
+        self.main_ax.tick_params(
+            axis='x', colors=color_palette[3], labelsize=11)
         self.main_ax.xaxis.label.set_color(color_palette[3])
         self.main_ax.spines['bottom'].set_color(color_palette[3])
         self.main_ax.spines['top'].set_color(color_palette[3])
         self.main_ax.spines['left'].set_color(color_palette[3])
         self.main_ax.spines['right'].set_color(color_palette[3])
         self.main_ax.set_yticks([])
+        self.span_ax.set_xlabel(
+            "Raman Shift (cm$^{-1}$)", fontsize=12, color=color_palette[3])
+        self.main_ax.set_ylabel(
+            "Intensity (a.u.)", fontsize=12, color=color_palette[3])
 
         self.span_ax.set_facecolor(color_palette[0])
         self.span_ax.tick_params(axis='x', colors=color_palette[3])
@@ -160,8 +165,8 @@ class RamanPlot(customtkinter.CTkFrame):
         self.span_ax.spines['top'].set_color(color_palette[3])
         self.span_ax.spines['left'].set_color(color_palette[3])
         self.span_ax.spines['right'].set_color(color_palette[3])
-        self.span_ax.set_yticks([])
         self.span_ax.set_xticks([])
+        self.span_ax.set_yticks([])
 
         self.toolbar.config(background=color_palette[4])
         self.toolbar.winfo_children()[-2].config(background=color_palette[4])

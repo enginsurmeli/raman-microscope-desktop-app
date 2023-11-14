@@ -20,15 +20,14 @@ class RamanScan(customtkinter.CTkFrame):
 
         inner_frame_padding = 4
         entry_box_width = 75
-        button_size = (50, 50)
+        button_size = (30, 30)
 
-        self.rowconfigure((0, 1, 2), weight=1)
+        self.rowconfigure((0, 1, 2, 3), weight=1)
         self.columnconfigure(0, weight=0)
-        self.columnconfigure(1, weight=5)
-        self.columnconfigure(2, weight=0)
+        self.columnconfigure(1, weight=1)
 
         spectral_center_label = customtkinter.CTkLabel(
-            self, text="Spectral Center (cm-1)")
+            self, text="Spectral Center (cm⁻¹)")
         spectral_center_label.grid(
             row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -63,9 +62,9 @@ class RamanScan(customtkinter.CTkFrame):
                                                  size=button_size)
 
         self.start_scan_button = customtkinter.CTkButton(
-            self, text="Start\nScan", command=self.startRamanScan, width=button_size[0], height=button_size[1], image=start_scan_icon, compound="top")
-        self.start_scan_button.grid(row=0, column=2, rowspan=3,
-                                    padx=inner_frame_padding, pady=inner_frame_padding)
+            self, text="Start Scan", command=self.startRamanScan, width=button_size[0], height=button_size[1], image=start_scan_icon)
+        self.start_scan_button.grid(row=3, column=0, columnspan=2,
+                                    padx=inner_frame_padding, pady=inner_frame_padding, sticky="nsew")
 
         self.raman_shift = []
         self.intensity = []
@@ -184,55 +183,56 @@ class Spinbox(customtkinter.CTkFrame):
 
         validation = self.register(self.only_numbers)
 
-        self.subtract_button = customtkinter.CTkButton(
-            self, text="-", command=self.subtract_button_callback)
+        self.entrybox = customtkinter.CTkEntry(
+            self, width=50, border_width=0, validate="key", validatecommand=(validation, '%P'))
+        self.entrybox.grid(row=0, column=1, columnspan=1,
+                           padx=3, pady=3, sticky="nsew")
+
+        entrybox_height = self.entrybox.winfo_reqheight() - 2
+
+        self.subtract_button = customtkinter.CTkButton(self, text="-", width=entrybox_height, height=entrybox_height,
+                                                       command=lambda: self.increment_callback('subtract'))
         self.subtract_button.grid(row=0, column=0, padx=(3, 0), pady=3)
 
-        self.entry = customtkinter.CTkEntry(
-            self, border_width=0, validate="key", validatecommand=(validation, '%P'))
-        self.entry.grid(row=0, column=1, columnspan=1,
-                        padx=3, pady=3, sticky="nsew")
-
-        self.add_button = customtkinter.CTkButton(
-            self, text="+", command=self.add_button_callback)
+        self.add_button = customtkinter.CTkButton(self, text="+", width=entrybox_height, height=entrybox_height,
+                                                  command=lambda: self.increment_callback('add'))
         self.add_button.grid(row=0, column=2, padx=(0, 3), pady=3)
 
         # default value
-        self.entry.insert(0, "0")
-        # All elements on mousewheel and keyboard events
-        self.entry.bind("<MouseWheel>", self.on_mouse_wheel)
+        self.entrybox.insert(0, "0")
+        # Bind all elements on mousewheel and keyboard events
+        self.entrybox.bind("<MouseWheel>", self.on_mouse_wheel)
         self.subtract_button.bind("<MouseWheel>", self.on_mouse_wheel)
         self.add_button.bind("<MouseWheel>", self.on_mouse_wheel)
         self.bind("<MouseWheel>", self.on_mouse_wheel)
 
-        self.entry.bind("<Up>", lambda e: self.add_button_callback())
-        self.entry.bind("<Down>", lambda e: self.subtract_button_callback())
+        self.entrybox.bind("<Up>", lambda e: self.increment_callback('add'))
+        self.entrybox.bind(
+            "<Down>", lambda e: self.increment_callback('subtract'))
+        self.entrybox.bind("<FocusOut>", self.focusOutEvent)
+        self.entrybox.bind("<Return>", lambda event: self.focus_set())
 
-    def add_button_callback(self):
+    def increment_callback(self, operation: str = "add"):
         try:
-            value = float(self.entry.get()) + self.step_size
-            if value <= self.max_value:
-                self.set(value)
-        except ValueError:
-            return
-
-    def subtract_button_callback(self):
-        try:
-            value = float(self.entry.get()) - self.step_size
-            if value >= self.min_value:
-                self.set(value)
+            if operation == "add":
+                value = float(self.entrybox.get()) + self.step_size
+            if operation == "subtract":
+                value = float(self.entrybox.get()) - self.step_size
+            value = self.constrain(value, self.min_value, self.max_value)
+            self.set(value)
         except ValueError:
             return
 
     def on_mouse_wheel(self, event):
         if event.delta > 0:
-            self.add_button_callback()
+            self.increment_callback('add')
         else:
-            self.subtract_button_callback()
+            self.increment_callback('subtract')
 
     def set(self, value: float):
-        self.entry.delete(0, "end")
-        self.entry.insert(0, round(value, self.decimal_places))
+        self.entrybox.delete(0, "end")
+        str_value = f"{value:.{self.decimal_places}f}"
+        self.entrybox.insert(0, str_value)
 
     def only_numbers(self, char):
         def is_float(char):
@@ -247,3 +247,15 @@ class Spinbox(customtkinter.CTkFrame):
             return True
         else:
             return False
+
+    def constrain(self, value, min_value, max_value):
+        if value < min_value:
+            return min_value
+        elif value > max_value:
+            return max_value
+        else:
+            return value
+
+    def focusOutEvent(self, event):
+        self.set(self.constrain(float(self.entrybox.get()),
+                 self.min_value, self.max_value))

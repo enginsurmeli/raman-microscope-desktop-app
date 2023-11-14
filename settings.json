@@ -19,7 +19,7 @@
     "last_y": "",
     "last_z": "",
     "last_cnc_state": "Disconnected",
-    "step_size": "10",
+    "step_size": "",
     "feed_rate": "2000",
     "last_x": "",
     "spectral_center": "2000",

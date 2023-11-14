@@ -91,4 +91,4 @@ $132=200.000
 9. (DONE) homing cycle status bar'a ekle.
 10. plot üzerine sağ tık menü -> copy to clipboard ekle.
 11. plot range x ve y eksenleri üzerinden değiştirilebilsin.
-12. axis label (Intensity ve Raman Shift) ekle.
+12. (DONE) axis label (Intensity ve Raman Shift) ekle.
