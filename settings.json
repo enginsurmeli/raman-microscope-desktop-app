@@ -22,7 +22,7 @@
     "step_size": "",
     "feed_rate": "2000",
     "last_x": "",
-    "spectral_center": "2000",
-    "integration_time": "1",
-    "accumulations": "2"
+    "spectral_center": "2e+03",
+    "integration_time": "1e+02",
+    "accumulations": "2e+00"
 }

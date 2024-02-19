@@ -31,8 +31,8 @@ class RamanScan(customtkinter.CTkFrame):
         spectral_center_label.grid(
             row=0, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.spectral_center_entry = customtkinter.CTkEntry(
-            self, width=entry_box_width, justify="center")
+        self.spectral_center_entry = Spinbox(self, step_size=1, min_value=-3000, max_value=3000,
+                                             decimal_places=0)
         self.spectral_center_entry.grid(
             row=0, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -41,8 +41,8 @@ class RamanScan(customtkinter.CTkFrame):
         integration_time_label.grid(
             row=1, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.integration_time_entry = customtkinter.CTkEntry(
-            self, width=entry_box_width, justify="center")
+        self.integration_time_entry = Spinbox(self, step_size=1, min_value=1, max_value=1000,
+                                              decimal_places=0)
         self.integration_time_entry.grid(
             row=1, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -51,8 +51,8 @@ class RamanScan(customtkinter.CTkFrame):
         accumulations_label.grid(
             row=2, column=0, padx=inner_frame_padding, pady=inner_frame_padding)
 
-        self.accumulations_entry = customtkinter.CTkEntry(
-            self, width=entry_box_width, justify="center")
+        self.accumulations_entry = Spinbox(self, step_size=1, min_value=1, max_value=1000,
+                                           decimal_places=0)
         self.accumulations_entry.grid(
             row=2, column=1, padx=inner_frame_padding, pady=inner_frame_padding)
 
@@ -160,18 +160,19 @@ class RamanScan(customtkinter.CTkFrame):
         settings_data['accumulations'] = self.accumulations_entry.get()
         return settings_data
 
-    def updateSettings(self, spectral_center: str, integration_time: str, accumulations: str):
-        self.spectral_center_entry.delete(0, "end")
-        self.spectral_center_entry.insert(0, spectral_center)
-        self.integration_time_entry.delete(0, "end")
-        self.integration_time_entry.insert(0, integration_time)
-        self.accumulations_entry.delete(0, "end")
-        self.accumulations_entry.insert(0, accumulations)
+    def updateSettings(self, spectral_center: float, integration_time: float, accumulations: float):
+        self.spectral_center_entry.set(spectral_center)
+        self.integration_time_entry.set(integration_time)
+        self.accumulations_entry.set(accumulations)
 
 
 class Spinbox(customtkinter.CTkFrame):
-    def __init__(self, step_size: float, min_value: float, max_value: float, decimal_places: int):
-        super().__init__()
+    def __init__(self, *args,
+                 step_size: float = 1,
+                 decimal_places: int = 0,
+                 min_value, max_value,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.step_size = step_size
         self.min_value = min_value
@@ -231,7 +232,7 @@ class Spinbox(customtkinter.CTkFrame):
 
     def set(self, value: float):
         self.entrybox.delete(0, "end")
-        str_value = f"{value:.{self.decimal_places}f}"
+        str_value = f"{value:.{self.decimal_places}}"
         self.entrybox.insert(0, str_value)
 
     def only_numbers(self, char):
@@ -259,3 +260,6 @@ class Spinbox(customtkinter.CTkFrame):
     def focusOutEvent(self, event):
         self.set(self.constrain(float(self.entrybox.get()),
                  self.min_value, self.max_value))
+
+    def get(self):
+        return self.entrybox.get()
