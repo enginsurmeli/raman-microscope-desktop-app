@@ -16,13 +16,13 @@
     ],
     "appearance": "Dark",
     "save_folder": "C:/Users/surme/OneDrive/Belgeler/GitHub/raman-microscope-cnc-3018/raman_database",
-    "last_y": "",
-    "last_z": "",
+    "last_y": "199.0",
+    "last_z": "1.0",
     "last_cnc_state": "Disconnected",
-    "step_size": "",
+    "step_size": "10",
     "feed_rate": "2000",
-    "last_x": "",
+    "last_x": "199.0",
     "spectral_center": "2e+03",
-    "integration_time": "1e+02",
-    "accumulations": "2e+00"
+    "integration_time": "1e+01",
+    "accumulations": "1e+01"
 }
