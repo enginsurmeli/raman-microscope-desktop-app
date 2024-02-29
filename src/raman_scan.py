@@ -230,10 +230,20 @@ class Spinbox(customtkinter.CTkFrame):
         else:
             self.increment_callback('subtract')
 
-    def set(self, value: float):
+    # def set(self, value: float):
+    #     self.entrybox.delete(0, "end")
+    #     str_value = f"{value:.{self.decimal_places}}"
+    #     self.entrybox.insert(0, str_value)
+
+    def set(self, value):
         self.entrybox.delete(0, "end")
-        str_value = f"{value:.{self.decimal_places}}"
-        self.entrybox.insert(0, str_value)
+        if isinstance(value, (int, float)):
+            # Format the value explicitly without scientific notation
+            str_value = "{:.{}f}".format(value, self.decimal_places)
+            self.entrybox.insert(0, str_value)
+        else:
+            # Handle non-numeric values (maybe display an error message?)
+            print("Error: Value must be numeric")
 
     def only_numbers(self, char):
         def is_float(char):
