@@ -1,5 +1,5 @@
 # Raman Microscope Project
-![App Screenshot](misc/lst_raman_scan_app_screenshot.png)
+![App Screenshot](src/app_screenshot.png)
 
 Interface for LST Raman Microscope with camera view, Raman map and spectrum view using CNC 3018.
 
