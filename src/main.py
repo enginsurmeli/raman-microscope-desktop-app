@@ -34,7 +34,7 @@ class App(customtkinter.CTk):
         self.current_folder = os.getcwd()
         # self.current_folder = globals()['_dh'][0] # Use this for jupyter notebook
         self.filename = sys.argv[0].rsplit('.', 1)[0]
-        icons_folder = 'src//icons'
+        icons_folder = os.path.join('src', 'icons')
         self.image_path = os.path.join(self.current_folder, icons_folder)
 
         try:
