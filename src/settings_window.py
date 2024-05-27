@@ -8,9 +8,9 @@ import platform
 os_name = platform.system()
 
 if os_name == "Windows":
-    from pygrabber.dshow_graph import FilterGraph
+    from pygrabber.dshow_graph import FilterGraph  # type: ignore
 elif platform.system() == "Darwin":
-    from AVFoundation import AVCaptureDevice
+    from AVFoundation import AVCaptureDevice  # type: ignore
 
 
 class SettingsWindow(customtkinter.CTkToplevel):
