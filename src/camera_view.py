@@ -2,7 +2,7 @@ import customtkinter
 import tkinter as tk
 
 import cv2
-from pygrabber.dshow_graph import FilterGraph
+# from pygrabber.dshow_graph import FilterGraph
 from PIL import Image, ImageTk
 
 from tkinter import filedialog as fd

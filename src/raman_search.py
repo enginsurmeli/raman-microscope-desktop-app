@@ -17,7 +17,8 @@ class RamanSearch(customtkinter.CTkFrame):
         self.master = master
         self.initialdir = os.getcwd()
         self.raman_db_folder = 'raman_database'
-        icons_folder = 'src\icons'
+        # icons_folder = 'src\icons'
+        icons_folder = os.path.join('src', 'icons')
         button_size = (150, 35)
         icon_size = (button_size[1], button_size[1])
         self.grid_rowconfigure(0, weight=1)

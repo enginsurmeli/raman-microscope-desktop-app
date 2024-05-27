@@ -1,9 +1,16 @@
 import customtkinter
 import serial.tools.list_ports
 import json
-from pygrabber.dshow_graph import FilterGraph
 import tkinter.ttk as ttk
 from tkinter import filedialog
+import platform
+
+os_name = platform.system()
+
+if os_name == "Windows":
+    from pygrabber.dshow_graph import FilterGraph
+elif platform.system() == "Darwin":
+    from AVFoundation import AVCaptureDevice
 
 
 class SettingsWindow(customtkinter.CTkToplevel):
@@ -89,10 +96,10 @@ class SettingsWindow(customtkinter.CTkToplevel):
         self.line_endings_optionmenu.grid(row=0, column=3, padx=10, pady=10)
 
         # get a list of available video devices
-        self.graph = FilterGraph()
+        # self.graph = FilterGraph() # this work only on windows
 
         # fill optionmenu with video devices
-        self.camera_list = self.graph.get_input_devices()
+        # self.camera_list = self.graph.get_input_devices()
         self.camera_optionmenu = customtkinter.CTkOptionMenu(
             self.settings_frame, values=self.camera_list, dynamic_resizing=False)
         self.camera_optionmenu.grid(row=2, column=1, padx=10, pady=10)

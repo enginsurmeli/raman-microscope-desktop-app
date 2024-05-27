@@ -16,7 +16,7 @@ class RamanScan(customtkinter.CTkFrame):
         dll_folder = 'thorlabs_lib'
         dll_filepath = os.path.join(os.path.dirname(
             __file__), '..', dll_folder, 'TLCCS_64.dll')
-        self.spectrometer = cdll.LoadLibrary(dll_filepath)
+        # self.spectrometer = cdll.LoadLibrary(dll_filepath)
 
         inner_frame_padding = 4
         entry_box_width = 75
@@ -72,71 +72,74 @@ class RamanScan(customtkinter.CTkFrame):
         self.configureButtons(['start_scan_button'], 'disabled')
         self.is_connected = False
 
-        self.connectSpectrometer()
+        # self.connectSpectrometer()
 
-    def connectSpectrometer(self):
-        # The resource name has this format: USB0::0x1313::<product ID>::<serial number>::RAW
-        #
-        # Product IDs are:
-        # 0x8081   // CCS100 Compact Spectrometer
-        # 0x8083   // CCS125 Special Spectrometer
-        # 0x8085   // CCS150 UV Spectrometer
-        # 0x8087   // CCS175 NIR Spectrometer
-        # 0x8089   // CCS200 UV-NIR Spectrometer
-        #
-        # The serial number is printed on the CCS spectrometer.
-        #
-        # E.g.: "USB0::0x1313::0x8081::M00822009::RAW" for a CCS100 with serial number M00822009
+    # def connectSpectrometer(self):
+    #     The resource name has this format: USB0::0x1313::<product ID>::<serial number>::RAW
 
-        serial_number = "M00822009"
-        product_id = "0x8081"
-        coding = 'utf-8'
-        device_address = bytes(
-            f"USB0::0x1313::{product_id}::{serial_number}::RAW", coding)
-        self.ccs_handle = c_int(0)
-        connect_spectrometer = self.spectrometer.tlccs_init(
-            device_address, 1, 1, byref(self.ccs_handle))
+    #     Product IDs are:
+    #     0x8081   // CCS100 Compact Spectrometer
+    #     0x8083   // CCS125 Special Spectrometer
+    #     0x8085   // CCS150 UV Spectrometer
+    #     0x8087   // CCS175 NIR Spectrometer
+    #     0x8089   // CCS200 UV-NIR Spectrometer
 
-        self.is_connected = True if connect_spectrometer == 0 else False
+    #     The serial number is printed on the CCS spectrometer.
 
-        if self.is_connected:
-            self.configureButtons(['start_scan_button'], 'normal')
-        else:
-            self.after(1000, self.connectSpectrometer)
+    #     E.g.: "USB0::0x1313::0x8081::M00822009::RAW" for a CCS100 with serial number M00822009
+
+    #     serial_number = "M00822009"
+    #     product_id = "0x8081"
+    #     coding = 'utf-8'
+    #     device_address = bytes(
+    #         f"USB0::0x1313::{product_id}::{serial_number}::RAW", coding)
+    #     self.ccs_handle = c_int(0)
+    #     connect_spectrometer = self.spectrometer.tlccs_init(
+    #         device_address, 1, 1, byref(self.ccs_handle))
+
+    #     self.is_connected = True if connect_spectrometer == 0 else False
+
+    #     if self.is_connected:
+    #         self.configureButtons(['start_scan_button'], 'normal')
+    #     else:
+    #         self.after(1000, self.connectSpectrometer)
 
     def disconnectSpectrometer(self):
-        self.configureButtons(['start_scan_button'], 'disabled')
-        self.is_connected = False
-        self.spectrometer.tlccs_close(self.ccs_handle)
+        # self.configureButtons(['start_scan_button'], 'disabled')
+        # self.is_connected = False
+        # self.spectrometer.tlccs_close(self.ccs_handle)
+        pass
 
     def setIntegrationTime(self):
         # set integration time in  seconds, ranging from 1e-5 to 5e1
-        integration_time = c_double(self.constrain(
-            float(self.integration_time_entry.get()), 1e-5, 5e1))
-        self.spectrometer.tlccs_setIntegrationTime(
-            self.ccs_handle, integration_time)
+        # integration_time = c_double(self.constrain(
+        #     float(self.integration_time_entry.get()), 1e-5, 5e1))
+        # self.spectrometer.tlccs_setIntegrationTime(
+        #     self.ccs_handle, integration_time)
+        pass
 
     def startRamanScan(self):
-        self.setIntegrationTime()
-        self.spectrometer.tlccs_startScan(self.ccs_handle)
+        #     self.setIntegrationTime()
+        #     self.spectrometer.tlccs_startScan(self.ccs_handle)
 
-        wavelengths = (c_double*3648)()
+        #     wavelengths = (c_double*3648)()
 
-        self.spectrometer.tlccs_getWavelengthData(self.ccs_handle, 0, byref(
-            wavelengths), c_void_p(None), c_void_p(None))
+        #     self.spectrometer.tlccs_getWavelengthData(self.ccs_handle, 0, byref(
+        #         wavelengths), c_void_p(None), c_void_p(None))
 
-        # retrieve data
-        data_array = (c_double*3648)()
-        self.spectrometer.tlccs_getScanData(self.ccs_handle, byref(data_array))
+        #     retrieve data
+        #     data_array = (c_double*3648)()
+        #     self.spectrometer.tlccs_getScanData(self.ccs_handle, byref(data_array))
 
-        raman_shift_nm = np.ndarray(
-            shape=(3648,), dtype=float, buffer=wavelengths)
-        raman_shift_inverse_cm = 1e7*(1/532 - 1/raman_shift_nm)
-        self.raman_shift = raman_shift_inverse_cm
-        self.intensity = np.ndarray(
-            shape=(3648,), dtype=float, buffer=data_array)
+        #     raman_shift_nm = np.ndarray(
+        #         shape=(3648,), dtype=float, buffer=wavelengths)
+        #     raman_shift_inverse_cm = 1e7*(1/532 - 1/raman_shift_nm)
+        #     self.raman_shift = raman_shift_inverse_cm
+        #     self.intensity = np.ndarray(
+        #         shape=(3648,), dtype=float, buffer=data_array)
 
-        self.sendDataToPlot()
+        #     self.sendDataToPlot()
+        pass
 
     def sendDataToPlot(self):
         datetime_string = datetime.now().strftime("%Y-%m-%d_%H-%M")
