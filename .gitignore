@@ -164,3 +164,7 @@ icons/
 raman_database/
 thorlabs_lib/
 misc/
+
+#.vscode and .DS_Store
+.vscode/
+.DS_Store
