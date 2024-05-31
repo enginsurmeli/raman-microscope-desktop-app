@@ -3,14 +3,7 @@ import serial.tools.list_ports
 import json
 import tkinter.ttk as ttk
 from tkinter import filedialog
-import platform
-
-os_name = platform.system()
-
-if os_name == "Windows":
-    from pygrabber.dshow_graph import FilterGraph  # type: ignore
-elif platform.system() == "Darwin":
-    from AVFoundation import AVCaptureDevice  # type: ignore
+from cv2 import VideoCapture
 
 
 class SettingsWindow(customtkinter.CTkToplevel):
@@ -96,12 +89,9 @@ class SettingsWindow(customtkinter.CTkToplevel):
         self.line_endings_optionmenu.grid(row=0, column=3, padx=10, pady=10)
 
         # get a list of available video devices
-        # self.graph = FilterGraph() # this work only on windows
-
-        # fill optionmenu with video devices
-        # self.camera_list = self.graph.get_input_devices()
+        self.capture_devices_list = self.get_capture_devices()
         self.camera_optionmenu = customtkinter.CTkOptionMenu(
-            self.settings_frame, values=self.camera_list, dynamic_resizing=False)
+            self.settings_frame, values=self.capture_devices_list, dynamic_resizing=False)
         self.camera_optionmenu.grid(row=2, column=1, padx=10, pady=10)
 
         # create a list of appearance modes and accent colors
@@ -129,7 +119,7 @@ class SettingsWindow(customtkinter.CTkToplevel):
         self.serial_ports_optionmenu.set(self.settings_data.get('port'))
         self.baud_rates_optionmenu.set(self.settings_data.get('baudrate'))
         self.line_endings_optionmenu.set(self.settings_data.get('lineending'))
-        self.camera_optionmenu.set(self.camera_list[camera_index])
+        self.camera_optionmenu.set(self.capture_devices_list[camera_index])
         self.appearance_optionmenu.set(self.settings_data.get('appearance'))
         self.save_folder_entry.delete(0, "end")
         self.save_folder_entry.insert(0, self.settings_data.get('save_folder'))
@@ -153,7 +143,7 @@ class SettingsWindow(customtkinter.CTkToplevel):
 
         # get camera index
         camera = self.camera_optionmenu.get()
-        for i, device in enumerate(self.camera_list):
+        for i, device in enumerate(self.capture_devices_list):
             if device == camera:
                 camera_index = i
 
@@ -167,7 +157,7 @@ class SettingsWindow(customtkinter.CTkToplevel):
         settings_data['port'] = serial_port
         settings_data['portlist'] = self.ports_list
         settings_data['camera_index'] = camera_index
-        settings_data['cameralist'] = self.camera_list
+        settings_data['cameralist'] = self.capture_devices_list
         settings_data['appearance'] = appearance
         settings_data['save_folder'] = self.save_folder_entry.get()
         with open('settings.json', 'w') as jfile:
@@ -180,3 +170,16 @@ class SettingsWindow(customtkinter.CTkToplevel):
         folder = filedialog.askdirectory()
         self.save_folder_entry.delete(0, "end")
         self.save_folder_entry.insert(0, folder)
+
+    def get_capture_devices(self):
+        capture_devices_list = []
+        index = 0
+        while True:
+            cap = VideoCapture(index)
+            if not cap.read()[0]:
+                break
+            else:
+                capture_devices_list.append(f"Camera {index}")
+            cap.release()
+            index += 1
+        return capture_devices_list
